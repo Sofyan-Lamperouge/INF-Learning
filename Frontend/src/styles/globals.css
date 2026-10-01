@@ -1,0 +1,62 @@
+/* Placeholder styling dasar -- ganti/perluas sesuai desain UX-01
+   dari UI/UX Designer setelah design system tersedia. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f8f9fb;
+  color: #1a1a1a;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.auth-page,
+.materi-page {
+  max-width: 420px;
+  margin: 3rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.materi-page {
+  max-width: 720px;
+}
+
+.input-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.input-field input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  color: #16a34a;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  color: #6b7280;
+  font-style: italic;
+}
