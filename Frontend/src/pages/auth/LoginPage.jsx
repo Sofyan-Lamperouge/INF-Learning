@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../services/authService.js";
 import { ApiError } from "../../services/api.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import InputField from "../../components/common/InputField.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import LoginSkeleton from "../../components/skeletons/LoginSkeleton.jsx";
 
 // FE-02 | Login Tanpa Pemilihan Role
-// AC: tidak ada dropdown/input role dalam bentuk apa pun di halaman ini.
-// Role diambil dari respons Backend, lalu dipakai untuk redirect ke
-// halaman daftar materi (FE-03) yang sama untuk Mahasiswa maupun Dosen.
 function LoginPage() {
   const navigate = useNavigate();
   const { loginSuccess } = useAuth();
   const [form, setForm] = useState({ nimNip: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // ✅ SELALU TRUE → skeleton tampil terus (mode demo / "gangguan jaringan")
+  const [booting] = useState(true);
+
+  // Kalau nanti mau kembalikan ke normal, pakai versi ini:
+  // const [booting, setBooting] = useState(true);
+  // useEffect(() => {
+  //   const t = setTimeout(() => setBooting(false), 2000);
+  //   return () => clearTimeout(t);
+  // }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,7 +39,7 @@ function LoginPage() {
       navigate("/materi");
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message); // contoh: "NIM/NIP atau kata sandi salah"
+        setError(err.message);
       } else {
         setError("Gagal terhubung ke server, periksa koneksi Anda.");
       }
@@ -39,6 +47,9 @@ function LoginPage() {
       setLoading(false);
     }
   }
+
+  // ✅ Kunci: saat booting, tampilkan skeleton
+  if (booting) return <LoginSkeleton />;
 
   return (
     <main className="auth-page">
@@ -59,8 +70,6 @@ function LoginPage() {
           onChange={handleChange}
           required
         />
-
-        {/* Sengaja TIDAK ADA dropdown/select role di sini -- lihat AC */}
 
         <ErrorMessage message={error} />
 
