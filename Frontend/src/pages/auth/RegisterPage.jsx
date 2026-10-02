@@ -4,16 +4,28 @@ import { register } from "../../services/authService.js";
 import { ApiError } from "../../services/api.js";
 import InputField from "../../components/common/InputField.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import RegisterSkeleton from "../../components/skeletons/RegisterSkeleton.jsx";
 
-// FE-01 | Tampilan Role Otomatis di Registrasi
-// AC: tidak ada dropdown/input role di halaman ini sama sekali.
-// Role hanya muncul di NOTIFIKASI setelah Backend merespons sukses.
+// FE-01 | Registrasi
 function RegisterPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nimNip: "", nama: "", password: "" });
+  const [form, setForm] = useState({
+    nimNip: "",
+    namaLengkap: "",
+    password: "",
+  });
   const [error, setError] = useState("");
-  const [successRole, setSuccessRole] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // ✅ Paksa skeleton tampil terus (demo / "gangguan jaringan")
+  const [booting] = useState(true);
+
+  // Kalau nanti mau normal, pakai versi ini:
+  // const [booting, setBooting] = useState(true);
+  // useEffect(() => {
+  //   const t = setTimeout(() => setBooting(false), 1500);
+  //   return () => clearTimeout(t);
+  // }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,17 +34,13 @@ function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setSuccessRole(null);
     setLoading(true);
     try {
-      // TIDAK ADA field role dikirim di sini -- sesuai AC-4 (role dari
-      // request diabaikan), field ini memang sengaja tidak pernah ada.
-      const result = await register(form);
-      setSuccessRole(result.role); // "Mahasiswa" atau "Dosen"
-      setTimeout(() => navigate("/login"), 1500);
+      await register(form);
+      navigate("/login");
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message); // contoh: "Format NIM/NIP tidak dikenali"
+        setError(err.message);
       } else {
         setError("Gagal terhubung ke server, periksa koneksi Anda.");
       }
@@ -40,6 +48,9 @@ function RegisterPage() {
       setLoading(false);
     }
   }
+
+  // ✅ Kunci: saat booting, tampilkan skeleton
+  if (booting) return <RegisterSkeleton />;
 
   return (
     <main className="auth-page">
@@ -54,8 +65,8 @@ function RegisterPage() {
         />
         <InputField
           label="Nama Lengkap"
-          name="nama"
-          value={form.nama}
+          name="namaLengkap"
+          value={form.namaLengkap}
           onChange={handleChange}
           required
         />
@@ -68,14 +79,7 @@ function RegisterPage() {
           required
         />
 
-        {/* Sengaja TIDAK ADA dropdown/select role di sini -- lihat AC-1 */}
-
         <ErrorMessage message={error} />
-        {successRole && (
-          <p className="success-message">
-            Akun berhasil dibuat sebagai {successRole}
-          </p>
-        )}
 
         <button type="submit" disabled={loading}>
           {loading ? "Memproses..." : "Daftar"}
