@@ -1,0 +1,54 @@
+# ==================================
+# Python / Backend
+# ==================================
+Backend/venv/
+Backend/.venv/
+Backend/__pycache__/
+Backend/**/__pycache__/
+Backend/*.pyc
+Backend/*.pyo
+Backend/.pytest_cache/
+Backend/.mypy_cache/
+Backend/.ruff_cache/
+Backend/.coverage
+Backend/htmlcov/
+
+# Environment files — JANGAN commit
+Backend/.env
+frontend/.env
+.env
+.env.local
+.env.*.local
+
+# ==================================
+# Node / Frontend
+# ==================================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ==================================
+# IDE
+# ==================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==================================
+# OS
+# ==================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==================================
+# Logs
+# ==================================
+*.log
+logs/
