@@ -4,83 +4,116 @@ import { login } from "../../services/authService.js";
 import { ApiError } from "../../services/api.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import InputField from "../../components/common/InputField.jsx";
+import PasswordField from "../../components/common/PasswordField.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import SuccessMessage from "../../components/common/SuccessMessage.jsx";
 import LoginSkeleton from "../../components/skeletons/LoginSkeleton.jsx";
+import { validateNimNip } from "../../utils/validators.js";
 
-// FE-02 | Login Tanpa Pemilihan Role
 function LoginPage() {
   const navigate = useNavigate();
   const { loginSuccess } = useAuth();
+
   const [form, setForm] = useState({ nimNip: "", password: "" });
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ SELALU TRUE → skeleton tampil terus (mode demo / "gangguan jaringan")
-  const [booting] = useState(true);
-
-  // Kalau nanti mau kembalikan ke normal, pakai versi ini:
-  // const [booting, setBooting] = useState(true);
-  // useEffect(() => {
-  //   const t = setTimeout(() => setBooting(false), 2000);
-  //   return () => clearTimeout(t);
-  // }, []);
+  // Skeleton muncul 800ms saat pertama kali halaman dibuka
+  const [booting, setBooting] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setBooting(false), 800);
+    return () => clearTimeout(t);
+  }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+    setServerError("");
+  }
+
+  function validate() {
+    const next = {};
+    const nimErr = validateNimNip(form.nimNip);
+    if (nimErr) next.nimNip = nimErr;
+    if (!form.password) next.password = "Password Salah!";
+    setErrors(next);
+    return Object.keys(next).length === 0;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
+    setServerError("");
+    setSuccess("");
+    if (!validate()) return;
+
     setLoading(true);
     try {
       const { token, role } = await login(form);
+      setSuccess(
+        "Login Berhasil! Selamat datang kembali, Kamu akan diarahkan ke halaman utama."
+      );
       loginSuccess(token, role);
-      navigate("/materi");
+      setTimeout(() => navigate("/materi"), 1200);
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError("Gagal terhubung ke server, periksa koneksi Anda.");
-      }
+      if (err instanceof ApiError) setServerError(err.message);
+      else setServerError("Gagal terhubung ke server, periksa koneksi Anda.");
     } finally {
       setLoading(false);
     }
   }
 
-  // ✅ Kunci: saat booting, tampilkan skeleton
   if (booting) return <LoginSkeleton />;
 
   return (
-    <main className="auth-page">
-      <h1>Masuk</h1>
-      <form onSubmit={handleSubmit} noValidate>
-        <InputField
-          label="NIM / NIP"
-          name="nimNip"
-          value={form.nimNip}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Kata Sandi"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+    <>
+      {success && <SuccessMessage message={success} />}
 
-        <ErrorMessage message={error} />
+      <main className="auth-page">
+        <div className="auth-card">
+          <div className="auth-illustration" aria-hidden="true"></div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Memproses..." : "Masuk"}
-        </button>
-      </form>
-      <p>
-        Belum punya akun? <Link to="/register">Daftar di sini</Link>
-      </p>
-    </main>
+          <div className="auth-form-col">
+            <h1 className="auth-title">Welcome Back!</h1>
+            <p className="auth-subtitle">Masuk untuk mulai belajar.</p>
+
+            <form onSubmit={handleSubmit} noValidate>
+              <InputField
+                label="NIM/NIP"
+                name="nimNip"
+                value={form.nimNip}
+                onChange={handleChange}
+                placeholder="Contoh: 24880100XX"
+                error={errors.nimNip}
+                required
+              />
+              {errors.nimNip && <ErrorMessage message={errors.nimNip} />}
+
+              <PasswordField
+                label="Password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Masukkan Password"
+                error={errors.password}
+              />
+              {errors.password && <ErrorMessage message={errors.password} />}
+
+              {serverError && <ErrorMessage message={serverError} />}
+
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Memproses..." : "Login"}
+              </button>
+            </form>
+
+            <p className="auth-footer">
+              Belum punya akun? <Link to="/register">Buat di sini</Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
 

@@ -1,8 +1,9 @@
-// Dipakai di setiap halaman untuk menampilkan pesan error dari Backend
-// (401, 422, 429, dll) dengan gaya yang seragam.
-function ErrorMessage({ message }) {
+export default function ErrorMessage({ message }) {
   if (!message) return null;
-  return <p className="error-message" role="alert">{message}</p>;
+  return (
+    <div className="alert alert-error" role="alert">
+      <span className="alert-icon">!</span>
+      <span>{message}</span>
+    </div>
+  );
 }
-
-export default ErrorMessage;

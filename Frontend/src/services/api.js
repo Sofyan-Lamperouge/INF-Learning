@@ -1,42 +1,36 @@
-// Wrapper tipis di atas fetch() supaya seluruh pemanggilan API di aplikasi
-// punya cara penanganan error yang seragam. Semua file *Service.js
-// memakai fungsi ini, jangan panggil fetch() langsung dari komponen/halaman.
-
-const BASE_URL = "/api";
-
-async function request(path, options = {}) {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    // Backend diharapkan mengirim { message: "..." } pada respons error,
-    // sesuai skema 401/422/429 yang sudah disepakati di AC masing-masing story.
-    const message = data?.message || "Terjadi kesalahan, silakan coba lagi.";
-    throw new ApiError(message, response.status, data);
-  }
-
-  return data;
-}
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 export class ApiError extends Error {
-  constructor(message, status, payload) {
+  constructor(message, status) {
     super(message);
+    this.name = "ApiError";
     this.status = status;
-    this.payload = payload;
   }
 }
 
-export const api = {
-  get: (path) => request(path, { method: "GET" }),
-  post: (path, body) => request(path, { method: "POST", body: JSON.stringify(body) }),
-};
+export async function request(path, options = {}) {
+  const token = localStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+
+  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    /* body kosong */
+  }
+
+  if (!res.ok) {
+    throw new ApiError(
+      data?.message || `Request gagal (${res.status})`,
+      res.status
+    );
+  }
+  return data;
+}
