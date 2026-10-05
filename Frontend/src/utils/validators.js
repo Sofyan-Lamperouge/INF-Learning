@@ -1,3 +1,7 @@
+/* ============================================================
+   VALIDATORS — Form login & registrasi
+   ============================================================ */
+
 export function validateNimNip(v) {
   if (!v) return "Format Username Salah!";
   if (!/^[0-9]{8,20}$/.test(v)) return "Format Username Salah!";
@@ -17,5 +21,11 @@ export function validatePassword(pwd) {
   if (!/[a-z]/.test(pwd)) return "Password harus ada huruf kecil";
   if (!/[0-9]/.test(pwd)) return "Password harus ada angka";
   if (!/[^A-Za-z0-9]/.test(pwd)) return "Password harus ada simbol";
+  return "";
+}
+
+export function validateKonfirmasiPassword(pwd, konfirmasi) {
+  if (!konfirmasi) return "Konfirmasi password wajib diisi";
+  if (pwd !== konfirmasi) return "Konfirmasi password tidak sama";
   return "";
 }
