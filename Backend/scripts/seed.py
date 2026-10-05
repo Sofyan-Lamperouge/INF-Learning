@@ -26,14 +26,14 @@ AKUN_AWAL = [
     },
     {
         "peran": "dosen",
-        "nomor_induk": "198501012010011001",
+        "nomor_induk": "199008172020041001",
         "nama": "Dr. Budi Santoso",
         "email": "budi.dosen@inf-learning.local",
         "kata_sandi": "dosen123",
     },
     {
         "peran": "mahasiswa",
-        "nomor_induk": "21101001",
+        "nomor_induk": "2488010071",
         "nama": "Sari Wulandari",
         "email": "sari.mahasiswa@inf-learning.local",
         "kata_sandi": "mhs123",
