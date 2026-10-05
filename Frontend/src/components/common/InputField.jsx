@@ -1,18 +1,26 @@
-// Komponen input generik dipakai di seluruh form (registrasi, login, dst.)
-// supaya gaya dan validasi dasarnya konsisten di satu tempat.
-function InputField({ label, name, type = "text", value, onChange, required }) {
+export default function InputField({
+  label,
+  name,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  required = false,
+  error = "",
+}) {
   return (
-    <label className="input-field">
-      <span>{label}</span>
+    <div className="input-field">
+      <label htmlFor={name}>{label}</label>
       <input
-        type={type}
+        id={name}
         name={name}
+        type={type}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
         required={required}
+        className={error ? "input-error" : ""}
       />
-    </label>
+    </div>
   );
 }
-
-export default InputField;

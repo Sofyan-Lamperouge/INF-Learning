@@ -1,34 +1,35 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [role, setRole] = useState(() => localStorage.getItem("role"));
+  const [token, setToken] = useState(null);
+  const [role, setRole] = useState(null);
 
-  // Dipanggil setelah login sukses (lihat LoginPage.jsx).
-  // role di sini datang LANGSUNG dari respons Backend -- frontend
-  // tidak pernah menentukan role sendiri.
-  const loginSuccess = useCallback((newToken, newRole) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("role", newRole);
+  useEffect(() => {
+    const t = localStorage.getItem("token");
+    const r = localStorage.getItem("role");
+    if (t) setToken(t);
+    if (r) setRole(r);
+  }, []);
+
+  function loginSuccess(newToken, newRole) {
     setToken(newToken);
     setRole(newRole);
-  }, []);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("role", newRole);
+  }
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+  function logout() {
     setToken(null);
     setRole(null);
-  }, []);
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+  }
 
-  const value = {
-    isAuthenticated: Boolean(token),
-    role,
-    loginSuccess,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ token, role, loginSuccess, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
