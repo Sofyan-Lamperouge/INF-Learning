@@ -11,14 +11,18 @@ import {
   validateNimNip,
   validateNamaLengkap,
   validatePassword,
+  validateKonfirmasiPassword,
 } from "../../utils/validators.js";
 
 function RegisterPage() {
   const navigate = useNavigate();
+
+  // Urutan: Nama → NIM/NIP → Password → Konfirmasi Password
   const [form, setForm] = useState({
-    nimNip: "",
     namaLengkap: "",
+    nimNip: "",
     password: "",
+    konfirmasiPassword: "",
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
@@ -32,19 +36,45 @@ function RegisterPage() {
   }, []);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
+    const { name, value } = e.target;
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+
+      // Auto-revalidate konfirmasi ketika password berubah
+      if (name === "password" && prev.konfirmasiPassword) {
+        setErrors((er) => ({
+          ...er,
+          konfirmasiPassword: validateKonfirmasiPassword(
+            value,
+            prev.konfirmasiPassword
+          ),
+        }));
+      }
+
+      return next;
+    });
+
+    setErrors((er) => ({ ...er, [name]: "" }));
     setServerError("");
   }
 
   function validate() {
     const next = {};
-    const eNim = validateNimNip(form.nimNip);
+
     const eNama = validateNamaLengkap(form.namaLengkap);
+    const eNim = validateNimNip(form.nimNip);
     const ePwd = validatePassword(form.password);
-    if (eNim) next.nimNip = eNim;
+    const eKonfirm = validateKonfirmasiPassword(
+      form.password,
+      form.konfirmasiPassword
+    );
+
     if (eNama) next.namaLengkap = eNama;
+    if (eNim) next.nimNip = eNim;
     if (ePwd) next.password = ePwd;
+    if (eKonfirm) next.konfirmasiPassword = eKonfirm;
+
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -57,7 +87,11 @@ function RegisterPage() {
 
     setLoading(true);
     try {
-      await register(form);
+      await register({
+        namaLengkap: form.namaLengkap,
+        nimNip: form.nimNip,
+        password: form.password,
+      });
       setSuccess("Registrasi berhasil! Silakan masuk.");
       setTimeout(() => navigate("/login"), 1200);
     } catch (err) {
@@ -76,24 +110,21 @@ function RegisterPage() {
 
       <main className="auth-page">
         <div className="auth-card">
-          <div className="auth-illustration" aria-hidden="true"></div>
+          {/* KIRI: ILUSTRASI */}
+          <div className="auth-illustration">
+            <img
+              src="/assets/INF.png"
+              alt="Ilustrasi Platform Belajar Informatika"
+            />
+          </div>
 
+          {/* KANAN: FORM */}
           <div className="auth-form-col">
-            <h1 className="auth-title">Daftar Akun</h1>
+            <h1 className="auth-title">Get Started!</h1>
             <p className="auth-subtitle">Buat akun untuk mulai belajar.</p>
 
             <form onSubmit={handleSubmit} noValidate>
-              <InputField
-                label="NIM/NIP"
-                name="nimNip"
-                value={form.nimNip}
-                onChange={handleChange}
-                placeholder="Contoh: 24880100XX"
-                error={errors.nimNip}
-                required
-              />
-              {errors.nimNip && <ErrorMessage message={errors.nimNip} />}
-
+              {/* 1. Nama Lengkap */}
               <InputField
                 label="Nama Lengkap"
                 name="namaLengkap"
@@ -107,6 +138,19 @@ function RegisterPage() {
                 <ErrorMessage message={errors.namaLengkap} />
               )}
 
+              {/* 2. NIM/NIP */}
+              <InputField
+                label="NIM/NIP"
+                name="nimNip"
+                value={form.nimNip}
+                onChange={handleChange}
+                placeholder="Contoh: 24880100XX"
+                error={errors.nimNip}
+                required
+              />
+              {errors.nimNip && <ErrorMessage message={errors.nimNip} />}
+
+              {/* 3. Password */}
               <PasswordField
                 label="Password"
                 name="password"
@@ -116,6 +160,19 @@ function RegisterPage() {
                 error={errors.password}
               />
               {errors.password && <ErrorMessage message={errors.password} />}
+
+              {/* 4. Konfirmasi Password */}
+              <PasswordField
+                label="Konfirmasi Password"
+                name="konfirmasiPassword"
+                value={form.konfirmasiPassword}
+                onChange={handleChange}
+                placeholder="Ulangi Password"
+                error={errors.konfirmasiPassword}
+              />
+              {errors.konfirmasiPassword && (
+                <ErrorMessage message={errors.konfirmasiPassword} />
+              )}
 
               {serverError && <ErrorMessage message={serverError} />}
 

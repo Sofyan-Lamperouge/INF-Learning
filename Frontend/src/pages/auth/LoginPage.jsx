@@ -20,7 +20,7 @@ function LoginPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Skeleton muncul 800ms saat pertama kali halaman dibuka
+  // Skeleton muncul 800ms saat halaman pertama kali dibuka
   const [booting, setBooting] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 800);
@@ -72,8 +72,15 @@ function LoginPage() {
 
       <main className="auth-page">
         <div className="auth-card">
-          <div className="auth-illustration" aria-hidden="true"></div>
+          {/* KIRI: ILUSTRASI */}
+          <div className="auth-illustration">
+            <img
+              src="/assets/INF.png"
+              alt="Ilustrasi Platform Belajar Informatika"
+            />
+          </div>
 
+          {/* KANAN: FORM */}
           <div className="auth-form-col">
             <h1 className="auth-title">Welcome Back!</h1>
             <p className="auth-subtitle">Masuk untuk mulai belajar.</p>

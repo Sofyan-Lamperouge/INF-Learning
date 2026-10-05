@@ -6,32 +6,28 @@ export default function LoginSkeleton() {
       aria-label="Memuat halaman login"
     >
       <div className="auth-card">
-        <div className="auth-illustration skeleton-block"></div>
+        {/* Kiri: kotak abu besar (ilustrasi) */}
+        <div className="image-placeholder skeleton-block"></div>
 
+        {/* Kanan: form skeleton */}
         <div className="auth-form-col">
-          <div className="header-row">
-            <span className="skeleton-block avatar"></span>
-            <span className="skeleton-block header-title"></span>
-          </div>
+          {/* Bar judul + subjudul */}
+          <span className="skeleton-block title-bar"></span>
+          <span className="skeleton-block subtitle-bar"></span>
 
-          <span className="skeleton-block line line--90"></span>
-          <span className="skeleton-block line line--60"></span>
+          {/* Field 1 */}
+          <span className="skeleton-block label-bar"></span>
+          <span className="skeleton-block field-bar"></span>
 
-          <div className="field skeleton-block">
-            <span>NIM/NIP</span>
-          </div>
-          <div className="field skeleton-block">
-            <span>Password</span>
-          </div>
+          {/* Field 2 */}
+          <span className="skeleton-block label-bar"></span>
+          <span className="skeleton-block field-bar"></span>
 
-          <button type="button" className="btn-primary btn-skeleton" disabled>
-            Login
-          </button>
+          {/* Tombol */}
+          <span className="skeleton-block button-bar"></span>
 
-          <div className="footer-row">
-            <span className="skeleton-block footer-line footer-line--lg"></span>
-            <span className="skeleton-block footer-line footer-line--sm"></span>
-          </div>
+          {/* Footer */}
+          <span className="skeleton-block footer-bar"></span>
         </div>
       </div>
     </main>
