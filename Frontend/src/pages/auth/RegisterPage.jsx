@@ -121,7 +121,7 @@ function RegisterPage() {
           {/* KANAN: FORM */}
           <div className="auth-form-col">
             <h1 className="auth-title">Get Started!</h1>
-            <p className="auth-subtitle">Buat akun untuk mulai belajar.</p>
+            <p className="auth-subtitle"></p>
 
             <form onSubmit={handleSubmit} noValidate>
               {/* 1. Nama Lengkap */}
