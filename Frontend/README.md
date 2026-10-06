@@ -46,4 +46,4 @@ sesuai port Backend kalian.
 - Halaman detail materi (WBS 2.3) dan dashboard progres (WBS 4.2) untuk
   sprint-sprint berikutnya — belum dibuat di skeleton ini
 
-// Frontend
+// Frontend Developer
