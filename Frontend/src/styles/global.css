@@ -82,12 +82,12 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   font-size: 1.75rem;
   font-weight: 700;        /* ← dari 800 → 700, lebih ringan */
   text-align: center;      /* ← BARU: rata tengah */
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.05rem;
   color: #1a1a1a;
 }
 .auth-subtitle {
   color: #6b7280;
-  margin: 0 0 1.25rem;     /* ← sedikit lebih lega */
+  margin: 0 0 1.8rem;     /* ← sedikit lebih lega */
   font-size: 0.9rem;
   font-weight: 400;        /* ← eksplisit regular */
   text-align: center;      /* ← BARU: rata tengah */

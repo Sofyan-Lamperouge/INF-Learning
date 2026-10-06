@@ -1,5 +1,6 @@
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+// src/services/api.js
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -9,6 +10,10 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Request HTTP ke backend.
+ * Otomatis menambahkan Authorization jika ada token di localStorage.
+ */
 export async function request(path, options = {}) {
   const token = localStorage.getItem("token");
   const headers = {
@@ -17,7 +22,15 @@ export async function request(path, options = {}) {
     ...options.headers,
   };
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  } catch {
+    throw new ApiError(
+      "Gagal terhubung ke server, periksa koneksi Anda.",
+      0
+    );
+  }
 
   let data = null;
   try {
@@ -32,5 +45,6 @@ export async function request(path, options = {}) {
       res.status
     );
   }
+
   return data;
 }
