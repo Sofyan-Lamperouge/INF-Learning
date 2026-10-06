@@ -45,3 +45,5 @@ sesuai port Backend kalian.
 - Validasi format input di sisi Frontend (mis. pola NIM/NIP) sebelum submit
 - Halaman detail materi (WBS 2.3) dan dashboard progres (WBS 4.2) untuk
   sprint-sprint berikutnya — belum dibuat di skeleton ini
+
+// Frontend
