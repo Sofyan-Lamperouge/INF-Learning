@@ -1,20 +1,22 @@
-import { useContext } from "react";
+import {
+  useContext,
+} from 'react';
 
 import {
   AuthContext,
-} from "../context/AuthContext.jsx";
+} from '../context/AuthContext.jsx';
 
 
 export function useAuth() {
-
   const context =
-    useContext(AuthContext);
+    useContext(
+      AuthContext
+    );
 
 
   if (!context) {
-
     throw new Error(
-      "useAuth harus digunakan di dalam AuthProvider"
+      'useAuth harus digunakan di dalam AuthProvider'
     );
   }
 
