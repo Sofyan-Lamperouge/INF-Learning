@@ -1,53 +1,112 @@
-// src/services/authService.js
-
 import { request } from "./api.js";
+
 import {
   mockLogin,
   mockRegister,
   mockGetMe,
 } from "../mocks/mockApi.js";
 
-// Baca dari .env
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
-/* ============================================================
-   LOGIN
-   ============================================================ */
-export async function login({ nimNip, password }) {
+const USE_MOCK =
+  import.meta.env.VITE_USE_MOCK ===
+  "true";
+
+
+export async function login({
+  nimNip,
+  password,
+}) {
+
   if (USE_MOCK) {
-    // Mode development tanpa backend
-    return mockLogin({ nimNip, password });
+
+    return mockLogin({
+      nimNip,
+      password,
+    });
   }
 
-  // Mode production / integrasi backend asli
-  return request("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ nimNip, password }),
-  });
+
+  const data = await request(
+    "/auth/login",
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        nomor_induk: nimNip,
+        kata_sandi: password,
+      }),
+    }
+  );
+
+
+  return {
+    token: data.access_token,
+
+    role: data.pengguna.peran,
+
+    user: data.pengguna,
+
+    expiresIn:
+      data.expires_in,
+  };
 }
 
-/* ============================================================
-   REGISTER
-   ============================================================ */
-export async function register({ namaLengkap, nimNip, password }) {
+
+export async function register({
+  namaLengkap,
+  nimNip,
+  email,
+  password,
+  konfirmasiPassword,
+}) {
+
   if (USE_MOCK) {
-    return mockRegister({ namaLengkap, nimNip, password });
+
+    return mockRegister({
+      namaLengkap,
+      nimNip,
+      email,
+      password,
+      konfirmasiPassword,
+    });
   }
 
-  return request("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ namaLengkap, nimNip, password }),
-  });
+
+  return request(
+    "/auth/registrasi",
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        nama: namaLengkap,
+
+        nomor_induk: nimNip,
+
+        email,
+
+        kata_sandi: password,
+
+        konfirmasi_kata_sandi:
+          konfirmasiPassword,
+      }),
+    }
+  );
 }
 
-/* ============================================================
-   GET ME (opsional)
-   ============================================================ */
+
 export async function getMe() {
+
   if (USE_MOCK) {
-    const token = localStorage.getItem("token");
-    return mockGetMe(token);
+
+    return mockGetMe(
+      localStorage.getItem(
+        "token"
+      )
+    );
   }
 
-  return request("/auth/me");
+
+  return request(
+    "/auth/me"
+  );
 }

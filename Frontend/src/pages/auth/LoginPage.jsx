@@ -1,127 +1,247 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../services/authService.js";
-import { ApiError } from "../../services/api.js";
-import { useAuth } from "../../hooks/useAuth.js";
-import InputField from "../../components/common/InputField.jsx";
-import PasswordField from "../../components/common/PasswordField.jsx";
-import ErrorMessage from "../../components/common/ErrorMessage.jsx";
-import SuccessMessage from "../../components/common/SuccessMessage.jsx";
-import LoginSkeleton from "../../components/skeletons/LoginSkeleton.jsx";
-import { validateNimNip } from "../../utils/validators.js";
+import {
+  useState,
+} from "react";
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  login,
+} from "../../services/authService.js";
+
+import {
+  ApiError,
+} from "../../services/api.js";
+
+import {
+  useAuth,
+} from "../../hooks/useAuth.js";
+
 
 function LoginPage() {
-  const navigate = useNavigate();
-  const { loginSuccess } = useAuth();
 
-  const [form, setForm] = useState({ nimNip: "", password: "" });
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  const navigate =
+    useNavigate();
 
-  // Skeleton muncul 800ms saat halaman pertama kali dibuka
-  const [booting, setBooting] = useState(true);
-  useEffect(() => {
-    const t = setTimeout(() => setBooting(false), 800);
-    return () => clearTimeout(t);
-  }, []);
+  const {
+    loginSuccess,
+  } = useAuth();
 
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
-    setServerError("");
+
+  const [form, setForm] =
+    useState({
+      nimNip: "",
+      password: "",
+    });
+
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  function handleChange(event) {
+
+    setForm({
+      ...form,
+      [event.target.name]:
+        event.target.value,
+    });
+
+    setError("");
   }
 
-  function validate() {
-    const next = {};
-    const nimErr = validateNimNip(form.nimNip);
-    if (nimErr) next.nimNip = nimErr;
-    if (!form.password) next.password = "Password Salah!";
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setServerError("");
-    setSuccess("");
-    if (!validate()) return;
+  async function handleSubmit(
+    event
+  ) {
 
-    setLoading(true);
-    try {
-      const { token, role } = await login(form);
-      setSuccess(
-        "Login Berhasil! Selamat datang kembali, Kamu akan diarahkan ke halaman utama."
+    event.preventDefault();
+
+    setError("");
+
+
+    if (!form.nimNip) {
+
+      setError(
+        "NIM/NIP wajib diisi."
       );
-      loginSuccess(token, role);
-      setTimeout(() => navigate("/materi"), 1200);
+
+      return;
+    }
+
+
+    if (!form.password) {
+
+      setError(
+        "Password wajib diisi."
+      );
+
+      return;
+    }
+
+
+    try {
+
+      setLoading(true);
+
+
+      const result =
+        await login(form);
+
+
+      loginSuccess(
+        result.token,
+        result.role,
+        result.user
+      );
+
+
+      navigate(
+        "/materi",
+        {
+          replace: true,
+        }
+      );
+
     } catch (err) {
-      if (err instanceof ApiError) setServerError(err.message);
-      else setServerError("Gagal terhubung ke server, periksa koneksi Anda.");
+
+      if (
+        err instanceof ApiError
+      ) {
+
+        setError(
+          err.message
+        );
+
+      } else {
+
+        setError(
+          "Terjadi kesalahan pada server."
+        );
+      }
+
     } finally {
+
       setLoading(false);
     }
   }
 
-  if (booting) return <LoginSkeleton />;
 
   return (
-    <>
-      {success && <SuccessMessage message={success} />}
+    <main className="auth-page">
 
-      <main className="auth-page">
-        <div className="auth-card">
-          {/* KIRI: ILUSTRASI */}
-          <div className="auth-illustration">
-            <img
-              src="/assets/INF.png"
-              alt="Ilustrasi Platform Belajar Informatika"
-            />
-          </div>
+      <div className="auth-card">
 
-          {/* KANAN: FORM */}
-          <div className="auth-form-col">
-            <h1 className="auth-title">Welcome Back!</h1>
-            <p className="auth-subtitle">Masuk untuk mulai belajar.</p>
+        <div className="auth-illustration">
 
-            <form onSubmit={handleSubmit} noValidate>
-              <InputField
-                label="NIM/NIP"
-                name="nimNip"
-                value={form.nimNip}
-                onChange={handleChange}
-                placeholder="Contoh: 24880100XX"
-                error={errors.nimNip}
-                required
-              />
-              {errors.nimNip && <ErrorMessage message={errors.nimNip} />}
+          <img
+            src="/assets/INF.png"
+            alt="INF-Learning"
+          />
 
-              <PasswordField
-                label="Password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Masukkan Password"
-                error={errors.password}
-              />
-              {errors.password && <ErrorMessage message={errors.password} />}
-
-              {serverError && <ErrorMessage message={serverError} />}
-
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Memproses..." : "Login"}
-              </button>
-            </form>
-
-            <p className="auth-footer">
-              Belum punya akun? <Link to="/register">Buat di sini</Link>
-            </p>
-          </div>
         </div>
-      </main>
-    </>
+
+
+        <div className="auth-form-col">
+
+          <h1>
+            Welcome Back!
+          </h1>
+
+          <p>
+            Masuk untuk mulai belajar.
+          </p>
+
+
+          <form
+            onSubmit={
+              handleSubmit
+            }
+          >
+
+            <label>
+              NIM/NIP
+            </label>
+
+            <input
+              name="nimNip"
+              value={
+                form.nimNip
+              }
+              onChange={
+                handleChange
+              }
+              placeholder="Masukkan NIM/NIP"
+            />
+
+
+            <label>
+              Password
+            </label>
+
+            <input
+              type="password"
+              name="password"
+              value={
+                form.password
+              }
+              onChange={
+                handleChange
+              }
+              placeholder="Masukkan password"
+            />
+
+
+            {error && (
+
+              <p
+                role="alert"
+                style={{
+                  color: "red",
+                }}
+              >
+                {error}
+              </p>
+
+            )}
+
+
+            <button
+              type="submit"
+              disabled={loading}
+            >
+
+              {loading
+                ? "Memproses..."
+                : "Masuk"}
+
+            </button>
+
+          </form>
+
+
+          <p>
+
+            Belum punya akun?{" "}
+
+            <Link to="/register">
+              Daftar
+            </Link>
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </main>
   );
 }
+
 
 export default LoginPage;

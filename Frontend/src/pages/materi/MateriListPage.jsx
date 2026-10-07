@@ -1,18 +1,50 @@
-import { useAuth } from "../../hooks/useAuth.js";
+import {
+  useAuth,
+} from "../../hooks/useAuth.js";
+
 
 export default function MateriListPage() {
-  const { role, logout } = useAuth();
+
+  const {
+    user,
+    role,
+    logout,
+  } = useAuth();
+
 
   return (
     <main className="materi-page">
-      <h1>Daftar Materi</h1>
+
+      <h1>
+        Daftar Materi
+      </h1>
+
+
       <p>
-        Selamat datang, <strong>{role}</strong>. Halaman ini akan menampilkan
-        daftar materi untuk Mahasiswa dan Dosen.
+        Selamat datang,{" "}
+
+        <strong>
+          {user?.nama || role}
+        </strong>
       </p>
-      <button type="button" className="btn-primary" onClick={logout}>
+
+
+      <p>
+        Role:{" "}
+
+        <strong>
+          {role}
+        </strong>
+      </p>
+
+
+      <button
+        type="button"
+        onClick={logout}
+      >
         Logout
       </button>
+
     </main>
   );
 }
