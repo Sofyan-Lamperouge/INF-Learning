@@ -1,10 +1,14 @@
 import {
   createContext,
+  useCallback,
   useEffect,
+  useMemo,
   useState,
-} from "react";
+} from 'react';
 
-import { getMe } from "../services/authService.js";
+import {
+  getMe,
+} from '../services/authService.js';
 
 
 export const AuthContext =
@@ -14,18 +18,17 @@ export const AuthContext =
 export function AuthProvider({
   children,
 }) {
-
   const [token, setToken] =
-    useState(
+    useState(() =>
       localStorage.getItem(
-        "token"
+        'token'
       )
     );
 
   const [role, setRole] =
-    useState(
+    useState(() =>
       localStorage.getItem(
-        "role"
+        'role'
       )
     );
 
@@ -36,22 +39,45 @@ export function AuthProvider({
     useState(true);
 
 
+  const logout =
+    useCallback(() => {
+      localStorage.removeItem(
+        'token'
+      );
+
+      localStorage.removeItem(
+        'role'
+      );
+
+      setToken(null);
+      setRole(null);
+      setUser(null);
+    }, []);
+
+
   useEffect(() => {
+    let active = true;
+
 
     async function restoreSession() {
-
       if (!token) {
-
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
 
         return;
       }
 
 
       try {
-
         const currentUser =
           await getMe();
+
+
+        if (!active) {
+          return;
+        }
+
 
         setUser(
           currentUser
@@ -61,77 +87,91 @@ export function AuthProvider({
           currentUser.peran
         );
 
+
         localStorage.setItem(
-          "role",
+          'role',
           currentUser.peran
         );
 
       } catch {
-
-        logout();
+        if (active) {
+          logout();
+        }
 
       } finally {
-
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
 
     restoreSession();
 
-  }, []);
 
+    return () => {
+      active = false;
+    };
 
-  function loginSuccess(
-    newToken,
-    newRole,
-    newUser = null
-  ) {
-
-    localStorage.setItem(
-      "token",
-      newToken
-    );
-
-    localStorage.setItem(
-      "role",
-      newRole
-    );
-
-
-    setToken(newToken);
-    setRole(newRole);
-    setUser(newUser);
-  }
-
-
-  function logout() {
-
-    localStorage.removeItem(
-      "token"
-    );
-
-    localStorage.removeItem(
-      "role"
-    );
-
-
-    setToken(null);
-    setRole(null);
-    setUser(null);
-  }
-
-
-  const value = {
+  }, [
     token,
-    role,
-    user,
-    loading,
-    isAuthenticated:
-      Boolean(token),
-    loginSuccess,
     logout,
-  };
+  ]);
+
+
+  const loginSuccess =
+    useCallback(
+      (
+        newToken,
+        newRole,
+        newUser = null
+      ) => {
+
+        localStorage.setItem(
+          'token',
+          newToken
+        );
+
+        localStorage.setItem(
+          'role',
+          newRole
+        );
+
+
+        setToken(newToken);
+        setRole(newRole);
+        setUser(newUser);
+      },
+      []
+    );
+
+
+  const value = useMemo(
+    () => ({
+      token,
+      role,
+      user,
+      loading,
+
+      isAuthenticated:
+        Boolean(
+          token &&
+          user
+        ),
+
+      loginSuccess,
+      logout,
+    }),
+
+    [
+      token,
+      role,
+      user,
+      loading,
+      loginSuccess,
+      logout,
+    ]
+  );
 
 
   return (

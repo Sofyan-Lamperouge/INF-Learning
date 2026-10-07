@@ -2,19 +2,23 @@ import {
   Routes,
   Route,
   Navigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import LoginPage from "./pages/auth/LoginPage.jsx";
-import RegisterPage from "./pages/auth/RegisterPage.jsx";
-import MateriListPage from "./pages/materi/MateriListPage.jsx";
+import LoginPage from
+  './pages/auth/LoginPage.jsx';
 
-import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import RegisterPage from
+  './pages/auth/RegisterPage.jsx';
+
+import MateriListPage from
+  './pages/materi/MateriListPage.jsx';
+
+import ProtectedRoute from
+  './components/common/ProtectedRoute.jsx';
 
 
 export default function App() {
-
   return (
-
     <Routes>
 
       <Route
@@ -47,13 +51,9 @@ export default function App() {
       <Route
         path="/materi"
         element={
-
           <ProtectedRoute>
-
             <MateriListPage />
-
           </ProtectedRoute>
-
         }
       />
 

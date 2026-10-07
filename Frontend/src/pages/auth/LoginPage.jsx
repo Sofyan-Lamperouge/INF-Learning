@@ -1,29 +1,36 @@
-import {
-  useState,
-} from "react";
+import { useState } from 'react';
 
 import {
   Link,
   useNavigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import {
   login,
-} from "../../services/authService.js";
+} from '../../services/authService.js';
 
 import {
   ApiError,
-} from "../../services/api.js";
+} from '../../services/api.js';
 
 import {
   useAuth,
-} from "../../hooks/useAuth.js";
+} from '../../hooks/useAuth.js';
+
+import InputField from
+  '../../components/common/InputField.jsx';
+
+import PasswordField from
+  '../../components/common/PasswordField.jsx';
+
+import ErrorMessage from
+  '../../components/common/ErrorMessage.jsx';
 
 
-function LoginPage() {
-
+export default function LoginPage() {
   const navigate =
     useNavigate();
+
 
   const {
     loginSuccess,
@@ -32,43 +39,58 @@ function LoginPage() {
 
   const [form, setForm] =
     useState({
-      nimNip: "",
-      password: "",
+      nimNip: '',
+      password: '',
     });
 
 
   const [error, setError] =
-    useState("");
+    useState('');
+
 
   const [loading, setLoading] =
     useState(false);
 
 
-  function handleChange(event) {
+  function handleChange(
+    event
+  ) {
+    const {
+      name,
+      value,
+    } = event.target;
 
-    setForm({
-      ...form,
-      [event.target.name]:
-        event.target.value,
-    });
 
-    setError("");
+    setForm(
+      (current) => ({
+        ...current,
+
+        [name]: value,
+      })
+    );
+
+
+    if (error) {
+      setError('');
+    }
   }
 
 
   async function handleSubmit(
     event
   ) {
-
     event.preventDefault();
 
-    setError("");
+    setError('');
 
 
-    if (!form.nimNip) {
+    const nimNip =
+      form.nimNip.trim();
 
+
+    if (!nimNip) {
       setError(
-        "NIM/NIP wajib diisi."
+        'NIM/NIP wajib diisi.'
       );
 
       return;
@@ -76,9 +98,8 @@ function LoginPage() {
 
 
     if (!form.password) {
-
       setError(
-        "Password wajib diisi."
+        'Password wajib diisi.'
       );
 
       return;
@@ -86,12 +107,15 @@ function LoginPage() {
 
 
     try {
-
       setLoading(true);
 
 
       const result =
-        await login(form);
+        await login({
+          nimNip,
+          password:
+            form.password,
+        });
 
 
       loginSuccess(
@@ -102,7 +126,7 @@ function LoginPage() {
 
 
       navigate(
-        "/materi",
+        '/materi',
         {
           replace: true,
         }
@@ -113,62 +137,73 @@ function LoginPage() {
       if (
         err instanceof ApiError
       ) {
-
         setError(
           err.message
         );
-
       } else {
-
         setError(
-          "Terjadi kesalahan pada server."
+          'Terjadi kesalahan pada server.'
         );
       }
 
     } finally {
-
       setLoading(false);
     }
   }
 
 
   return (
-    <main className="auth-page">
+    <main
+      className="auth-page"
+    >
 
-      <div className="auth-card">
+      <div
+        className="auth-card"
+      >
 
-        <div className="auth-illustration">
-
+        <div
+          className="auth-illustration"
+        >
           <img
             src="/assets/INF.png"
             alt="INF-Learning"
           />
-
         </div>
 
 
-        <div className="auth-form-col">
+        <div
+          className="auth-form-col"
+        >
 
-          <h1>
+          <h1
+            className="auth-title"
+          >
             Welcome Back!
           </h1>
 
-          <p>
-            Masuk untuk mulai belajar.
+
+          <p
+            className="auth-subtitle"
+          >
+            Masuk untuk mulai
+            belajar.
           </p>
+
+
+          <ErrorMessage
+            message={error}
+          />
 
 
           <form
             onSubmit={
               handleSubmit
             }
+            noValidate
           >
 
-            <label>
-              NIM/NIP
-            </label>
-
-            <input
+            <InputField
+              label="NIM/NIP"
               name="nimNip"
               value={
                 form.nimNip
@@ -177,15 +212,12 @@ function LoginPage() {
                 handleChange
               }
               placeholder="Masukkan NIM/NIP"
+              required
             />
 
 
-            <label>
-              Password
-            </label>
-
-            <input
-              type="password"
+            <PasswordField
+              label="Password"
               name="password"
               value={
                 form.password
@@ -197,42 +229,29 @@ function LoginPage() {
             />
 
 
-            {error && (
-
-              <p
-                role="alert"
-                style={{
-                  color: "red",
-                }}
-              >
-                {error}
-              </p>
-
-            )}
-
-
             <button
+              className="btn-primary"
               type="submit"
               disabled={loading}
             >
-
               {loading
-                ? "Memproses..."
-                : "Masuk"}
-
+                ? 'Memproses...'
+                : 'Masuk'}
             </button>
 
           </form>
 
 
-          <p>
+          <p
+            className="auth-footer"
+          >
+            Belum punya akun?{' '}
 
-            Belum punya akun?{" "}
-
-            <Link to="/register">
+            <Link
+              to="/register"
+            >
               Daftar
             </Link>
-
           </p>
 
         </div>
@@ -242,6 +261,3 @@ function LoginPage() {
     </main>
   );
 }
-
-
-export default LoginPage;

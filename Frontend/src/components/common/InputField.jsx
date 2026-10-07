@@ -1,16 +1,21 @@
 export default function InputField({
   label,
   name,
-  type = "text",
+  type = 'text',
   value,
   onChange,
   placeholder,
   required = false,
-  error = "",
+  error = '',
 }) {
   return (
     <div className="input-field">
-      <label htmlFor={name}>{label}</label>
+
+      <label htmlFor={name}>
+        {label}
+      </label>
+
+
       <input
         id={name}
         name={name}
@@ -19,8 +24,13 @@ export default function InputField({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className={error ? "input-error" : ""}
+        className={
+          error
+            ? 'input-error'
+            : ''
+        }
       />
+
     </div>
   );
 }

@@ -1,16 +1,15 @@
 import {
   Navigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import {
   useAuth,
-} from "../../hooks/useAuth.js";
+} from '../../hooks/useAuth.js';
 
 
 export default function ProtectedRoute({
   children,
 }) {
-
   const {
     isAuthenticated,
     loading,
@@ -18,17 +17,17 @@ export default function ProtectedRoute({
 
 
   if (loading) {
-
     return (
-      <div>
-        Memeriksa sesi login...
-      </div>
+      <main className="materi-page">
+        <p>
+          Memeriksa sesi login...
+        </p>
+      </main>
     );
   }
 
 
   if (!isAuthenticated) {
-
     return (
       <Navigate
         to="/login"
