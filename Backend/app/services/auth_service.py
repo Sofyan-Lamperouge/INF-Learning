@@ -34,12 +34,6 @@ def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
             detail="Nomor induk sudah terdaftar",
         )
 
-    # Cek duplikat email
-    if crud_pengguna.get_by_email(db, data.email):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email sudah terdaftar",
-        )
 
     # Tentukan peran
     peran = tentukan_peran(data.nomor_induk)
@@ -53,7 +47,7 @@ def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
         peran=peran,
         nomor_induk=data.nomor_induk,
         nama=data.nama,
-        email=data.email,
+        email=None,
         kata_sandi_hashed=hash_sandi,
         status="aktif",
     )

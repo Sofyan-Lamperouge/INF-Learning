@@ -13,7 +13,7 @@ class Pengguna(Base):
     peran: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
     nomor_induk: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     nama: Mapped[str] = mapped_column(String(100), nullable=False)
-    email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    email: Mapped[str | None] = mapped_column(String(100), unique=True, nullable=True)
     kata_sandi: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="aktif", nullable=False)
     dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
