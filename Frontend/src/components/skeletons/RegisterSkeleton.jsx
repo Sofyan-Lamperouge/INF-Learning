@@ -5,15 +5,16 @@ export default function RegisterSkeleton() {
       role="status"
       aria-label="Memuat halaman registrasi"
     >
-      <div className="auth-card">
+      <div className="auth-card auth-card--register">
+
         {/* Kiri: kotak abu besar (ilustrasi) */}
         <div className="image-placeholder skeleton-block"></div>
 
         {/* Kanan: form skeleton */}
         <div className="auth-form-col">
-          {/* Bar judul + subjudul */}
+
+          {/* Bar judul saja — subtitle-bar DIHAPUS */}
           <span className="skeleton-block title-bar"></span>
-          <span className="skeleton-block subtitle-bar"></span>
 
           {/* Field 1 — Nama Lengkap */}
           <span className="skeleton-block label-bar"></span>

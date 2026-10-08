@@ -52,6 +52,14 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   box-shadow: 0 20px 50px rgba(30, 90, 140, 0.08);
 }
 
+/* === MODIFIER REGISTER — tanpa subtitle, padding lebih lega === */
+.auth-card--register {
+  padding: 1.5rem 1.75rem;
+}
+.auth-card--register .auth-title {
+  margin-bottom: 1.5rem;
+}
+
 .auth-illustration {
   position: relative;
   border-radius: 16px;
@@ -77,20 +85,20 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   gap: 0.5rem;
 }
 
-/* === JUDUL & SUBTITLE: RATA TENGAH, FONT LEBIH RINGAN === */
+/* === JUDUL & SUBTITLE === */
 .auth-title {
   font-size: 1.75rem;
-  font-weight: 700;        /* ← dari 800 → 700, lebih ringan */
-  text-align: center;      /* ← BARU: rata tengah */
+  font-weight: 700;
+  text-align: center;
   margin-bottom: 0.05rem;
   color: #1a1a1a;
 }
 .auth-subtitle {
   color: #6b7280;
-  margin: 0 0 1.8rem;     /* ← sedikit lebih lega */
+  margin: 0 0 1.8rem;
   font-size: 0.9rem;
-  font-weight: 400;        /* ← eksplisit regular */
-  text-align: center;      /* ← BARU: rata tengah */
+  font-weight: 400;
+  text-align: center;
 }
 
 /* ============================================================
@@ -267,6 +275,14 @@ body > .alert-success {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
+/* === MODIFIER REGISTER untuk skeleton === */
+.auth-page.skeleton-mode .auth-card--register {
+  padding: 1.5rem 1.75rem;
+}
+.auth-page.skeleton-mode .auth-card--register .title-bar {
+  margin-bottom: 1.5rem;
+}
+
 .auth-page.skeleton-mode .image-placeholder {
   min-height: 100%;
   border-radius: 16px;
@@ -285,7 +301,6 @@ body > .alert-success {
   height: 22px;
   border-radius: 12px;
   margin-bottom: 0.15rem;
-  /* title bar di skeleton juga center agar konsisten dengan form asli */
   margin-left: auto;
   margin-right: auto;
 }

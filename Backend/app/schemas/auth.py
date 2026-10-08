@@ -52,7 +52,7 @@ class RegistrasiResponse(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str
+    email: str | None
     status: str
     dibuat_pada: datetime
 
@@ -80,7 +80,7 @@ class PenggunaRingkas(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str
+    email: str | None
     status: str
 
     model_config = {

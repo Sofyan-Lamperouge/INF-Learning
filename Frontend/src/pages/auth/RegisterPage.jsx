@@ -1,32 +1,15 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { register } from '../../services/authService.js';
+import { ApiError } from '../../services/api.js';
+
+import InputField from '../../components/common/InputField.jsx';
+import PasswordField from '../../components/common/PasswordField.jsx';
+import ErrorMessage from '../../components/common/ErrorMessage.jsx';
+import SuccessMessage from '../../components/common/SuccessMessage.jsx';
 
 import {
-  Link,
-  useNavigate,
-} from 'react-router-dom';
-
-import {
-  register,
-} from '../../services/authService.js';
-
-import {
-  ApiError,
-} from '../../services/api.js';
-
-import InputField from
-  '../../components/common/InputField.jsx';
-
-import PasswordField from
-  '../../components/common/PasswordField.jsx';
-
-import ErrorMessage from
-  '../../components/common/ErrorMessage.jsx';
-
-import SuccessMessage from
-  '../../components/common/SuccessMessage.jsx';
-
-import {
-  validateEmail,
   validateNamaLengkap,
   validateNimNip,
   validatePassword,
@@ -35,321 +18,163 @@ import {
 
 
 export default function RegisterPage() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
+  const [form, setForm] = useState({
+    namaLengkap: '',
+    nimNip: '',
+    password: '',
+    konfirmasiPassword: '',
+  });
 
-  const [form, setForm] =
-    useState({
-      namaLengkap: '',
-      nimNip: '',
-      email: '',
-      password: '',
-      konfirmasiPassword: '',
-    });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  function handleChange(event) {
+    const { name, value } = event.target;
 
-  const [error, setError] =
-    useState('');
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
 
-
-  const [success, setSuccess] =
-    useState('');
-
-
-  const [loading, setLoading] =
-    useState(false);
-
-
-  function handleChange(
-    event
-  ) {
-    const {
-      name,
-      value,
-    } = event.target;
-
-
-    setForm(
-      (current) => ({
-        ...current,
-
-        [name]: value,
-      })
-    );
-
-
-    if (error) {
-      setError('');
-    }
-
-
-    if (success) {
-      setSuccess('');
-    }
+    if (error) setError('');
+    if (success) setSuccess('');
   }
 
-
-  async function handleSubmit(
-    event
-  ) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     setError('');
     setSuccess('');
 
-
-    const namaLengkap =
-      form.namaLengkap.trim();
-
-    const nimNip =
-      form.nimNip.trim();
-
-    const email =
-      form.email.trim();
-
+    const namaLengkap = form.namaLengkap.trim();
+    const nimNip = form.nimNip.trim();
 
     const errors = [
-      validateNamaLengkap(
-        namaLengkap
-      ),
-
-      validateNimNip(
-        nimNip
-      ),
-
-      validateEmail(
-        email
-      ),
-
-      validatePassword(
-        form.password
-      ),
-
+      validateNamaLengkap(namaLengkap),
+      validateNimNip(nimNip),
+      validatePassword(form.password),
       validateKonfirmasiPassword(
         form.password,
         form.konfirmasiPassword
       ),
     ];
 
-
-    const firstError =
-      errors.find(Boolean);
-
+    const firstError = errors.find(Boolean);
 
     if (firstError) {
-      setError(
-        firstError
-      );
-
+      setError(firstError);
       return;
     }
-
 
     try {
       setLoading(true);
 
-
       await register({
         namaLengkap,
         nimNip,
-        email,
-
-        password:
-          form.password,
-
-        konfirmasiPassword:
-          form.konfirmasiPassword,
+        password: form.password,
+        konfirmasiPassword: form.konfirmasiPassword,
       });
-
 
       setSuccess(
         'Registrasi berhasil. Mengarahkan ke halaman login...'
       );
 
-
       setTimeout(() => {
-        navigate(
-          '/login',
-          {
-            replace: true,
-          }
-        );
+        navigate('/login', { replace: true });
       }, 800);
 
     } catch (err) {
-
-      if (
-        err instanceof ApiError
-      ) {
-        setError(
-          err.message
-        );
+      if (err instanceof ApiError) {
+        setError(err.message);
       } else {
-        setError(
-          'Registrasi gagal.'
-        );
+        setError('Registrasi gagal.');
       }
-
     } finally {
       setLoading(false);
     }
   }
 
-
   return (
-    <main
-      className="auth-page"
-    >
+    <main className="auth-page">
+      <div className="auth-card auth-card--register">
 
-      <div
-        className="auth-card"
-      >
-
-        <div
-          className="auth-illustration"
-        >
+        <div className="auth-illustration">
           <img
             src="/assets/INF.png"
             alt="INF-Learning"
           />
         </div>
 
+        <div className="auth-form-col">
 
-        <div
-          className="auth-form-col"
-        >
-
-          <h1
-            className="auth-title"
-          >
+          <h1 className="auth-title">
             Get Started!
           </h1>
 
+          {/* Subtitle DIHAPUS */}
 
-          <p
-            className="auth-subtitle"
-          >
-            Buat akun untuk
-            mulai belajar.
-          </p>
+          <ErrorMessage message={error} />
+          <SuccessMessage message={success} />
 
-
-          <ErrorMessage
-            message={error}
-          />
-
-
-          <SuccessMessage
-            message={success}
-          />
-
-
-          <form
-            onSubmit={
-              handleSubmit
-            }
-            noValidate
-          >
+          <form onSubmit={handleSubmit} noValidate>
 
             <InputField
               label="Nama Lengkap"
               name="namaLengkap"
-              value={
-                form.namaLengkap
-              }
-              onChange={
-                handleChange
-              }
+              value={form.namaLengkap}
+              onChange={handleChange}
               placeholder="Masukkan nama lengkap"
               required
             />
 
-
             <InputField
               label="NIM/NIP"
               name="nimNip"
-              value={
-                form.nimNip
-              }
-              onChange={
-                handleChange
-              }
+              value={form.nimNip}
+              onChange={handleChange}
               placeholder="Masukkan NIM/NIP"
               required
             />
 
-
-            <InputField
-              label="Email"
-              name="email"
-              type="email"
-              value={
-                form.email
-              }
-              onChange={
-                handleChange
-              }
-              placeholder="nama@email.com"
-              required
-            />
-
+            {/* Field Email DIHAPUS */}
 
             <PasswordField
               label="Password"
               name="password"
-              value={
-                form.password
-              }
-              onChange={
-                handleChange
-              }
+              value={form.password}
+              onChange={handleChange}
               placeholder="Minimal 8 karakter"
             />
-
 
             <PasswordField
               label="Konfirmasi Password"
               name="konfirmasiPassword"
-              value={
-                form.konfirmasiPassword
-              }
-              onChange={
-                handleChange
-              }
+              value={form.konfirmasiPassword}
+              onChange={handleChange}
               placeholder="Ulangi password"
             />
-
 
             <button
               className="btn-primary"
               type="submit"
               disabled={loading}
             >
-              {loading
-                ? 'Mendaftarkan...'
-                : 'Daftar'}
+              {loading ? 'Mendaftarkan...' : 'Daftar'}
             </button>
 
           </form>
 
-
-          <p
-            className="auth-footer"
-          >
+          <p className="auth-footer">
             Sudah punya akun?{' '}
-
-            <Link
-              to="/login"
-            >
-              Login
-            </Link>
+            <Link to="/login">Login</Link>
           </p>
 
         </div>
-
       </div>
-
     </main>
   );
 }
