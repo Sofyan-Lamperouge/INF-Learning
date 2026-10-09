@@ -43,13 +43,12 @@ def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
 
     # Simpan
     pengguna = crud_pengguna.create(
-        db,
-        peran=peran,
-        nomor_induk=data.nomor_induk,
-        nama=data.nama,
-        email=None,
-        kata_sandi_hashed=hash_sandi,
-        status="aktif",
+    db,
+    peran=peran,
+    nomor_induk=data.nomor_induk,
+    nama=data.nama,
+    kata_sandi_hashed=hash_sandi,
+    status="aktif",
     )
     return pengguna
 

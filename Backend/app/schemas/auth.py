@@ -1,23 +1,13 @@
 import re
 from datetime import datetime
-
-from pydantic import (
-    BaseModel,
-    EmailStr,
-    Field,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 POLA_NIM = re.compile(r"^2\d88\d{6}$")
-POLA_NIP = re.compile(r"^\d{18}$")
-
 
 class RegistrasiRequest(BaseModel):
     nama: str = Field(..., min_length=3, max_length=100)
     nomor_induk: str = Field(..., min_length=8, max_length=18)
-    email: EmailStr
     kata_sandi: str = Field(..., min_length=8, max_length=72)
     konfirmasi_kata_sandi: str = Field(
         ...,
@@ -52,7 +42,6 @@ class RegistrasiResponse(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str | None
     status: str
     dibuat_pada: datetime
 
@@ -80,9 +69,7 @@ class PenggunaRingkas(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str | None
     status: str
-
     model_config = {
         "from_attributes": True
     }
