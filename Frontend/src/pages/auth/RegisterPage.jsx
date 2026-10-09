@@ -11,7 +11,7 @@ import SuccessMessage from '../../components/common/SuccessMessage.jsx';
 
 import {
   validateNamaLengkap,
-  validateNimNip,
+  validateNim,
   validatePassword,
   validateKonfirmasiPassword,
 } from '../../utils/validators.js';
@@ -22,7 +22,7 @@ export default function RegisterPage() {
 
   const [form, setForm] = useState({
     namaLengkap: '',
-    nimNip: '',
+    nim: '',
     password: '',
     konfirmasiPassword: '',
   });
@@ -50,11 +50,11 @@ export default function RegisterPage() {
     setSuccess('');
 
     const namaLengkap = form.namaLengkap.trim();
-    const nimNip = form.nimNip.trim();
+    const nim = form.nim.trim();
 
     const errors = [
       validateNamaLengkap(namaLengkap),
-      validateNimNip(nimNip),
+      validateNim(nim),
       validatePassword(form.password),
       validateKonfirmasiPassword(
         form.password,
@@ -74,7 +74,7 @@ export default function RegisterPage() {
 
       await register({
         namaLengkap,
-        nimNip,
+        nim,
         password: form.password,
         konfirmasiPassword: form.konfirmasiPassword,
       });
@@ -115,8 +115,6 @@ export default function RegisterPage() {
             Get Started!
           </h1>
 
-          {/* Subtitle DIHAPUS */}
-
           <ErrorMessage message={error} />
           <SuccessMessage message={success} />
 
@@ -132,15 +130,15 @@ export default function RegisterPage() {
             />
 
             <InputField
-              label="NIM/NIP"
-              name="nimNip"
-              value={form.nimNip}
+              label="NIM"
+              name="nim"
+              value={form.nim}
               onChange={handleChange}
-              placeholder="Masukkan NIM/NIP"
+              placeholder="Masukkan NIM"
               required
             />
 
-            {/* Field Email DIHAPUS */}
+            {/* ❌ Field Email DIHAPUS */}
 
             <PasswordField
               label="Password"

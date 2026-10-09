@@ -1,263 +1,152 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import {
-  Link,
-  useNavigate,
-} from 'react-router-dom';
+import { login } from '../../services/authService.js';
+import { ApiError } from '../../services/api.js';
+import { useAuth } from '../../hooks/useAuth.js';
 
-import {
-  login,
-} from '../../services/authService.js';
+import InputField from '../../components/common/InputField.jsx';
+import PasswordField from '../../components/common/PasswordField.jsx';
+import ErrorMessage from '../../components/common/ErrorMessage.jsx';
+import SuccessMessage from '../../components/common/SuccessMessage.jsx';
 
-import {
-  ApiError,
-} from '../../services/api.js';
-
-import {
-  useAuth,
-} from '../../hooks/useAuth.js';
-
-import InputField from
-  '../../components/common/InputField.jsx';
-
-import PasswordField from
-  '../../components/common/PasswordField.jsx';
-
-import ErrorMessage from
-  '../../components/common/ErrorMessage.jsx';
+import { validateNim } from '../../utils/validators.js';
 
 
 export default function LoginPage() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
+  const { loginSuccess } = useAuth();
 
+  const [form, setForm] = useState({
+    nim: '',
+    password: '',
+  });
 
-  const {
-    loginSuccess,
-  } = useAuth();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  function handleChange(event) {
+    const { name, value } = event.target;
 
-  const [form, setForm] =
-    useState({
-      nimNip: '',
-      password: '',
-    });
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
 
-
-  const [error, setError] =
-    useState('');
-
-
-  const [loading, setLoading] =
-    useState(false);
-
-
-  function handleChange(
-    event
-  ) {
-    const {
-      name,
-      value,
-    } = event.target;
-
-
-    setForm(
-      (current) => ({
-        ...current,
-
-        [name]: value,
-      })
-    );
-
-
-    if (error) {
-      setError('');
-    }
+    if (error) setError('');
+    if (success) setSuccess('');
   }
 
-
-  async function handleSubmit(
-    event
-  ) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     setError('');
+    setSuccess('');
 
+    const nim = form.nim.trim();
 
-    const nimNip =
-      form.nimNip.trim();
+    const errors = [
+      validateNim(nim),
+      form.password ? '' : 'Password wajib diisi.',
+    ];
 
+    const firstError = errors.find(Boolean);
 
-    if (!nimNip) {
-      setError(
-        'NIM/NIP wajib diisi.'
-      );
-
+    if (firstError) {
+      setError(firstError);
       return;
     }
-
-
-    if (!form.password) {
-      setError(
-        'Password wajib diisi.'
-      );
-
-      return;
-    }
-
 
     try {
       setLoading(true);
 
+      const result = await login({
+        nim,
+        password: form.password,
+      });
 
-      const result =
-        await login({
-          nimNip,
-          password:
-            form.password,
-        });
-
-
-      loginSuccess(
-        result.token,
-        result.role,
-        result.user
+      setSuccess(
+        'Login Berhasil! Selamat datang kembali, Kamu akan diarahkan ke halaman utama.'
       );
 
+      loginSuccess(result.token, result.role);
 
-      navigate(
-        '/materi',
-        {
-          replace: true,
-        }
-      );
+      setTimeout(() => {
+        navigate('/materi', { replace: true });
+      }, 800);
 
     } catch (err) {
-
-      if (
-        err instanceof ApiError
-      ) {
-        setError(
-          err.message
-        );
+      if (err instanceof ApiError) {
+        setError(err.message);
       } else {
-        setError(
-          'Terjadi kesalahan pada server.'
-        );
+        setError('Gagal terhubung ke server, periksa koneksi Anda.');
       }
-
     } finally {
       setLoading(false);
     }
   }
 
-
   return (
-    <main
-      className="auth-page"
-    >
+    <main className="auth-page">
+      <div className="auth-card">
 
-      <div
-        className="auth-card"
-      >
-
-        <div
-          className="auth-illustration"
-        >
+        <div className="auth-illustration">
           <img
             src="/assets/INF.png"
             alt="INF-Learning"
           />
         </div>
 
+        <div className="auth-form-col">
 
-        <div
-          className="auth-form-col"
-        >
-
-          <h1
-            className="auth-title"
-          >
+          <h1 className="auth-title">
             Welcome Back!
           </h1>
 
-
-          <p
-            className="auth-subtitle"
-          >
-            Masuk untuk mulai
-            belajar.
+          <p className="auth-subtitle">
+            Masuk untuk mulai belajar.
           </p>
 
+          <ErrorMessage message={error} />
+          <SuccessMessage message={success} />
 
-          <ErrorMessage
-            message={error}
-          />
-
-
-          <form
-            onSubmit={
-              handleSubmit
-            }
-            noValidate
-          >
+          <form onSubmit={handleSubmit} noValidate>
 
             <InputField
-              label="NIM/NIP"
-              name="nimNip"
-              value={
-                form.nimNip
-              }
-              onChange={
-                handleChange
-              }
-              placeholder="Masukkan NIM/NIP"
+              label="NIM"
+              name="nim"
+              value={form.nim}
+              onChange={handleChange}
+              placeholder="Contoh: 24880100XX"
               required
             />
-
 
             <PasswordField
               label="Password"
               name="password"
-              value={
-                form.password
-              }
-              onChange={
-                handleChange
-              }
-              placeholder="Masukkan password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Masukkan Password"
             />
-
 
             <button
               className="btn-primary"
               type="submit"
               disabled={loading}
             >
-              {loading
-                ? 'Memproses...'
-                : 'Masuk'}
+              {loading ? 'Memproses...' : 'Masuk'}
             </button>
 
           </form>
 
-
-          <p
-            className="auth-footer"
-          >
+          <p className="auth-footer">
             Belum punya akun?{' '}
-
-            <Link
-              to="/register"
-            >
-              Daftar
-            </Link>
+            <Link to="/register">Buat di sini</Link>
           </p>
 
         </div>
-
       </div>
-
     </main>
   );
 }
