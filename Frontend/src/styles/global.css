@@ -341,6 +341,298 @@ body > .alert-success {
 }
 
 /* ============================================================
+   BLUEPRINT MODE — Low-Fidelity Skeleton
+   Digunakan untuk halaman /blueprint, /login/skeleton, dll.
+   ============================================================ */
+
+/* === Halaman blueprint === */
+.bp-page {
+  min-height: 100vh;
+  background: #d0d0d0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+/* === Header blueprint === */
+.bp-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1000px;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.bp-badge {
+  background: #333;
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.bp-title {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* === Card utama blueprint === */
+.bp-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1000px;
+  width: 100%;
+  background: #ffffff;
+  border: 3px solid #333;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.bp-card--single {
+  grid-template-columns: 1fr;
+}
+
+/* === Semua kotak blueprint === */
+.bp-box {
+  border: 2px dashed #666;
+  background: #ededed;
+  border-radius: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.75rem;
+  color: #444;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+/* === Area gambar (kiri) === */
+.bp-image {
+  min-height: 400px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* === Form column (kanan) === */
+.bp-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* === Ukuran elemen form === */
+.bp-h1 {
+  height: 40px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.bp-h1--left {
+  justify-content: flex-start;
+  padding-left: 1rem;
+}
+
+.bp-subtitle {
+  height: 22px;
+}
+
+.bp-label {
+  height: 18px;
+  width: 30%;
+}
+
+.bp-input {
+  height: 44px;
+}
+
+.bp-button {
+  height: 44px;
+  background: #c8c8c8;
+  border-style: solid;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.bp-footer {
+  height: 18px;
+  width: 50%;
+  margin: 1.5rem auto 0;
+}
+
+/* === Navbar blueprint === */
+.bp-navbar {
+  height: 50px;
+  margin-bottom: 1.5rem;
+}
+
+/* === List blueprint (untuk materi) === */
+.bp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.bp-list-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.bp-list-icon {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.bp-list-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bp-list-title {
+  height: 20px;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+}
+
+.bp-list-desc {
+  height: 14px;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+}
+
+/* === Navigasi blueprint === */
+.bp-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  max-width: 1000px;
+  width: 100%;
+  justify-content: center;
+}
+
+.bp-nav a {
+  background: #ffffff;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border: 2px solid #333;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.bp-nav a:hover {
+  background: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Halaman index blueprint === */
+.bp-index {
+  min-height: 100vh;
+  background: #d0d0d0;
+  padding: 3rem 2rem;
+  font-family: system-ui, sans-serif;
+}
+
+.bp-index-header {
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+}
+
+.bp-index-header h1 {
+  font-size: 1.75rem;
+  margin: 0.75rem 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.bp-index-header p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+.bp-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.bp-index-card {
+  background: #ffffff;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.bp-index-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.bp-index-card p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.bp-index-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bp-btn {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.bp-btn--primary {
+  background: #333;
+  color: #ffffff;
+}
+.bp-btn--primary:hover {
+  background: #000;
+  text-decoration: none;
+}
+
+.bp-btn--outline {
+  background: transparent;
+  color: #333;
+  border: 2px solid #333;
+}
+.bp-btn--outline:hover {
+  background: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-height: 800px) and (min-width: 701px) {
@@ -370,5 +662,18 @@ body > .alert-success {
   }
   .auth-page.skeleton-mode .footer-bar {
     margin-top: 1.5rem;
+  }
+
+  /* Blueprint responsive */
+  .bp-card {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+  .bp-image {
+    min-height: 200px;
+  }
+  .bp-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

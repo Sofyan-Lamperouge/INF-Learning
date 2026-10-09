@@ -1,7 +1,6 @@
 const NIM_REGEX = /^2\d88\d{6}$/;
-const NIP_REGEX = /^\d{18}$/;
 
-// EMAIL_REGEX DIHAPUS
+//  NIP_REGISTRASI TELAS DIHAPUS
 
 
 export function validateNamaLengkap(value) {
@@ -23,22 +22,20 @@ export function validateNamaLengkap(value) {
 }
 
 
-export function validateNimNip(value) {
-  const nomor = String(value ?? '').trim();
+// ✅ Fungsi diganti nama & logika disederhanakan
+export function validateNim(value) {
+  const nim = String(value ?? '').trim();
 
-  if (!nomor) {
-    return 'NIM/NIP wajib diisi.';
+  if (!nim) {
+    return 'NIM wajib diisi.';
   }
 
-  if (!NIM_REGEX.test(nomor) && !NIP_REGEX.test(nomor)) {
-    return 'Format NIM/NIP tidak dikenali.';
+  if (!NIM_REGEX.test(nim)) {
+    return 'Format NIM tidak dikenali.';
   }
 
   return '';
 }
-
-
-// validateEmail DIHAPUS
 
 
 export function validatePassword(value) {
