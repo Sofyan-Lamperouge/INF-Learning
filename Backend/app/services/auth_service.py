@@ -3,86 +3,90 @@ import re
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.security import hash_kata_sandi
-from app.crud import pengguna as crud_pengguna
-from app.schemas.auth import RegistrasiRequest
-from app.models.pengguna import Pengguna
-
-
-POLA_NIM = re.compile(r"^2\d88\d{6}$")
-POLA_NIP = re.compile(r"^\d{18}$")
-
-
-def tentukan_peran(nomor_induk: str) -> str:
-    """Tentukan peran otomatis dari pola NIM/NIP."""
-    if POLA_NIM.match(nomor_induk):
-        return "mahasiswa"
-    if POLA_NIP.match(nomor_induk):
-        return "dosen"
-    # Seharusnya tidak sampai sini karena sudah divalidasi di schema
-    raise HTTPException(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        detail="Format NIM/NIP tidak dikenali",
-    )
-
-
-def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
-    # Cek duplikat nomor_induk
-    if crud_pengguna.get_by_nomor_induk(db, data.nomor_induk):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Nomor induk sudah terdaftar",
-        )
-
-
-    # Tentukan peran
-    peran = tentukan_peran(data.nomor_induk)
-
-    # Hash password
-    hash_sandi = hash_kata_sandi(data.kata_sandi)
-
-    # Simpan
-    pengguna = crud_pengguna.create(
-    db,
-    peran=peran,
-    nomor_induk=data.nomor_induk,
-    nama=data.nama,
-    kata_sandi_hashed=hash_sandi,
-    status="aktif",
-    )
-    return pengguna
-
+from app.core.config import settings
 from app.core.security import (
     buat_access_token,
     hash_kata_sandi,
     verifikasi_kata_sandi,
 )
-from app.schemas.auth import LoginRequest, LoginResponse, PenggunaRingkas
-from app.core.config import settings
+from app.crud import pengguna as crud_pengguna
+from app.models.pengguna import Pengguna
+from app.schemas.auth import (
+    LoginRequest,
+    LoginResponse,
+    PenggunaRingkas,
+    RegistrasiRequest,
+)
+
+POLA_NIM = re.compile(r"^2\d88\d{6}$")
 
 
-def login(db: Session, data: LoginRequest) -> LoginResponse:
-    # Cari user
+# ============================================================
+# Registrasi (Aktivasi Akun)
+# ============================================================
+def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
+    """
+    Registrasi = aktivasi akun.
+    NIM harus sudah diinput admin sebelumnya.
+    Set password + ubah status jadi 'aktif'.
+    """
+    # 1. Cari pengguna by NIM
     pengguna = crud_pengguna.get_by_nomor_induk(db, data.nomor_induk)
 
-    # Cek user ada & password cocok
-    # (pesan error disamakan biar tidak bisa dipakai untuk enumerasi NIM)
-    if not pengguna or not verifikasi_kata_sandi(
-        data.kata_sandi, pengguna.kata_sandi
-    ):
+    # 2. Tidak ada → 404
+    if not pengguna:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Nomor induk atau kata sandi salah",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="NIM tidak terdaftar. Hubungi admin.",
         )
 
-    # Cek status
+    # 3. Sudah aktif → 409
+    if pengguna.status == "aktif":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Akun sudah aktif. Silakan login.",
+        )
+
+    # 4. Nonaktif (di-block admin) → 403
+    if pengguna.status == "nonaktif":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Akun Anda dinonaktifkan. Hubungi admin.",
+        )
+
+    # 5. Set password + aktifkan
+    pengguna.kata_sandi = hash_kata_sandi(data.kata_sandi)
+    pengguna.status = "aktif"
+    db.commit()
+    db.refresh(pengguna)
+
+    return pengguna
+
+
+# ============================================================
+# Login
+# ============================================================
+def login(db: Session, data: LoginRequest) -> LoginResponse:
+    pengguna = crud_pengguna.get_by_nomor_induk(db, data.nomor_induk)
+
+    if not pengguna or not pengguna.kata_sandi:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="NIM atau kata sandi salah",
+        )
+
+    if not verifikasi_kata_sandi(data.kata_sandi, pengguna.kata_sandi):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="NIM atau kata sandi salah",
+        )
+
     if pengguna.status != "aktif":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Akun Anda nonaktif",
+            detail="Akun Anda belum aktif. Silakan registrasi terlebih dahulu.",
         )
 
-    # Bikin token
     access_token = buat_access_token({"sub": str(pengguna.id)})
 
     return LoginResponse(

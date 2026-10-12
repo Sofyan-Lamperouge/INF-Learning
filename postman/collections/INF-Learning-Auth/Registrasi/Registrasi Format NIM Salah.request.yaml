@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"1234567890\",\r
+
+    \  \"kata_sandi\": \"rahasia123\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"rahasia123\"\r
+
+    }"
+order: 195
