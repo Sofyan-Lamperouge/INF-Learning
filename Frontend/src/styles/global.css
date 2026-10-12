@@ -633,6 +633,917 @@ body > .alert-success {
 }
 
 /* ============================================================
+   WIREFRAME MODE — Detail Wireframe
+   Digunakan untuk halaman /wireframe, /login/wireframe, dll.
+   ============================================================ */
+
+/* === Halaman wireframe === */
+.wf-page {
+  min-height: 100vh;
+  background: #e8e8e8;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+/* === Header wireframe === */
+.wf-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1100px;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.wf-badge {
+  background: #1d4ed8;
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.wf-title {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* === Card wireframe === */
+.wf-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1100px;
+  width: 100%;
+  background: #ffffff;
+  border: 3px solid #1d4ed8;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.wf-card--single {
+  grid-template-columns: 1fr;
+}
+
+/* === Semua kotak wireframe === */
+.wf-box {
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.wf-box--dashed {
+  border: 2px dashed #555;
+  background: #f5f5f5;
+}
+
+.wf-box--solid {
+  border: 2px solid #1d4ed8;
+  background: #dbeafe;
+}
+
+.wf-box--full {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+/* === Label & deskripsi dalam kotak === */
+.wf-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wf-desc {
+  font-size: 0.68rem;
+  color: #555;
+  font-style: italic;
+}
+
+.wf-note {
+  font-size: 0.6rem;
+  color: #888;
+}
+
+/* === Ilustrasi (kiri) === */
+.wf-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Form column (kanan) === */
+.wf-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* === Grup field (label + input + state) === */
+.wf-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-left: 3px solid #1d4ed8;
+  background: #fafbff;
+  border-radius: 4px;
+}
+
+.wf-group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+/* === Ukuran elemen === */
+.wf-h1       { height: 50px; }
+.wf-h1--left { justify-content: flex-start; align-items: flex-start; padding-left: 1rem; }
+.wf-subtitle { height: 30px; }
+.wf-label    { height: 24px; width: 35%; align-items: flex-start; padding-left: 0.5rem; }
+.wf-input    { height: 48px; }
+.wf-button   { height: 48px; }
+.wf-footer   { height: 30px; width: 70%; margin: 1rem auto 0; }
+
+/* === State notes === */
+.wf-state {
+  font-size: 0.6rem;
+  color: #888;
+  font-style: italic;
+  margin-top: 0.15rem;
+}
+
+/* === Navbar wireframe === */
+.wf-navbar {
+  height: 55px;
+  margin-bottom: 1rem;
+}
+
+/* === Toolbar (search & filter) === */
+.wf-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.wf-search { height: 44px; }
+.wf-filter { height: 44px; }
+
+/* === List materi === */
+.wf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.wf-list-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border: 2px dashed #999;
+  border-radius: 6px;
+  background: #fafbff;
+}
+
+.wf-list-icon {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+}
+
+.wf-list-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.wf-list-title {
+  height: 28px;
+  align-items: flex-start;
+  padding-left: 0.5rem;
+}
+
+.wf-list-desc {
+  height: 22px;
+  align-items: flex-start;
+  padding-left: 0.5rem;
+}
+
+/* === Pagination === */
+.wf-pagination {
+  height: 50px;
+  margin-top: 1rem;
+}
+
+/* === Legenda === */
+.wf-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  max-width: 1100px;
+  width: 100%;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.wf-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wf-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.wf-dot--solid {
+  background: #dbeafe;
+  border: 2px solid #1d4ed8;
+}
+
+.wf-dot--dashed {
+  background: #f5f5f5;
+  border: 2px dashed #555;
+}
+
+/* === Navigasi wireframe === */
+.wf-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  max-width: 1100px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.wf-nav a {
+  background: #ffffff;
+  color: #1d4ed8;
+  padding: 0.5rem 1rem;
+  border: 2px solid #1d4ed8;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.wf-nav a:hover {
+  background: #1d4ed8;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Halaman index wireframe === */
+.wf-index {
+  min-height: 100vh;
+  background: #e8e8e8;
+  padding: 3rem 2rem;
+  font-family: system-ui, sans-serif;
+}
+
+.wf-index-header {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+}
+
+.wf-index-header h1 {
+  font-size: 1.75rem;
+  margin: 0.75rem 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.wf-index-header p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.wf-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.wf-index-card {
+  background: #ffffff;
+  border: 2px solid #1d4ed8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.wf-index-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.wf-index-card p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.wf-index-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.wf-btn {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.wf-btn--primary {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+.wf-btn--primary:hover {
+  background: #1e3a8a;
+  text-decoration: none;
+}
+
+.wf-btn--outline {
+  background: transparent;
+  color: #1d4ed8;
+  border: 2px solid #1d4ed8;
+}
+.wf-btn--outline:hover {
+  background: #1d4ed8;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Responsive wireframe === */
+@media (max-width: 900px) {
+  .wf-card {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+  .wf-box--full {
+    min-height: 200px;
+  }
+  .wf-toolbar {
+    grid-template-columns: 1fr;
+  }
+  .wf-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wf-legend {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* ============================================================
+   MOCKUP MODE — Medium Fidelity
+   Digunakan untuk halaman /mockup, /login/mockup, dll.
+   ============================================================ */
+
+/* === Halaman mockup === */
+.mk-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf5fc 0%, #d9edf9 100%);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+/* === Header mockup === */
+.mk-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1000px;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.mk-badge {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #fff;
+  padding: 0.25rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(78, 168, 224, 0.3);
+}
+
+.mk-title {
+  color: #2c3e50;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* === Card mockup === */
+.mk-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1000px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 20px 50px rgba(30, 90, 140, 0.12);
+}
+
+.mk-card--register {
+  padding: 1.75rem 2rem;
+}
+
+.mk-card--single {
+  grid-template-columns: 1fr;
+}
+
+/* === Ilustrasi placeholder === */
+.mk-illustration {
+  border-radius: 18px;
+  background: linear-gradient(135deg, #d6ecfa 0%, #b9dff5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mk-illustration::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0%, transparent 40%);
+}
+
+.mk-illustration-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+  color: #2c5f7c;
+}
+
+.mk-illustration-icon {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.mk-illustration-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.mk-illustration-sub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+/* === Form column === */
+.mk-form-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* === Judul & subtitle === */
+.mk-h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0 0 0.25rem;
+}
+
+.mk-h1--left {
+  text-align: left;
+  margin: 1rem 0 1rem;
+}
+
+.mk-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+/* === Field group === */
+.mk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mk-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.mk-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: border-color 0.15s ease;
+}
+
+.mk-input-placeholder {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.mk-input-icon {
+  position: absolute;
+  right: 0.85rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* === Tombol === */
+.mk-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(78, 168, 224, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mk-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(78, 168, 224, 0.4);
+}
+
+/* === Footer === */
+.mk-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin: 0.75rem 0 0;
+}
+
+.mk-link {
+  color: #4ea8e0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* === Navbar mockup (untuk materi) === */
+.mk-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 2px solid #eaf5fc;
+  margin-bottom: 1rem;
+}
+
+.mk-navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #4ea8e0;
+}
+
+.mk-navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* === Toolbar (search & filter) === */
+.mk-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mk-input--search {
+  background: #f5fbff;
+}
+
+.mk-input--filter {
+  background: #f5fbff;
+  justify-content: center;
+}
+
+/* === List materi === */
+.mk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mk-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fafbff;
+  border: 2px solid #eaf5fc;
+  border-radius: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.mk-list-item:hover {
+  border-color: #7ec8f5;
+  transform: translateX(4px);
+}
+
+.mk-list-icon {
+  font-size: 1.75rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #d6ecfa 0%, #b9dff5 100%);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.mk-list-content {
+  flex: 1;
+}
+
+.mk-list-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.mk-list-desc {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.mk-list-action {
+  font-size: 1.25rem;
+  color: #4ea8e0;
+  font-weight: 700;
+}
+
+/* === Pagination === */
+.mk-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.mk-pagination-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: #f5fbff;
+  color: #4ea8e0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mk-pagination-num {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f5fbff;
+  color: #4ea8e0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mk-pagination-num--active {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #ffffff;
+}
+
+/* === Legenda === */
+.mk-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  max-width: 1000px;
+  width: 100%;
+  font-size: 0.75rem;
+  color: #4b5563;
+  justify-content: center;
+}
+
+/* === Navigasi mockup === */
+.mk-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  max-width: 1000px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mk-nav a {
+  background: #ffffff;
+  color: #4ea8e0;
+  padding: 0.5rem 1rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mk-nav a:hover {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Halaman index mockup === */
+.mk-index {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf5fc 0%, #d9edf9 100%);
+  padding: 3rem 2rem;
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+.mk-index-header {
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+}
+
+.mk-index-header h1 {
+  font-size: 1.75rem;
+  margin: 0.75rem 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.mk-index-header p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.mk-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.mk-index-card {
+  background: #ffffff;
+  border: 2px solid #eaf5fc;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(30, 90, 140, 0.06);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.mk-index-card:hover {
+  box-shadow: 0 8px 24px rgba(30, 90, 140, 0.1);
+  transform: translateY(-2px);
+}
+
+.mk-index-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #1a1a1a;
+}
+
+.mk-index-card p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.mk-index-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mk-btn--primary {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mk-btn--outline {
+  background: transparent;
+  color: #4ea8e0;
+  border: 2px solid #7ec8f5;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mk-btn--outline:hover {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* === Responsive mockup === */
+@media (max-width: 900px) {
+  .mk-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+  .mk-illustration {
+    min-height: 200px;
+  }
+  .mk-toolbar {
+    grid-template-columns: 1fr;
+  }
+  .mk-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .mk-legend {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-height: 800px) and (min-width: 701px) {
@@ -675,5 +1586,560 @@ body > .alert-success {
   .bp-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* ============================================================
+   DESIGN SYSTEM PAGE — /design-system
+   Dokumentasi aturan visual aplikasi.
+   ============================================================ */
+
+/* === Halaman design system === */
+.ds-page {
+  min-height: 100vh;
+  background: #f5fbff;
+  font-family: "Poppins", system-ui, sans-serif;
+  padding: 0 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === Hero header === */
+.ds-hero {
+  padding: 3rem 0 2rem;
+  border-bottom: 2px solid #eaf5fc;
+  margin-bottom: 2rem;
+}
+
+.ds-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #fff;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(78, 168, 224, 0.3);
+}
+
+.ds-hero-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.ds-hero-desc {
+  font-size: 1rem;
+  color: #6b7280;
+  max-width: 700px;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.ds-hero-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  flex-wrap: wrap;
+}
+
+/* === Navigasi sticky === */
+.ds-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(245, 251, 255, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eaf5fc;
+  margin-bottom: 3rem;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+
+.ds-nav-item {
+  background: transparent;
+  border: 2px solid #eaf5fc;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.ds-nav-item:hover {
+  background: #eaf5fc;
+  color: #4ea8e0;
+  border-color: #7ec8f5;
+}
+
+/* === Section === */
+.ds-section {
+  margin-bottom: 4rem;
+  scroll-margin-top: 5rem;
+}
+
+.ds-section-header {
+  margin-bottom: 2rem;
+}
+
+.ds-section-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4ea8e0;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.ds-section-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem;
+}
+
+.ds-section-desc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  max-width: 700px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* === Subsection === */
+.ds-subsection {
+  margin-bottom: 2.5rem;
+}
+
+.ds-subsection-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid #7ec8f5;
+}
+
+/* === Colors === */
+.ds-color-group {
+  margin-bottom: 2rem;
+}
+
+.ds-color-group-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.ds-color-group-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 1rem;
+}
+
+.ds-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.ds-color-item {
+  display: flex;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 12px;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.ds-color-swatch {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ds-color-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ds-color-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ds-color-hex {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #4ea8e0;
+  font-weight: 600;
+}
+
+.ds-color-usage {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+/* === Typography === */
+.ds-typography-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ds-typography-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 12px;
+  padding: 1.25rem;
+  align-items: center;
+}
+
+.ds-typography-preview {
+  padding: 0.5rem;
+  color: #1a1a1a;
+  overflow: hidden;
+}
+
+.ds-typography-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ds-typography-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ds-typography-spec {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #4ea8e0;
+}
+
+.ds-typography-usage {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Typography demo classes */
+.ds-text-h1      { font-size: 1.75rem; font-weight: 700; line-height: 1.25; }
+.ds-text-h2      { font-size: 1.25rem; font-weight: 700; line-height: 1.3; }
+.ds-text-h3      { font-size: 1rem;    font-weight: 700; line-height: 1.4; }
+.ds-text-body    { font-size: 0.95rem; font-weight: 400; line-height: 1.5; }
+.ds-text-small   { font-size: 0.85rem; font-weight: 400; line-height: 1.5; }
+.ds-text-label   { font-size: 0.85rem; font-weight: 600; line-height: 1.4; }
+.ds-text-button  { font-size: 0.95rem; font-weight: 700; line-height: 1; }
+.ds-text-caption { font-size: 0.75rem; font-weight: 400; line-height: 1.4; }
+
+/* === Spacing === */
+.ds-spacing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ds-spacing-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.ds-spacing-box {
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-spacing-demo {
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  border-radius: 4px;
+}
+
+.ds-spacing-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ds-spacing-name {
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4ea8e0;
+}
+
+.ds-spacing-usage {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* === Radius === */
+.ds-radius-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.ds-radius-item {
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.ds-radius-box {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  margin-bottom: 0.25rem;
+}
+
+.ds-radius-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ds-radius-value {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #4ea8e0;
+}
+
+.ds-radius-usage {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* === Shadow === */
+.ds-shadow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.ds-shadow-item {
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.ds-shadow-box {
+  width: 60px;
+  height: 60px;
+  background: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.ds-shadow-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ds-shadow-value {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: #4ea8e0;
+  word-break: break-all;
+}
+
+.ds-shadow-usage {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* === Components === */
+.ds-component-preview {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.ds-component-preview--block {
+  flex-direction: column;
+}
+
+.ds-component-demo {
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 220px;
+}
+
+.ds-component-demo--full {
+  width: 100%;
+  max-width: 400px;
+}
+
+.ds-component-code {
+  background: #1a1a1a;
+  color: #7ec8f5;
+  padding: 1rem;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Demo card */
+.ds-demo-card {
+  background: #fafbff;
+  border: 1px solid #eaf5fc;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.ds-demo-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem;
+}
+
+.ds-demo-card-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* === Principles === */
+.ds-principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.ds-principle-card {
+  background: #ffffff;
+  border: 1px solid #eaf5fc;
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.ds-principle-card:hover {
+  box-shadow: 0 8px 24px rgba(30, 90, 140, 0.08);
+  transform: translateY(-2px);
+}
+
+.ds-principle-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.ds-principle-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem;
+}
+
+.ds-principle-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* === Footer === */
+.ds-footer {
+  text-align: center;
+  padding: 2rem 0;
+  border-top: 2px solid #eaf5fc;
+  margin-top: 3rem;
+}
+
+.ds-footer p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin: 0 0 0.5rem;
+}
+
+.ds-footer-sub {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* === Responsive design system === */
+@media (max-width: 900px) {
+  .ds-page {
+    padding: 0 1rem 2rem;
+  }
+
+  .ds-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .ds-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ds-nav-item {
+    white-space: nowrap;
+  }
+
+  .ds-typography-item {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ds-color-grid,
+  .ds-principles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ds-radius-grid,
+  .ds-shadow-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

@@ -11,6 +11,21 @@ import LoginBlueprintPage from './pages/auth/LoginBlueprintPage.jsx';
 import RegisterBlueprintPage from './pages/auth/RegisterBlueprintPage.jsx';
 import MateriBlueprintPage from './pages/materi/MateriBlueprintPage.jsx';
 
+// Wireframe pages
+import WireframeIndexPage from './pages/WireframeIndexPage.jsx';
+import LoginWireframePage from './pages/wireframe/LoginWireframePage.jsx';
+import RegisterWireframePage from './pages/wireframe/RegisterWireframePage.jsx';
+import MateriWireframePage from './pages/wireframe/MateriWireframePage.jsx';
+
+// Mockup pages
+import MockupIndexPage from './pages/MockupIndexPage.jsx';
+import LoginMockupPage from './pages/mockup/LoginMockupPage.jsx';
+import RegisterMockupPage from './pages/mockup/RegisterMockupPage.jsx';
+import MateriMockupPage from './pages/mockup/MateriMockupPage.jsx';
+
+// Design System
+import DesignSystemPage from './pages/DesignSystemPage.jsx';
+
 
 export default function App() {
   return (
@@ -18,7 +33,7 @@ export default function App() {
       {/* Redirect */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Halaman Final */}
+      {/* === HALAMAN FINAL === */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route
@@ -30,11 +45,26 @@ export default function App() {
         }
       />
 
-      {/* === BLUEPRINT ROUTES (Low-Fidelity Skeleton) === */}
+      {/* === BLUEPRINT === */}
       <Route path="/blueprint" element={<BlueprintIndexPage />} />
       <Route path="/login/skeleton" element={<LoginBlueprintPage />} />
       <Route path="/register/skeleton" element={<RegisterBlueprintPage />} />
       <Route path="/materi/skeleton" element={<MateriBlueprintPage />} />
+
+      {/* === WIREFRAME === */}
+      <Route path="/wireframe" element={<WireframeIndexPage />} />
+      <Route path="/login/wireframe" element={<LoginWireframePage />} />
+      <Route path="/register/wireframe" element={<RegisterWireframePage />} />
+      <Route path="/materi/wireframe" element={<MateriWireframePage />} />
+
+      {/* === MOCKUP === */}
+      <Route path="/mockup" element={<MockupIndexPage />} />
+      <Route path="/login/mockup" element={<LoginMockupPage />} />
+      <Route path="/register/mockup" element={<RegisterMockupPage />} />
+      <Route path="/materi/mockup" element={<MateriMockupPage />} />
+
+      {/* === DESIGN SYSTEM === */}
+      <Route path="/design-system" element={<DesignSystemPage />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />
