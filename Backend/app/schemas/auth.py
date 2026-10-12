@@ -1,49 +1,27 @@
 import re
 from datetime import datetime
-
-from pydantic import (
-    BaseModel,
-    EmailStr,
-    Field,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 POLA_NIM = re.compile(r"^2\d88\d{6}$")
-POLA_NIP = re.compile(r"^\d{18}$")
-
 
 class RegistrasiRequest(BaseModel):
-    nama: str = Field(..., min_length=3, max_length=100)
-    nomor_induk: str = Field(..., min_length=8, max_length=18)
-    email: EmailStr
+    nomor_induk: str = Field(..., min_length=10, max_length=10)
     kata_sandi: str = Field(..., min_length=8, max_length=72)
-    konfirmasi_kata_sandi: str = Field(
-        ...,
-        min_length=8,
-        max_length=72,
-    )
+    konfirmasi_kata_sandi: str = Field(..., min_length=8, max_length=72)
 
     @field_validator("nomor_induk")
     @classmethod
-    def validasi_nomor_induk(cls, v: str) -> str:
+    def validasi_nim(cls, v: str) -> str:
         v = v.strip()
-
-        if POLA_NIM.match(v) or POLA_NIP.match(v):
-            return v
-
-        raise ValueError(
-            "Format NIM/NIP tidak dikenali"
-        )
+        if not POLA_NIM.match(v):
+            raise ValueError("Format NIM tidak dikenali")
+        return v
 
     @model_validator(mode="after")
     def cek_konfirmasi_kata_sandi(self):
         if self.kata_sandi != self.konfirmasi_kata_sandi:
-            raise ValueError(
-                "Konfirmasi kata sandi tidak cocok"
-            )
-
+            raise ValueError("Konfirmasi kata sandi tidak cocok")
         return self
 
 
@@ -52,7 +30,6 @@ class RegistrasiResponse(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str | None
     status: str
     dibuat_pada: datetime
 
@@ -70,7 +47,7 @@ class LoginRequest(BaseModel):
 
     kata_sandi: str = Field(
         ...,
-        min_length=1,
+        min_length=8,
         max_length=72,
     )
 
@@ -80,9 +57,7 @@ class PenggunaRingkas(BaseModel):
     peran: str
     nomor_induk: str
     nama: str
-    email: str | None
     status: str
-
     model_config = {
         "from_attributes": True
     }

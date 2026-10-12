@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, String
+from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -13,9 +13,11 @@ class Pengguna(Base):
     peran: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
     nomor_induk: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     nama: Mapped[str] = mapped_column(String(100), nullable=False)
-    email: Mapped[str | None] = mapped_column(String(100), unique=True, nullable=True)
-    kata_sandi: Mapped[str] = mapped_column(String(255), nullable=False)
-    status: Mapped[str] = mapped_column(String(20), default="aktif", nullable=False)
+    kata_sandi: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    angkatan: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(20), default="belum_aktif", nullable=False
+    )
     dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     diubah_pada: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow

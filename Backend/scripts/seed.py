@@ -1,5 +1,5 @@
 """
-Seeder: bikin akun awal untuk testing.
+Seeder: bikin akun admin untuk testing.
 
 Jalankan dari folder Backend/:
     python -m scripts.seed
@@ -8,7 +8,6 @@ Jalankan dari folder Backend/:
 import sys
 from pathlib import Path
 
-# Tambahkan root project ke sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.security import hash_kata_sandi
@@ -21,22 +20,8 @@ AKUN_AWAL = [
         "peran": "admin",
         "nomor_induk": "ADM001",
         "nama": "Administrator",
-        "email": None,
         "kata_sandi": "admin123",
-    },
-    {
-        "peran": "dosen",
-        "nomor_induk": "199008172020041001",
-        "nama": "Dr. Budi Santoso",
-        "email": None,
-        "kata_sandi": "dosen123",
-    },
-    {
-        "peran": "mahasiswa",
-        "nomor_induk": "2488010071",
-        "nama": "Sari Wulandari",
-        "email": None,
-        "kata_sandi": "mhs123",
+        "status": "aktif",
     },
 ]
 
@@ -45,7 +30,6 @@ def seed():
     db = SessionLocal()
     try:
         for akun in AKUN_AWAL:
-            # Cek apakah sudah ada
             existing = db.query(Pengguna).filter(
                 Pengguna.nomor_induk == akun["nomor_induk"]
             ).first()
@@ -58,9 +42,8 @@ def seed():
                 peran=akun["peran"],
                 nomor_induk=akun["nomor_induk"],
                 nama=akun["nama"],
-                email=akun["email"],
                 kata_sandi=hash_kata_sandi(akun["kata_sandi"]),
-                status="aktif",
+                status=akun["status"],
             )
             db.add(pengguna)
             print(f"[OK]   {akun['peran']:<10} {akun['nomor_induk']} berhasil dibuat")

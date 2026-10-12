@@ -25,16 +25,18 @@ router = APIRouter(
 @router.post(
     "/registrasi",
     response_model=RegistrasiResponse,
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
+    summary="Aktivasi akun mahasiswa",
+    description=(
+        "Aktivasi akun dengan NIM yang sudah diinput admin. "
+        "Set password dan ubah status akun jadi aktif."
+    ),
 )
 def registrasi(
     data: RegistrasiRequest,
     db: Session = Depends(get_db),
 ):
-    return auth_service.registrasi(
-        db,
-        data,
-    )
+    return auth_service.registrasi(db, data)
 
 
 @router.post(
