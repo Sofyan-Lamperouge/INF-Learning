@@ -1,32 +1,33 @@
-# Stage 1: Build
+# Stage 1: Build aplikasi
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files saja dulu
+# Copy package.json dan package-lock.json
 COPY package.json package-lock.json ./
 
-# Install pakai npm install (bukan npm ci) — lebih toleran
+# Install dependensi (menggunakan npm install, bukan npm ci)
 RUN npm install --no-audit --no-fund
 
-# Force permission untuk semua binary
-RUN chmod -R +x node_modules/.bin/ || true
-
-# Copy source code (node_modules sudah di-exclude oleh .dockerignore)
+# Copy semua source code (node_modules sudah di-exclude oleh .dockerignore)
 COPY . .
 
-# Build
+# Build aplikasi Vite
 RUN npm run build
 
-# Stage 2: Serve
+# Stage 2: Sajikan file statis
 FROM node:20-alpine
 
 WORKDIR /app
 
+# Install 'serve' untuk menyajikan file statis
 RUN npm install -g serve
 
+# Copy hasil build dari stage pertama
 COPY --from=builder /app/dist ./dist
 
+# Expose port (Railway akan inject PORT)
 EXPOSE 3000
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Jalankan serve, menggunakan PORT dari environment variable
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-3000}"]
