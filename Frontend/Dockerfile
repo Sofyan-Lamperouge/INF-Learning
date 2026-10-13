@@ -6,15 +6,10 @@ WORKDIR /app
 # Copy package.json dan package-lock.json
 COPY package*.json ./
 
-# Install dependensi
+# Install dependensi (karena .dockerignore sudah ada, ini akan bersih)
 RUN npm ci
 
-# --- TAMBAHKAN BARIS INI ---
-# Beri izin eksekusi pada binary di node_modules/.bin
-RUN chmod -R +x node_modules/.bin/
-# --------------------------
-
-# Copy semua source code
+# Copy semua source code (kecuali yang ada di .dockerignore)
 COPY . .
 
 # Build aplikasi Vite
