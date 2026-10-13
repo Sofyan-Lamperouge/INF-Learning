@@ -9,6 +9,11 @@ COPY package*.json ./
 # Install dependensi
 RUN npm ci
 
+# --- TAMBAHKAN BARIS INI ---
+# Beri izin eksekusi pada binary di node_modules/.bin
+RUN chmod -R +x node_modules/.bin/
+# --------------------------
+
 # Copy semua source code
 COPY . .
 
