@@ -5,32 +5,38 @@
 export const MOCK_USERS = [
   {
     id: 1,
-    namaLengkap: "Budi Santoso",
-    nim: "20240101",
-    password: "HidupCokowi2#",
-    role: "mahasiswa",
+    nama: 'Budi Santoso',
+    nim: '2488010071',     // 10 digit, pola ^2\d88\d{6}$
+    password: 'rahasia123',
+    role: 'mahasiswa',
   },
-  // ❌ User dosen DIHAPUS
+  {
+    id: 2,
+    nama: 'Sari Wulandari',
+    nim: '2488010072',
+    password: 'rahasia123',
+    role: 'mahasiswa',
+  },
 ];
 
 // Data dummy materi (untuk halaman /materi)
 export const MOCK_MATERI = [
   {
     id: 1,
-    judul: "Pengantar Algoritma",
-    deskripsi: "Konsep dasar algoritma dan flowchart.",
-    pengajar: "Dosen Pengampu",
+    judul: 'Pengantar Algoritma',
+    deskripsi: 'Konsep dasar algoritma dan flowchart.',
+    pengajar: 'Dosen Pengampu',
   },
   {
     id: 2,
-    judul: "Struktur Data Dasar",
-    deskripsi: "Array, linked list, stack, dan queue.",
-    pengajar: "Dosen Pengampu",
+    judul: 'Struktur Data Dasar',
+    deskripsi: 'Array, linked list, stack, dan queue.',
+    pengajar: 'Dosen Pengampu',
   },
   {
     id: 3,
-    judul: "Pemrograman Berorientasi Objek",
-    deskripsi: "Class, object, inheritance, polymorphism.",
-    pengajar: "Dosen Pengampu",
+    judul: 'Pemrograman Berorientasi Objek',
+    deskripsi: 'Class, object, inheritance, polymorphism.',
+    pengajar: 'Dosen Pengampu',
   },
 ];

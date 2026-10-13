@@ -82,16 +82,14 @@ export async function request(
   if (!response.ok) {
     let message =
       `Request gagal (${response.status})`;
-
-    if (
-      Array.isArray(data?.detail)
-    ) {
-      message = data.detail
-        .map(
-          (item) => item.msg
-        )
-        .join(', ');
-    } else if (
+      if (Array.isArray(data?.detail)) {
+  message = data.detail
+    .map((item) =>
+      item.msg.replace(/^Value error,\s*/, '')
+    )
+    .join(', ');
+}
+ else if (
       data?.detail
     ) {
       message = data.detail;

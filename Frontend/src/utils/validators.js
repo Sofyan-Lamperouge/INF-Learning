@@ -1,28 +1,9 @@
 const NIM_REGEX = /^2\d88\d{6}$/;
 
-//  NIP_REGISTRASI TELAS DIHAPUS
+
+// ❌ validateNamaLengkap DIHAPUS
 
 
-export function validateNamaLengkap(value) {
-  const nama = String(value ?? '').trim();
-
-  if (!nama) {
-    return 'Nama lengkap wajib diisi.';
-  }
-
-  if (nama.length < 3) {
-    return 'Nama lengkap minimal 3 karakter.';
-  }
-
-  if (nama.length > 100) {
-    return 'Nama lengkap maksimal 100 karakter.';
-  }
-
-  return '';
-}
-
-
-// ✅ Fungsi diganti nama & logika disederhanakan
 export function validateNim(value) {
   const nim = String(value ?? '').trim();
 

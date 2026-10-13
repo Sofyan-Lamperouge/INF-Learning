@@ -21,7 +21,7 @@ export async function login({ nim, password }) {
   const data = await request('/auth/login', {
     method: 'POST',
     body: JSON.stringify({
-      nomor_induk: nim,        // ← map ke backend
+      nomor_induk: nim,
       kata_sandi: password,
     }),
   });
@@ -42,26 +42,24 @@ export async function login({ nim, password }) {
 
 
 /* ============================================================
-   REGISTER
+   REGISTER (Aktivasi Akun)
    ============================================================ */
 export async function register({
-  namaLengkap,
   nim,
   password,
   konfirmasiPassword,
 }) {
   if (USE_MOCK) {
     return mockRegister({
-      namaLengkap,
       nim,
       password,
+      konfirmasiPassword,
     });
   }
 
   return request('/auth/registrasi', {
     method: 'POST',
     body: JSON.stringify({
-      nama: namaLengkap,
       nomor_induk: nim,
       kata_sandi: password,
       konfirmasi_kata_sandi: konfirmasiPassword,

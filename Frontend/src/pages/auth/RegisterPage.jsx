@@ -10,7 +10,6 @@ import ErrorMessage from '../../components/common/ErrorMessage.jsx';
 import SuccessMessage from '../../components/common/SuccessMessage.jsx';
 
 import {
-  validateNamaLengkap,
   validateNim,
   validatePassword,
   validateKonfirmasiPassword,
@@ -21,7 +20,6 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    namaLengkap: '',
     nim: '',
     password: '',
     konfirmasiPassword: '',
@@ -49,11 +47,9 @@ export default function RegisterPage() {
     setError('');
     setSuccess('');
 
-    const namaLengkap = form.namaLengkap.trim();
     const nim = form.nim.trim();
 
     const errors = [
-      validateNamaLengkap(namaLengkap),
       validateNim(nim),
       validatePassword(form.password),
       validateKonfirmasiPassword(
@@ -73,14 +69,13 @@ export default function RegisterPage() {
       setLoading(true);
 
       await register({
-        namaLengkap,
         nim,
         password: form.password,
         konfirmasiPassword: form.konfirmasiPassword,
       });
 
       setSuccess(
-        'Registrasi berhasil. Mengarahkan ke halaman login...'
+        'Aktivasi berhasil. Mengarahkan ke halaman login...'
       );
 
       setTimeout(() => {
@@ -91,7 +86,7 @@ export default function RegisterPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError('Registrasi gagal.');
+        setError('Aktivasi gagal.');
       }
     } finally {
       setLoading(false);
@@ -112,8 +107,12 @@ export default function RegisterPage() {
         <div className="auth-form-col">
 
           <h1 className="auth-title">
-            Get Started!
+            Aktivasi Akun
           </h1>
+
+          <p className="auth-subtitle">
+            Masukkan NIM dan buat password untuk mengaktifkan akunmu.
+          </p>
 
           <ErrorMessage message={error} />
           <SuccessMessage message={success} />
@@ -121,24 +120,13 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} noValidate>
 
             <InputField
-              label="Nama Lengkap"
-              name="namaLengkap"
-              value={form.namaLengkap}
-              onChange={handleChange}
-              placeholder="Masukkan nama lengkap"
-              required
-            />
-
-            <InputField
               label="NIM"
               name="nim"
               value={form.nim}
               onChange={handleChange}
-              placeholder="Masukkan NIM"
+              placeholder="Masukkan NIM (10 digit)"
               required
             />
-
-            {/* ❌ Field Email DIHAPUS */}
 
             <PasswordField
               label="Password"
@@ -161,7 +149,7 @@ export default function RegisterPage() {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Mendaftarkan...' : 'Daftar'}
+              {loading ? 'Mengaktifkan...' : 'Aktivasi'}
             </button>
 
           </form>

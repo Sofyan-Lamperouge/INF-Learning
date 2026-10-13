@@ -11,10 +11,9 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+
 /* ============================================================
    POST /auth/login
-   Request:  { nim, password }
-   Response: { token, role, user, expiresIn }
    ============================================================ */
 export async function mockLogin({ nim, password }) {
   await delay(DELAY);
@@ -32,32 +31,47 @@ export async function mockLogin({ nim, password }) {
     role: user.role,
     user: {
       id: user.id,
-      namaLengkap: user.namaLengkap,
-      nim: user.nim,
-      role: user.role,
+      nama: user.nama,
+      nomor_induk: user.nim,
+      peran: user.role,
+      status: 'aktif',
     },
     expiresIn: 3600,
   };
 }
 
+
 /* ============================================================
-   POST /auth/register
-   Request:  { namaLengkap, nim, password }
-   Response: { message, user }
+   POST /auth/registrasi (Aktivasi Akun)
    ============================================================ */
-export async function mockRegister({ namaLengkap, nim, password }) {
+export async function mockRegister({ nim, password, konfirmasiPassword }) {
   await delay(DELAY);
 
+  if (!/^2\d88\d{6}$/.test(nim)) {
+    throw new ApiError('Format NIM tidak dikenali', 422);
+  }
+
+  if (password !== konfirmasiPassword) {
+    throw new ApiError('Konfirmasi kata sandi tidak cocok', 422);
+  }
+
   const exists = MOCK_USERS.some((u) => u.nim === nim);
-  if (exists) {
-    throw new ApiError('NIM sudah terdaftar', 409);
+
+  // Simulasi: NIM belum terdaftar di mock → anggap tidak ada di database admin
+  if (!exists) {
+    throw new ApiError('NIM tidak terdaftar. Hubungi admin.', 404);
   }
 
   return {
-    message: 'Registrasi berhasil',
-    user: { namaLengkap, nim },
+    id: 1,
+    peran: 'mahasiswa',
+    nomor_induk: nim,
+    nama: 'Budi Santoso',
+    status: 'aktif',
+    dibuat_pada: new Date().toISOString(),
   };
 }
+
 
 /* ============================================================
    GET /auth/me
@@ -70,9 +84,14 @@ export async function mockGetMe(token) {
   }
 
   return {
-    user: { namaLengkap: 'Budi Santoso', role: 'mahasiswa' },
+    id: 1,
+    peran: 'mahasiswa',
+    nomor_induk: '2488010071',
+    nama: 'Budi Santoso',
+    status: 'aktif',
   };
 }
+
 
 /* ============================================================
    GET /materi
