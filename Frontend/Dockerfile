@@ -1,33 +1,32 @@
-# Stage 1: Build aplikasi
+# Stage 1: Build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package.json dan package-lock.json
-COPY package*.json ./
+# Copy package files saja dulu
+COPY package.json package-lock.json ./
 
-# Install dependensi (karena .dockerignore sudah ada, ini akan bersih)
-RUN npm ci
+# Install pakai npm install (bukan npm ci) — lebih toleran
+RUN npm install --no-audit --no-fund
 
-# Copy semua source code (kecuali yang ada di .dockerignore)
+# Force permission untuk semua binary
+RUN chmod -R +x node_modules/.bin/ || true
+
+# Copy source code (node_modules sudah di-exclude oleh .dockerignore)
 COPY . .
 
-# Build aplikasi Vite
+# Build
 RUN npm run build
 
-# Stage 2: Sajikan file statis
+# Stage 2: Serve
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Install 'serve' untuk menyajikan file statis
 RUN npm install -g serve
 
-# Copy hasil build dari stage pertama
 COPY --from=builder /app/dist ./dist
 
-# Expose port
 EXPOSE 3000
 
-# Jalankan serve untuk menyajikan folder dist
 CMD ["serve", "-s", "dist", "-l", "3000"]
