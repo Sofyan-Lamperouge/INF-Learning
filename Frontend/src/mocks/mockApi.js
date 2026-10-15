@@ -1,6 +1,4 @@
 // src/mocks/mockApi.js
-// Mock API — meniru respons backend untuk development.
-// Aktif hanya jika VITE_USE_MOCK=true.
 
 import { MOCK_USERS, MOCK_MATERI } from './users.js';
 import { ApiError } from '../services/api.js';
@@ -10,7 +8,6 @@ const DELAY = 800;
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 
 /* ============================================================
    POST /auth/login
@@ -40,11 +37,15 @@ export async function mockLogin({ nim, password }) {
   };
 }
 
-
 /* ============================================================
    POST /auth/registrasi (Aktivasi Akun)
+   ✅ Validasi konfirmasi kata sandi
    ============================================================ */
-export async function mockRegister({ nim, password, konfirmasiPassword }) {
+export async function mockRegister({
+  nim,
+  password,
+  konfirmasiPassword,
+}) {
   await delay(DELAY);
 
   if (!/^2\d88\d{6}$/.test(nim)) {
@@ -57,7 +58,6 @@ export async function mockRegister({ nim, password, konfirmasiPassword }) {
 
   const exists = MOCK_USERS.some((u) => u.nim === nim);
 
-  // Simulasi: NIM belum terdaftar di mock → anggap tidak ada di database admin
   if (!exists) {
     throw new ApiError('NIM tidak terdaftar. Hubungi admin.', 404);
   }
@@ -71,7 +71,6 @@ export async function mockRegister({ nim, password, konfirmasiPassword }) {
     dibuat_pada: new Date().toISOString(),
   };
 }
-
 
 /* ============================================================
    GET /auth/me
@@ -91,7 +90,6 @@ export async function mockGetMe(token) {
     status: 'aktif',
   };
 }
-
 
 /* ============================================================
    GET /materi

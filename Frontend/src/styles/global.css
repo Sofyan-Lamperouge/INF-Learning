@@ -5,11 +5,15 @@
 * {
   box-sizing: border-box;
 }
+
+/* ✅ KUNCI LAYAR: Body tidak boleh di-scroll */
 html, body, #root {
   height: 100%;
-}
-body {
   margin: 0;
+  overflow: hidden; 
+}
+
+body {
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: #f5fbff;
   color: #1a1a1a;
@@ -17,6 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 a {
   color: #2f9fe0;
   text-decoration: none;
@@ -25,51 +30,56 @@ a:hover { text-decoration: underline; }
 h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 /* ============================================================
-   HALAMAN AUTH (Login & Registrasi)
+   HALAMAN AUTH (Login & Registrasi) — LOCKED TO SCREEN
    ============================================================ */
+
 .auth-page {
-  min-height: 100vh;
+  height: 100vh;          /* Kunci tinggi pas 1 layar */
+  width: 100vw;           /* Kunci lebar pas 1 layar */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 1rem;
-  background:
-    radial-gradient(circle at 15% 20%, #d9edf9 0%, transparent 45%),
-    radial-gradient(circle at 85% 80%, #cfe9f8 0%, transparent 50%),
-    #eaf5fc;
+  padding: 1.5rem;
+  background-color: #eaf5fc;
+  overflow: hidden;       /* Cegah scroll di halaman auth */
 }
 
+/* Card utama */
 .auth-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
   width: 100%;
-  max-width: 860px;
-  max-height: 560px;
+  max-width: 1000px;
+  
+  /* ✅ KUNCI TINGGI CARD */
+  height: 100%;           
+  max-height: 820px;      /* Batas maksimal tinggi card */
+  min-height: 500px;      /* Batas minimal agar tidak terlalu pendek */
+  
   background: #ffffff;
-  border-radius: 22px;
-  padding: 1.75rem;
+  border-radius: 28px;
+  padding: 2rem;
   box-shadow: 0 20px 50px rgba(30, 90, 140, 0.08);
 }
 
-/* === MODIFIER REGISTER — tanpa subtitle, padding lebih lega === */
+/* Modifier register */
 .auth-card--register {
-  padding: 1.5rem 1.75rem;
-}
-.auth-card--register .auth-title {
-  margin-bottom: 1.5rem;
+  height: 100%;
+  max-height: 860px;      /* Sedikit lebih tinggi untuk akomodasi 3 field */
 }
 
 .auth-illustration {
   position: relative;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   background: linear-gradient(135deg, #e8f4fb 0%, #d6ecfa 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
+  height: 100%;
 }
+
 .auth-illustration img {
   width: 100%;
   height: 100%;
@@ -81,22 +91,39 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-form-col {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* Form di tengah vertikal */
   gap: 0.5rem;
+  height: 100%;
+  overflow-y: auto;        /* Jika layar sangat kecil, form bisa di-scroll DI DALAM card saja */
+  padding-right: 0.5rem;   /* Ruang untuk scrollbar dalam */
+}
+
+/* Menghilangkan scrollbar di dalam form (opsional, agar lebih rapi) */
+.auth-form-col::-webkit-scrollbar {
+  width: 6px;
+}
+.auth-form-col::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
 }
 
 /* === JUDUL & SUBTITLE === */
 .auth-title {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   text-align: center;
-  margin-bottom: 0.05rem;
+  margin-bottom: 0.25rem;
   color: #1a1a1a;
 }
+
+.auth-card--register .auth-title {
+  margin-bottom: 1.5rem;
+}
+
 .auth-subtitle {
   color: #6b7280;
-  margin: 0 0 1.8rem;
-  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
   font-weight: 400;
   text-align: center;
 }
@@ -104,20 +131,20 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 /* ============================================================
    FORM
    ============================================================ */
-.input-field { margin-bottom: 0.65rem; }
+.input-field { margin-bottom: 0.85rem; }
 .input-field label {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 .input-field input {
   width: 100%;
-  padding: 0.55rem 0.85rem;
+  padding: 0.7rem 1rem;
   border: 2px solid #7ec8f5;
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   background: #ffffff;
   color: #1a1a1a;
   outline: none;
@@ -146,26 +173,35 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 }
 .input-with-icon .icon-btn {
   position: absolute;
-  right: 0.65rem;
+  right: 0.85rem;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
   color: #6b7280;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+.input-with-icon .icon-btn:hover {
+  color: #2f9fe0;
 }
 
 /* Tombol utama */
 .btn-primary {
   width: 100%;
-  padding: 0.65rem 1rem;
+  padding: 0.8rem 1rem;
   border: none;
   border-radius: 12px;
   background: #7ec8f5;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   transition: background 0.15s ease;
 }
 .btn-primary:hover:not(:disabled) { background: #62b6e8; }
@@ -179,39 +215,20 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   border-radius: 8px;
   font-size: 0.85rem;
-  margin: 0.4rem 0;
-}
-.alert-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 0.7rem;
-  flex-shrink: 0;
+  margin: 0.5rem 0;
 }
 .alert-error {
   background: #fee2e2;
   color: #991b1b;
   border: 1px solid #fecaca;
 }
-.alert-error .alert-icon {
-  background: #dc2626;
-  color: #fff;
-}
 .alert-success {
   background: #dcfce7;
   color: #166534;
   border: 1px solid #bbf7d0;
-}
-.alert-success .alert-icon {
-  background: #16a34a;
-  color: #fff;
 }
 
 body > .alert-success {
@@ -227,117 +244,212 @@ body > .alert-success {
 
 /* Footer auth */
 .auth-footer {
-  margin-top: 0.9rem;
+  margin-top: 1.25rem;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #4b5563;
 }
 
-/* Halaman materi */
-.materi-page {
-  max-width: 720px;
-  margin: 3rem auto;
-  padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Laptop pendek (tinggi < 800px) */
+@media (max-height: 800px) and (min-width: 801px) {
+  .auth-card {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .auth-title { font-size: 1.6rem; }
+  .input-field { margin-bottom: 0.5rem; }
+}
+
+/* Tablet / Mobile */
+@media (max-width: 800px) {
+  .auth-page {
+    padding: 1rem;
+    height: auto;
+    overflow-y: auto;      /* Izinkan scroll di mobile */
+  }
+  
+  /* Di mobile, biarkan body di-scroll */
+  html, body, #root {
+    overflow: auto; 
+  }
+
+  .auth-card, 
+  .auth-card--register {
+    grid-template-columns: 1fr;
+    height: auto;         /* Lepas kunci tinggi */
+    max-height: none;
+    min-height: auto;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .auth-illustration {
+    height: 250px;
+  }
+  .auth-form-col {
+    overflow-y: visible; 
+  }
 }
 
 /* ============================================================
-   SKELETON (loading state) — minimalis, abu terang
+   SKELETON (Loading State) — Fit di Desktop 1440×1024
+   Prefix: sk- (skeleton)
    ============================================================ */
 
-.skeleton-block {
-  display: block;
-  background: #ececec;
-  border-radius: 12px;
-}
-
-.auth-page.skeleton-mode {
+/* === Halaman skeleton === */
+.sk-page {
   min-height: 100vh;
+  background: #ececec;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 1rem;
-  background: #f4f4f4;
+  padding: 2rem 1.5rem;
 }
 
-.auth-page.skeleton-mode .auth-card {
+/* === Card putih — UKURAN DIKUNCI === */
+.sk-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
   width: 100%;
-  max-width: 860px;
-  max-height: 560px;
+  max-width: 1000px;
+  height: auto;
+  max-height: 620px;
   background: #ffffff;
-  border-radius: 22px;
-  padding: 1.75rem;
+  border-radius: 28px;
+  padding: 2.25rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
-/* === MODIFIER REGISTER untuk skeleton === */
-.auth-page.skeleton-mode .auth-card--register {
-  padding: 1.5rem 1.75rem;
-}
-.auth-page.skeleton-mode .auth-card--register .title-bar {
-  margin-bottom: 1.5rem;
-}
-
-.auth-page.skeleton-mode .image-placeholder {
-  min-height: 100%;
-  border-radius: 16px;
+/* === Semua box skeleton === */
+.sk-box {
   background: #ececec;
+  border-radius: 10px;
 }
 
-.auth-page.skeleton-mode .auth-form-col {
+/* === KIRI: Ilustrasi === */
+.sk-illustration {
+  min-height: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+/* === KANAN: Form column === */
+.sk-form-col {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.auth-page.skeleton-mode .title-bar {
-  width: 70%;
-  height: 22px;
-  border-radius: 12px;
-  margin-bottom: 0.15rem;
-  margin-left: auto;
-  margin-right: auto;
+/* === Judul === */
+.sk-title {
+  width: 60%;
+  height: 28px;
+  border-radius: 14px;
+  margin: 0 auto 0.25rem;
 }
-.auth-page.skeleton-mode .subtitle-bar {
-  width: 55%;
-  height: 14px;
-  border-radius: 8px;
-  margin-bottom: 0.9rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-.auth-page.skeleton-mode .label-bar {
-  width: 28%;
-  height: 10px;
-  border-radius: 5px;
-  margin-bottom: 0.3rem;
-}
-.auth-page.skeleton-mode .field-bar {
-  width: 100%;
-  height: 40px;
-  border-radius: 20px;
-  margin-bottom: 0.65rem;
-}
-.auth-page.skeleton-mode .button-bar {
-  width: 100%;
-  height: 40px;
-  border-radius: 20px;
-  background: #e0e0e0;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.auth-page.skeleton-mode .footer-bar {
+
+/* === Subtitle === */
+.sk-subtitle {
   width: 45%;
-  height: 10px;
-  border-radius: 5px;
-  margin-top: 2.5rem;
-  margin-left: auto;
+  height: 16px;
+  border-radius: 8px;
+  margin: 0 auto 1.25rem;
+}
+
+/* === Label === */
+.sk-label {
+  width: 25%;
+  height: 12px;
+  border-radius: 6px;
+  margin-bottom: -0.25rem;
+}
+
+/* === Field (input) === */
+.sk-field {
+  width: 100%;
+  height: 42px;
+  border-radius: 21px;
+  margin-bottom: 0.25rem;
+}
+
+/* === Tombol === */
+.sk-button {
+  width: 100%;
+  height: 42px;
+  border-radius: 21px;
+  background: #e0e0e0;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* === Footer === */
+.sk-footer {
+  width: 55%;
+  height: 12px;
+  border-radius: 6px;
+  margin: 2rem auto 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablet: < 900px */
+@media (max-width: 900px) {
+  .sk-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    max-height: none;
+  }
+
+  .sk-illustration {
+    min-height: 200px;
+    height: 200px;
+  }
+
+  .sk-title,
+  .sk-subtitle {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .sk-title { width: 60%; }
+  .sk-subtitle { width: 45%; }
+
+  .sk-footer {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Desktop pendek: tinggi layar < 800px */
+@media (max-height: 800px) and (min-width: 901px) {
+  .sk-card {
+    max-height: 560px;
+    padding: 1.75rem;
+  }
+
+  .sk-illustration {
+    min-height: 460px;
+  }
+
+  .sk-field,
+  .sk-button {
+    height: 38px;
+  }
+
+  .sk-title {
+    height: 26px;
+  }
+
+  .sk-footer {
+    margin-top: 1.5rem;
+  }
 }
 
 /* ============================================================
@@ -2142,4 +2254,1927 @@ body > .alert-success {
   .ds-shadow-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ============================================================
+   FIELD ERROR — Error Per Field
+   Muncul di bawah input, bentuk pill merah kecil
+   ============================================================ */
+
+.field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  margin-top: 0.4rem;
+  margin-bottom: 0.65rem;
+  padding: 0.35rem 0.75rem;
+
+  background: #fee2e2;
+  border-radius: 999px;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+
+  animation: field-error-shake 0.3s ease-in-out;
+}
+
+.field-error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Animasi shake halus saat error muncul */
+@keyframes field-error-shake {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-3px); }
+  50%  { transform: translateX(3px); }
+  75%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+/* ============================================================
+   RESPONSIVE — Field Error
+   ============================================================ */
+@media (max-width: 700px) {
+  .field-error {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.65rem;
+  }
+}
+
+/* ============================================================
+   REGISTER PAGE — Compact Layout
+   Rapatkan spacing agar semua error muat di card
+   ============================================================ */
+
+/* === Card register: lebih longgar tinggi === */
+.auth-card--register {
+  padding: 1.25rem 1.5rem;
+  max-height: 620px;
+  gap: 1.25rem;
+}
+
+/* === Judul register: ukuran + margin bawah lebih lega === */
+.auth-card--register .auth-title {
+  font-size: 1.6rem;              /* ← dari 1.4rem → 1.6rem */
+  font-weight: 700;
+  text-align: center;
+  margin-top: 0;                  /* ← tambahan */
+  margin-bottom: 1.5rem;          /* ← dari 0.75rem → 1.5rem */
+}
+
+/* === Form column register: judul naik ke atas + gap rapat === */
+.auth-card--register .auth-form-col {
+  justify-content: flex-start;    /* ← KUNCI: judul naik ke atas */
+  padding-top: 0.5rem;             /* ← jarak dari atas card */
+  gap: 0.25rem;
+}
+
+/* === Field group register: lebih rapat === */
+.auth-card--register .input-field {
+  margin-bottom: 0.25rem;
+}
+
+/* === Label register: lebih kecil === */
+.auth-card--register .input-field label {
+  font-size: 0.75rem;
+  margin-bottom: 0.15rem;
+}
+
+/* === Input register: padding lebih kecil === */
+.auth-card--register .input-field input {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* === Field error register: lebih ringkas === */
+.auth-card--register .field-error {
+  margin-top: 0.2rem;
+  margin-bottom: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.7rem;
+}
+
+.auth-card--register .field-error-icon {
+  width: 12px;
+  height: 12px;
+  font-size: 0.55rem;
+}
+
+/* === Tombol register: lebih kecil === */
+.auth-card--register .btn-primary {
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* === Footer register === */
+.auth-card--register .auth-footer {
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+}
+
+/* === Responsive register === */
+@media (max-width: 900px) {
+  .auth-card--register {
+    padding: 1rem 1.25rem;
+    max-height: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .auth-card--register {
+    padding: 1rem;
+  }
+  .auth-card--register .auth-title {
+    font-size: 1.4rem;             /* ← dari 1.25rem → 1.4rem */
+    margin-bottom: 1.25rem;        /* ← tambahan */
+  }
+  .auth-card--register .auth-form-col {
+    padding-top: 0.25rem;          /* ← tambahan */
+  }
+}
+
+/* ============================================================
+   DASHBOARD LAYOUT — Sidebar + Content
+   ============================================================ */
+
+/* === Layout utama === */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+/* === Logo === */
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+/* === LOGO SIDEBAR (Teks) === */
+.sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-decoration: none;        /* ← TAMBAH: hilangkan garis default */
+}
+
+.sidebar-logo:hover {
+  text-decoration: none;        /* ← TAMBAH: hilangkan garis saat hover */
+}
+
+.sidebar-logo-text {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a4d7a;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-logo-accent {
+  color: #7ec8f5;
+  font-weight: 800;
+}
+
+.sidebar-logo-tagline {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 400;
+  line-height: 1.2;
+  text-decoration: none;        /* ← TAMBAH: jaga-jaga untuk tagline */
+}
+
+/* === Divider === */
+.sidebar-divider {
+  height: 1px;
+  background: #e5e7eb;
+  width: 100%;
+}
+
+/* ============================================================
+   SIDEBAR MENU
+   ============================================================ */
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+}
+
+.sidebar-menu-item:hover {
+  background: #f0f9ff;
+  color: #2f9fe0;
+  text-decoration: none;
+}
+
+/* === Active state === */
+.sidebar-menu-item--active {
+  background: #eaf5fc;
+  color: #2f9fe0;
+  font-weight: 600;
+}
+
+.sidebar-menu-item--active:hover {
+  background: #eaf5fc;
+}
+
+.sidebar-menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.sidebar-menu-label {
+  flex: 1;
+}
+
+/* ============================================================
+   SIDEBAR USER
+   ============================================================ */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-top: auto;
+}
+
+.sidebar-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* ============================================================
+   DASHBOARD CONTENT
+   ============================================================ */
+.dashboard-content {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
+
+  /* ✅ Background wave */
+  background-color: #f5f7fa;
+  background-image: url("/assets/background-wave.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.dashboard-main {
+  max-width: 1200px;
+}
+
+.dashboard-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem;
+}
+
+.dashboard-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE DASHBOARD
+   ============================================================ */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    min-height: auto;
+    position: static;
+    padding: 1rem 1.25rem;
+  }
+
+  .sidebar-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .sidebar-menu-item {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .sidebar-menu-label {
+    display: none;
+  }
+
+  .sidebar-user {
+    margin-top: 0.5rem;
+  }
+
+  .dashboard-content {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* ============================================================
+   PASSWORD STRENGTH METER
+   Bar indikator + checklist persyaratan password
+   ============================================================ */
+
+.password-strength {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.password-strength-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.4rem;
+}
+
+.password-strength-bars {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.password-strength-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #e5e7eb;
+  transition: background 0.3s ease;
+}
+
+/* Warna bar sesuai kekuatan */
+.password-strength--weak .password-strength-bar.active {
+  background: #fbbf24;           /* kuning */
+}
+
+.password-strength--strong .password-strength-bar.active {
+  background: #16a34a;           /* hijau */
+}
+
+.password-strength--empty .password-strength-bar.active {
+  background: #e5e7eb;           /* abu */
+}
+
+/* Checklist */
+.password-strength-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.password-strength-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.password-strength-checklist li.checked {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.password-strength-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.password-strength-checklist li.checked .password-strength-check {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+@media (max-width: 700px) {
+  .password-strength-checklist li {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================================
+   SKELETON LOADING — Versi Tampil Lama + Shimmer Animation
+   Prefix: sl- (skeleton loading)
+   ============================================================ */
+
+.sl-page {
+  min-height: 100vh;
+  background: #f5fbff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.sl-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 900px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* === SHIMMER ANIMATION (acuan dari HTML) === */
+.sl-skeleton {
+  border-radius: 8px;
+
+  background: linear-gradient(
+    90deg,
+    #ececec 25%,
+    #f5f5f5 37%,
+    #ececec 63%
+  );
+  background-size: 400% 100%;
+  animation: sl-shimmer 1.4s ease infinite;
+}
+
+@keyframes sl-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* === ILUSTRASI (kiri) === */
+.sl-illustration {
+  height: 400px;
+  border-radius: 16px;
+}
+
+/* === FORM COLUMN (kanan) === */
+.sl-form-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* === UKURAN BAR === */
+.sl-title-bar {
+  width: 70%;
+  height: 28px;
+  margin: 0 auto 0.5rem;
+}
+
+.sl-subtitle-bar {
+  width: 55%;
+  height: 16px;
+  margin: 0 auto 1.5rem;
+}
+
+.sl-label-bar {
+  width: 30%;
+  height: 12px;
+  margin-bottom: 0.25rem;
+}
+
+.sl-field-bar {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 0.5rem;
+}
+
+.sl-button-bar {
+  width: 100%;
+  height: 44px;
+  margin-top: 0.5rem;
+
+  /* Tombol: gradien sedikit lebih gelap */
+  background: linear-gradient(
+    90deg,
+    #d9d9d9 25%,
+    #e5e5e5 37%,
+    #d9d9d9 63%
+  );
+  background-size: 400% 100%;
+  animation: sl-shimmer 1.4s ease infinite;
+}
+
+.sl-footer-bar {
+  width: 50%;
+  height: 12px;
+  margin: 2rem auto 0;
+}
+
+/* === TOMBOL DISMISS (opsional) === */
+.sl-dismiss-btn {
+  background: #7ec8f5;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sl-dismiss-btn:hover {
+  background: #62b6e8;
+}
+
+/* === AKSESIBILITAS: hormati preferensi user === */
+@media (prefers-reduced-motion: reduce) {
+  .sl-skeleton,
+  .sl-button-bar {
+    animation: none;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 700px) {
+  .sl-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .sl-illustration {
+    height: 200px;
+  }
+}
+
+/* ============================================================
+   DASHBOARD HEADER — Judul + Search Bar
+   ============================================================ */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 0;
+}
+
+.dashboard-header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* === Search Bar === */
+.dashboard-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+}
+
+.dashboard-search-icon {
+  position: absolute;
+  left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.dashboard-search-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 1rem 0 2.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: #ffffff;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dashboard-search-input::placeholder {
+  color: #9ca3af;
+}
+
+.dashboard-search-input:focus {
+  border-color: #7ec8f5;
+  box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.25);
+}
+
+
+/* ============================================================
+   MAIN PANEL — Panel Biru dengan Welcome + Statistik
+   ============================================================ */
+
+.main-panel {
+  background: linear-gradient(135deg, #7ec8f5 0%, #5cb8e8 100%);
+  border-radius: 20px;
+  padding: 1.75rem;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(92, 184, 232, 0.25);
+}
+
+/* === Row atas: Welcome + Tombol Upload === */
+.main-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.main-panel-welcome {
+  flex: 1;
+  min-width: 0;
+}
+
+.main-panel-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+}
+
+.main-panel-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* === Tombol Upload === */
+.btn-upload {
+  background: #ffffff;
+  color: #2f9fe0;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-upload:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* === Row bawah: 3 Kartu Statistik === */
+.main-panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* === Kartu Statistik === */
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  color: #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #eaf5fc 0%, #d6ecfa 100%);
+  color: #2f9fe0;
+  flex-shrink: 0;
+}
+
+.stat-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.stat-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.stat-card-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.stat-card-subtitle {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+
+/* ============================================================
+   RESPONSIVE — Dashboard
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .dashboard-search {
+    max-width: 100%;
+  }
+
+  .main-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-upload {
+    width: 100%;
+  }
+
+  .main-panel-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .main-panel {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .main-panel-title {
+    font-size: 1.15rem;
+  }
+
+  .stat-card {
+    padding: 0.85rem 1rem;
+  }
+
+  .stat-card-value {
+    font-size: 1.25rem;
+  }
+}
+
+/* ============================================================
+   SIDEBAR — Tombol Keluar
+   ============================================================ */
+
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+  width: 100%;
+}
+
+.sidebar-logout:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.sidebar-logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.sidebar-logout-label {
+  flex: 1;
+}
+
+
+/* ============================================================
+   SIDEBAR USER — Tanpa border (sesuai desain baru)
+   ============================================================ */
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin-top: auto;
+}
+
+.sidebar-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7ec8f5 0%, #4ea8e0 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+
+/* ============================================================
+   REKAP CARD — Materi, Kuis, Mahasiswa
+   ============================================================ */
+
+.rekap-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem 1.75rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.rekap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.rekap-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.rekap-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2f9fe0;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.rekap-link:hover {
+  color: #1e7ab8;
+  text-decoration: underline;
+}
+
+.rekap-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin-bottom: 1.25rem;
+}
+
+/* === Body: Empty state === */
+.rekap-body {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.rekap-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.rekap-empty-icon {
+  color: #4b5563;
+  opacity: 0.6;
+}
+
+.rekap-empty-text {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+  text-align: center;
+}
+
+/* === Tombol Tambah === */
+.btn-tambah {
+  background: #7ec8f5;
+  color: #ffffff;
+  padding: 0.55rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+  display: inline-block;
+}
+
+.btn-tambah:hover {
+  background: #62b6e8;
+  text-decoration: none;
+}
+
+/* === List (kalau ada data) === */
+.rekap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.rekap-list-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.rekap-list-item:last-child {
+  border-bottom: none;
+}
+
+
+/* ============================================================
+   TABEL MAHASISWA
+   ============================================================ */
+
+.tabel-mahasiswa {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.tabel-mahasiswa thead th {
+  text-align: left;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1.5px solid #e5e7eb;
+  font-size: 0.8rem;
+}
+
+.tabel-mahasiswa tbody td {
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #4b5563;
+  font-size: 0.85rem;
+}
+
+.tabel-mahasiswa tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabel-mahasiswa tbody tr:hover {
+  background: #f9fafb;
+}
+
+
+/* ============================================================
+   DASHBOARD BOTTOM GRID — 2 kolom
+   ============================================================ */
+
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .rekap-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .tabel-mahasiswa {
+    font-size: 0.75rem;
+  }
+
+  .tabel-mahasiswa thead th,
+  .tabel-mahasiswa tbody td {
+    padding: 0.5rem 0.35rem;
+  }
+}
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+
+.landing-wrapper {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4fbfd; /* Warna latar biru sangat muda */
+  min-height: 100vh;
+}
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* === NAVBAR === */
+.landing-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.landing-logo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a4d7a;
+  text-decoration: none;
+}
+.landing-logo span {
+  color: #7ec8f5;
+}
+
+.landing-nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.landing-nav-links a {
+  text-decoration: none;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.landing-nav-links a:hover {
+  color: #2f9fe0;
+}
+
+.landing-nav-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-login-outline {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 8px;
+  color: #2f9fe0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.btn-login-outline:hover {
+  background-color: #eaf5fc;
+}
+
+.btn-register-solid {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 8px;
+  background-color: #7ec8f5;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.btn-register-solid:hover {
+  background-color: #62b6e8;
+  border-color: #62b6e8;
+}
+
+/* === HERO SECTION === */
+.landing-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5rem 2rem;
+  gap: 4rem;
+}
+
+.landing-hero-text {
+  flex: 1;
+}
+
+.landing-badge {
+  display: inline-block;
+  background-color: #eaf5fc;
+  color: #2f9fe0;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.landing-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.landing-title .text-accent {
+  color: #7ec8f5;
+}
+
+.landing-desc {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.btn-hero {
+  display: inline-block;
+  background-color: #7ec8f5;
+  color: #ffffff;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-hero:hover {
+  background-color: #62b6e8;
+}
+
+.landing-hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+.landing-hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* === KEUNGGULAN === */
+.landing-features {
+  padding: 4rem 2rem;
+}
+
+.landing-section-header {
+  margin-bottom: 3rem;
+}
+
+.landing-subtitle {
+  display: block;
+  color: #2f9fe0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.landing-section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.landing-section-desc {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background-color: #eaf5fc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.feature-item h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.feature-item p {
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* === TENTANG === */
+.landing-about {
+  background-color: #eaf5fc;
+  padding: 5rem 2rem;
+  margin-top: 2rem;
+}
+
+.landing-about-inner {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.landing-about-text {
+  flex: 1;
+}
+
+.landing-about-icon {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  opacity: 0.6;
+}
+.landing-about-icon svg {
+  width: 300px;
+  height: 300px;
+}
+
+/* === RESPONSIVE LANDING === */
+@media (max-width: 900px) {
+  .landing-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem 1rem;
+    gap: 2rem;
+  }
+  .landing-desc {
+    margin: 0 auto 2rem;
+  }
+  .landing-hero-image {
+    justify-content: center;
+  }
+  .landing-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .landing-about-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .landing-nav-links {
+    display: none; /* Sembunyikan menu di mobile */
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-title {
+    font-size: 2.2rem;
+  }
+  .landing-features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+
+/* 1. BACKGROUND BIRU MUDA */
+.landing-wrapper {
+  font-family: 'Poppins', sans-serif;
+  background-color: #CDEEFF;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* 2. NAVBAR FLOATING (BUBBLE) */
+.landing-header-wrapper {
+  width: 100%;
+  padding: 1.5rem 2rem 0; /* Jarak atas, kiri, kanan */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.landing-header {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff; /* Putih */
+  border-radius: 16px;       /* Sudut membulat */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05); /* Bayangan */
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  padding: 0 2rem;
+}
+
+.landing-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a4d7a;
+  text-decoration: none;
+}
+.landing-logo span {
+  color: #7ec8f5;
+}
+
+.landing-nav-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.landing-nav-links a {
+  text-decoration: none;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.landing-nav-links a:hover {
+  color: #2f9fe0;
+}
+
+.landing-nav-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-login-outline {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 8px;
+  color: #2f9fe0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.btn-login-outline:hover {
+  background-color: #eaf5fc;
+}
+
+.btn-register-solid {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #7ec8f5;
+  border-radius: 8px;
+  background-color: #7ec8f5;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.btn-register-solid:hover {
+  background-color: #62b6e8;
+  border-color: #62b6e8;
+}
+
+/* 3. HERO SECTION */
+.landing-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6rem 2rem;
+  gap: 4rem;
+}
+
+.landing-hero-text {
+  flex: 1;
+}
+
+.landing-badge {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #2f9fe0;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.landing-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.landing-title .text-accent {
+  color: #7ec8f5;
+}
+
+.landing-desc {
+  font-size: 1.1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.btn-hero {
+  display: inline-block;
+  background-color: #7ec8f5;
+  color: #ffffff;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-hero:hover {
+  background-color: #62b6e8;
+}
+
+.landing-hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+.landing-hero-image img {
+  max-width: 100%;
+  height: auto;
+  max-height: 500px;
+}
+
+/* 4. KEUNGGULAN */
+.landing-features {
+  padding: 4rem 2rem;
+}
+
+.landing-section-header {
+  margin-bottom: 3rem;
+}
+
+.landing-subtitle {
+  display: block;
+  color: #2f9fe0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.landing-section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.landing-section-desc {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.feature-item h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.feature-item p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* 5. TENTANG SECTION */
+.landing-about {
+  background-color: #ffffff;
+  padding: 6rem 2rem;
+  border-radius: 40px 40px 0 0; /* Lengkungan di atas */
+}
+
+.landing-about-inner {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.landing-about-text {
+  flex: 1;
+}
+
+.landing-about-cards {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.about-card {
+  background: #f5fbff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.about-card-title {
+  color: #2f9fe0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.about-card-desc {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* 6. FAQ SECTION */
+.landing-faq {
+  padding: 6rem 2rem;
+  background-color: #ffffff;
+}
+
+.landing-faq-inner {
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+}
+
+.landing-faq-text {
+  flex: 1;
+  position: sticky;
+  top: 120px;
+}
+
+.landing-faq-list {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faq-item {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  border: 1px solid #eaf5fc;
+  transition: all 0.3s ease;
+}
+
+.faq-item.active {
+  border-color: #7ec8f5;
+  box-shadow: 0 8px 24px rgba(126, 200, 245, 0.15);
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.faq-icon {
+  color: #9ca3af;
+  transition: transform 0.3s;
+}
+
+.faq-item.active .faq-icon {
+  color: #7ec8f5;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  margin-top: 1rem;
+}
+
+.faq-answer p {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* 7. FOOTER */
+.landing-footer {
+  background-color: #3b82f6;
+  color: #ffffff;
+  padding: 4rem 2rem 2rem;
+  border-radius: 40px 40px 0 0;
+}
+
+.landing-footer-inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+.footer-logo span {
+  color: #bae6fd;
+}
+
+.footer-desc {
+  color: #bfdbfe;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.footer-links h4,
+.footer-contact h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.footer-links a {
+  display: block;
+  color: #bfdbfe;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+}
+
+.footer-contact p {
+  color: #bfdbfe;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-bottom {
+  border-top: 1px solid #60a5fa;
+  padding-top: 2rem;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: #bfdbfe;
+  font-size: 0.85rem;
+}
+
+/* 8. RESPONSIVE */
+@media (max-width: 900px) {
+  .landing-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  .landing-desc {
+    margin: 0 auto 2rem;
+  }
+  .landing-hero-image {
+    justify-content: center;
+  }
+  .landing-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .landing-about-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .landing-nav-links {
+    display: none;
+  }
+  .landing-faq-inner {
+    flex-direction: column;
+  }
+  .landing-footer-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .footer-desc {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-header-wrapper { padding: 1rem 1rem 0; }
+  .landing-title { font-size: 2.2rem; }
+  .landing-section-title { font-size: 1.8rem; }
+  .landing-features-grid { grid-template-columns: 1fr; }
 }

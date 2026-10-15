@@ -23,12 +23,12 @@ Backend harus mengizinkan origin:
 
 ## Endpoints
 
-### 1. `POST /auth/register`
+### 1. POST `/auth/registrasi`
 
-**Request:**
+**Request Body:**
 ```json
 {
-  "namaLengkap": "Budi Santoso",
-  "nimNip": "20240101",
-  "password": "HidupCokowi2#"
+  "nomor_induk": "20240101",
+  "kata_sandi": "HidupCokowi2#",
+  "konfirmasi_kata_sandi": "HidupCokowi2#"
 }

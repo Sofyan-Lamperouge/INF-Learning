@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { login } from '../../services/authService.js';
@@ -9,8 +9,9 @@ import InputField from '../../components/common/InputField.jsx';
 import PasswordField from '../../components/common/PasswordField.jsx';
 import ErrorMessage from '../../components/common/ErrorMessage.jsx';
 import SuccessMessage from '../../components/common/SuccessMessage.jsx';
+import LoginSkeleton from '../../components/skeletons/LoginSkeleton.jsx';
 
-import { validateNim } from '../../utils/validators.js';
+import { validateNimLogin } from '../../utils/validators.js';
 
 
 export default function LoginPage() {
@@ -22,9 +23,21 @@ export default function LoginPage() {
     password: '',
   });
 
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({
+    nim: '',
+    password: '',
+  });
+
+  const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [booting, setBooting] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setBooting(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -34,29 +47,32 @@ export default function LoginPage() {
       [name]: value,
     }));
 
-    if (error) setError('');
+    setErrors((current) => ({
+      ...current,
+      [name]: '',
+    }));
+
+    if (serverError) setServerError('');
     if (success) setSuccess('');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    setError('');
+    setServerError('');
     setSuccess('');
 
     const nim = form.nim.trim();
 
-    const errors = [
-      validateNim(nim),
-      form.password ? '' : 'Password wajib diisi.',
-    ];
+    const newErrors = {
+      nim: validateNimLogin(nim),
+      password: form.password ? '' : 'Password wajib diisi.',
+    };
 
-    const firstError = errors.find(Boolean);
+    setErrors(newErrors);
 
-    if (firstError) {
-      setError(firstError);
-      return;
-    }
+    const hasError = Object.values(newErrors).some(Boolean);
+    if (hasError) return;
 
     try {
       setLoading(true);
@@ -78,17 +94,25 @@ export default function LoginPage() {
 
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
+        setServerError(err.message);
       } else {
-        setError('Gagal terhubung ke server, periksa koneksi Anda.');
+        setServerError('Gagal terhubung ke server, periksa koneksi Anda.');
       }
     } finally {
       setLoading(false);
     }
   }
 
+  if (booting) {
+    return <LoginSkeleton />;
+  }
+
+  // ... kode di atasnya tetap sama ...
+
   return (
     <main className="auth-page">
+      {/* ❌ TAG <img> BACKGROUND SUDAH DIHAPUS */}
+
       <div className="auth-card">
 
         <div className="auth-illustration">
@@ -99,7 +123,6 @@ export default function LoginPage() {
         </div>
 
         <div className="auth-form-col">
-
           <h1 className="auth-title">
             Welcome Back!
           </h1>
@@ -108,27 +131,36 @@ export default function LoginPage() {
             Masuk untuk mulai belajar.
           </p>
 
-          <ErrorMessage message={error} />
           <SuccessMessage message={success} />
+          {serverError && <ErrorMessage message={serverError} />}
 
           <form onSubmit={handleSubmit} noValidate>
-
+            {/* Field NIM/NIP */}
             <InputField
-              label="NIM"
+              label="NIM/NIP"
               name="nim"
               value={form.nim}
               onChange={handleChange}
               placeholder="Contoh: 24880100XX"
+              error={errors.nim}
               required
             />
+            {errors.nim && (
+              <ErrorMessage message={errors.nim} variant="field" />
+            )}
 
+            {/* Field Password */}
             <PasswordField
               label="Password"
               name="password"
               value={form.password}
               onChange={handleChange}
               placeholder="Masukkan Password"
+              error={errors.password}
             />
+            {errors.password && (
+              <ErrorMessage message={errors.password} variant="field" />
+            )}
 
             <button
               className="btn-primary"
@@ -137,14 +169,12 @@ export default function LoginPage() {
             >
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
-
           </form>
 
           <p className="auth-footer">
-            Belum punya akun?{' '}
-            <Link to="/register">Buat di sini</Link>
+            Belum punya akun? <b>Buat</b>{' '}
+            <Link to="/register"> di sini</Link>
           </p>
-
         </div>
       </div>
     </main>

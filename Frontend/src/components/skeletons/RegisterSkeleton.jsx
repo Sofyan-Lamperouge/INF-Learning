@@ -1,31 +1,36 @@
 export default function RegisterSkeleton() {
   return (
     <main
-      className="auth-page skeleton-mode"
+      className="sk-page"
       role="status"
       aria-label="Memuat halaman registrasi"
     >
-      <div className="auth-card">
-        <div className="image-placeholder skeleton-block"></div>
+      <div className="sk-card">
+        {/* KIRI: kotak besar (ilustrasi) */}
+        <div className="sk-box sk-illustration"></div>
 
-        <div className="auth-form-col">
-          <span className="skeleton-block title-bar"></span>
-          <span className="skeleton-block subtitle-bar"></span>
+        {/* KANAN: form skeleton */}
+        <div className="sk-form-col">
+          {/* Judul saja */}
+          <div className="sk-box sk-title"></div>
 
           {/* Field 1 — NIM */}
-          <span className="skeleton-block label-bar"></span>
-          <span className="skeleton-block field-bar"></span>
+          <div className="sk-box sk-label"></div>
+          <div className="sk-box sk-field"></div>
 
           {/* Field 2 — Password */}
-          <span className="skeleton-block label-bar"></span>
-          <span className="skeleton-block field-bar"></span>
+          <div className="sk-box sk-label"></div>
+          <div className="sk-box sk-field"></div>
 
-          {/* Field 3 — Konfirmasi Password */}
-          <span className="skeleton-block label-bar"></span>
-          <span className="skeleton-block field-bar"></span>
+          {/* ✅ Field 3 — Konfirmasi Password (KEMBALI) */}
+          <div className="sk-box sk-label"></div>
+          <div className="sk-box sk-field"></div>
 
-          <span className="skeleton-block button-bar"></span>
-          <span className="skeleton-block footer-bar"></span>
+          {/* Tombol */}
+          <div className="sk-box sk-button"></div>
+
+          {/* Footer */}
+          <div className="sk-box sk-footer"></div>
         </div>
       </div>
     </main>
