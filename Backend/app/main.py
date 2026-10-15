@@ -37,3 +37,7 @@ def health():
     except Exception as e:
         db_status = f"error: {e}"
     return {"status": "ok", "database": db_status}
+
+from app.api.v1 import auth, materi  
+
+app.include_router(materi.router, prefix="/api/v1")
