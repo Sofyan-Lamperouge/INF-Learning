@@ -16,7 +16,32 @@ from app.core.config import settings
 from app.models import *  # noqa: F401, F403
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+
+
+# ============================================================
+# Normalisasi URL (sama seperti di app/db/session.py)
+# ============================================================
+def _normalisasi_url(url: str) -> str:
+    if not url or not url.strip():
+        raise ValueError(
+            "DATABASE_URL kosong. Pastikan environment variable sudah di-set."
+        )
+    url = url.strip()
+
+    # mysql:// → mysql+pymysql://
+    if url.startswith("mysql://"):
+        url = url.replace("mysql://", "mysql+pymysql://", 1)
+
+    # Tambah charset kalau belum ada
+    if "charset" not in url:
+        separator = "&" if "?" in url else "?"
+        url = f"{url}{separator}charset=utf8mb4"
+
+    return url
+
+
+# Override URL dari settings (yang sudah dinormalisasi)
+config.set_main_option("sqlalchemy.url", _normalisasi_url(settings.DATABASE_URL))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
