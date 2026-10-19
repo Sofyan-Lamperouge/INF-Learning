@@ -1,3 +1,4 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -5,7 +6,12 @@ class Settings(BaseSettings):
     APP_NAME: str = "INF-Learning"
     APP_ENV: str = "development"
     APP_PORT: int = 8000
-    DATABASE_URL: str
+
+    # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
+    DATABASE_URL: str = Field(
+        validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL")
+    )
+
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
