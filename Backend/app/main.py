@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.db.session import engine
 
 # Import semua router di satu tempat
-from app.api.v1 import auth, materi, admin
+from app.api.v1 import auth, materi, admin, mahasiswa
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -27,6 +27,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(materi.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(mahasiswa.router, prefix="/api/v1") # ← TAMBAHKAN BARIS INI
 
 
 @app.get("/", tags=["root"])

@@ -18,7 +18,6 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 )
 def get_dashboard(
     db: Session = Depends(get_db),
-    # Parameter ini memastikan hanya admin yang bisa lewat
-    admin: Pengguna = Depends(require_role("admin")), 
+    admin: Pengguna = Depends(require_role("admin")),
 ):
     return admin_service.get_dashboard_stats(db)

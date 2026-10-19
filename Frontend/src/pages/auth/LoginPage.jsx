@@ -10,8 +10,7 @@ import PasswordField from '../../components/common/PasswordField.jsx';
 import ErrorMessage from '../../components/common/ErrorMessage.jsx';
 import SuccessMessage from '../../components/common/SuccessMessage.jsx';
 
-import { validateNim } from '../../utils/validators.js';
-
+// ❌ HAPUS IMPORT validateNim
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -28,27 +27,25 @@ export default function LoginPage() {
 
   function handleChange(event) {
     const { name, value } = event.target;
-
     setForm((current) => ({
       ...current,
       [name]: value,
     }));
-
     if (error) setError('');
     if (success) setSuccess('');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setError('');
     setSuccess('');
 
     const nim = form.nim.trim();
 
+    // ✅ VALIDASI BARU: Hanya cek kosong
     const errors = [
-      validateNim(nim),
-      form.password ? '' : 'Password wajib diisi.',
+      !nim ? 'NIM atau ID Admin wajib diisi.' : '',
+      !form.password ? 'Password wajib diisi.' : '',
     ];
 
     const firstError = errors.find(Boolean);
@@ -66,14 +63,19 @@ export default function LoginPage() {
         password: form.password,
       });
 
-      setSuccess(
-        'Login Berhasil! Selamat datang kembali, Kamu akan diarahkan ke halaman utama.'
-      );
+      setSuccess('Login Berhasil! Kamu akan diarahkan...');
 
-      loginSuccess(result.token, result.role);
+      // Simpan sesi login
+      loginSuccess(result.token, result.role, result.user);
 
+      // ✅ LOGIKA REDIRECT: Beda halaman untuk Admin dan Mahasiswa
       setTimeout(() => {
-        navigate('/materi', { replace: true });
+        if (result.role === 'admin') {
+          navigate('/admin/dashboard', { replace: true }); 
+          // Sesuaikan '/admin/dashboard' dengan route frontend kamu nanti
+        } else {
+          navigate('/materi', { replace: true });
+        }
       }, 800);
 
     } catch (err) {
@@ -92,33 +94,26 @@ export default function LoginPage() {
       <div className="auth-card">
 
         <div className="auth-illustration">
-          <img
-            src="/assets/INF.png"
-            alt="INF-Learning"
-          />
+          <img src="/assets/INF.png" alt="INF-Learning" />
         </div>
 
         <div className="auth-form-col">
 
-          <h1 className="auth-title">
-            Welcome Back!
-          </h1>
-
-          <p className="auth-subtitle">
-            Masuk untuk mulai belajar.
-          </p>
+          <h1 className="auth-title">Welcome Back!</h1>
+          <p className="auth-subtitle">Masuk untuk mulai belajar.</p>
 
           <ErrorMessage message={error} />
           <SuccessMessage message={success} />
 
           <form onSubmit={handleSubmit} noValidate>
 
+            {/* ✅ Ubah label & placeholder agar Admin tahu bisa login di sini */}
             <InputField
-              label="NIM"
+              label="NIM / ID Admin"
               name="nim"
               value={form.nim}
               onChange={handleChange}
-              placeholder="Contoh: 24880100XX"
+              placeholder="Masukkan NIM atau ID Admin"
               required
             />
 
@@ -130,19 +125,14 @@ export default function LoginPage() {
               placeholder="Masukkan Password"
             />
 
-            <button
-              className="btn-primary"
-              type="submit"
-              disabled={loading}
-            >
+            <button className="btn-primary" type="submit" disabled={loading}>
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
 
           </form>
 
           <p className="auth-footer">
-            Belum punya akun?{' '}
-            <Link to="/register">Buat di sini</Link>
+            Belum punya akun? <Link to="/register">Buat di sini</Link>
           </p>
 
         </div>
