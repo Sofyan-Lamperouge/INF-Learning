@@ -4,7 +4,9 @@ from sqlalchemy import text
 
 from app.core.config import settings
 from app.db.session import engine
-from app.api.v1 import auth 
+
+# Import semua router di satu tempat
+from app.api.v1 import auth, materi, admin
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -21,7 +23,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Daftarkan semua router
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(materi.router, prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")
+
 
 @app.get("/", tags=["root"])
 def root():
@@ -37,7 +43,3 @@ def health():
     except Exception as e:
         db_status = f"error: {e}"
     return {"status": "ok", "database": db_status}
-
-from app.api.v1 import auth, materi  
-
-app.include_router(materi.router, prefix="/api/v1")
