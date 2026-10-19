@@ -1,33 +1,38 @@
+// src/components/skeletons/LoginSkeleton.jsx
+//
+// Skeleton halaman LOGIN — muncul saat loading.
+// Layout: ilustrasi kiri, form kanan.
+// Fit di viewport desktop 1440×1024.
+
 export default function LoginSkeleton() {
   return (
-    <main
-      className="auth-page skeleton-mode"
-      role="status"
-      aria-label="Memuat halaman login"
-    >
-      <div className="auth-card">
-        {/* Kiri: kotak abu besar (ilustrasi) */}
-        <div className="image-placeholder skeleton-block"></div>
+    <main className="sk-page" role="status" aria-label="Memuat halaman login">
+      <div className="sk-card">
 
-        {/* Kanan: form skeleton */}
-        <div className="auth-form-col">
-          {/* Bar judul + subjudul */}
-          <span className="skeleton-block title-bar"></span>
-          <span className="skeleton-block subtitle-bar"></span>
+        {/* KIRI: kotak besar (ilustrasi) */}
+        <div className="sk-box sk-illustration"></div>
+
+        {/* KANAN: form skeleton */}
+        <div className="sk-form-col">
+
+          {/* Judul + subtitle */}
+          <div className="sk-box sk-title"></div>
+          <div className="sk-box sk-subtitle"></div>
 
           {/* Field 1 */}
-          <span className="skeleton-block label-bar"></span>
-          <span className="skeleton-block field-bar"></span>
+          <div className="sk-box sk-label"></div>
+          <div className="sk-box sk-field"></div>
 
           {/* Field 2 */}
-          <span className="skeleton-block label-bar"></span>
-          <span className="skeleton-block field-bar"></span>
+          <div className="sk-box sk-label"></div>
+          <div className="sk-box sk-field"></div>
 
           {/* Tombol */}
-          <span className="skeleton-block button-bar"></span>
+          <div className="sk-box sk-button"></div>
 
           {/* Footer */}
-          <span className="skeleton-block footer-bar"></span>
+          <div className="sk-box sk-footer"></div>
+
         </div>
       </div>
     </main>

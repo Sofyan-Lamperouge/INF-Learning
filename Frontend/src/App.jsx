@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import LandingPage from './pages/LandingPage.jsx';          // ✅ IMPORT BARU
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import MateriListPage from './pages/materi/MateriListPage.jsx';
@@ -26,12 +27,21 @@ import MateriMockupPage from './pages/mockup/MateriMockupPage.jsx';
 // Design System
 import DesignSystemPage from './pages/DesignSystemPage.jsx';
 
+// Dashboard pages
+import DashboardPage from './pages/dashboard/DashboardPage.jsx';
+import MateriPage from './pages/dashboard/MateriPage.jsx';
+import KuisPage from './pages/dashboard/KuisPage.jsx';
+import MahasiswaPage from './pages/dashboard/MahasiswaPage.jsx';
+
+// ✅ Preview Skeleton
+import PreviewSkeletonPage from './pages/PreviewSkeletonPage.jsx';
+
 
 export default function App() {
   return (
     <Routes>
-      {/* Redirect */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* === LANDING PAGE (Pintu Masuk) === */}
+      <Route path="/" element={<LandingPage />} />
 
       {/* === HALAMAN FINAL === */}
       <Route path="/login" element={<LoginPage />} />
@@ -41,6 +51,40 @@ export default function App() {
         element={
           <ProtectedRoute>
             <MateriListPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* === DASHBOARD === */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/materi"
+        element={
+          <ProtectedRoute>
+            <MateriPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/kuis"
+        element={
+          <ProtectedRoute>
+            <KuisPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/mahasiswa"
+        element={
+          <ProtectedRoute>
+            <MahasiswaPage />
           </ProtectedRoute>
         }
       />
@@ -66,8 +110,11 @@ export default function App() {
       {/* === DESIGN SYSTEM === */}
       <Route path="/design-system" element={<DesignSystemPage />} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* ✅ === PREVIEW SKELETON === */}
+      <Route path="/preview/skeleton" element={<PreviewSkeletonPage />} />
+
+      {/* Fallback — redirect ke Landing Page */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

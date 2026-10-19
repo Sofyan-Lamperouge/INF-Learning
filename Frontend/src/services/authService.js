@@ -43,6 +43,7 @@ export async function login({ nim, password }) {
 
 /* ============================================================
    REGISTER (Aktivasi Akun)
+   ✅ Kirim konfirmasi_kata_sandi
    ============================================================ */
 export async function register({
   nim,

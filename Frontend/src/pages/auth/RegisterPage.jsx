@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { register } from '../../services/authService.js';
@@ -8,6 +8,7 @@ import InputField from '../../components/common/InputField.jsx';
 import PasswordField from '../../components/common/PasswordField.jsx';
 import ErrorMessage from '../../components/common/ErrorMessage.jsx';
 import SuccessMessage from '../../components/common/SuccessMessage.jsx';
+import RegisterSkeleton from '../../components/skeletons/RegisterSkeleton.jsx';
 
 import {
   validateNim,
@@ -25,9 +26,28 @@ export default function RegisterPage() {
     konfirmasiPassword: '',
   });
 
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({
+    nim: '',
+    password: '',
+    konfirmasiPassword: '',
+  });
+
+  const [touched, setTouched] = useState({
+    nim: false,
+    password: false,
+    konfirmasiPassword: false,
+  });
+
+  const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [booting, setBooting] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setBooting(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -37,33 +57,67 @@ export default function RegisterPage() {
       [name]: value,
     }));
 
-    if (error) setError('');
+    setTouched((current) => ({
+      ...current,
+      [name]: true,
+    }));
+
+    validateField(name, value);
+
+    if (serverError) setServerError('');
     if (success) setSuccess('');
+  }
+
+  function validateField(name, value) {
+    let errorMsg = '';
+
+    switch (name) {
+      case 'nim':
+        errorMsg = validateNim(value);
+        break;
+      case 'password':
+        errorMsg = validatePassword(value);
+        break;
+      case 'konfirmasiPassword':
+        errorMsg = validateKonfirmasiPassword(form.password, value);
+        break;
+      default:
+        break;
+    }
+
+    setErrors((current) => ({
+      ...current,
+      [name]: errorMsg,
+    }));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    setError('');
+    setServerError('');
     setSuccess('');
 
     const nim = form.nim.trim();
 
-    const errors = [
-      validateNim(nim),
-      validatePassword(form.password),
-      validateKonfirmasiPassword(
+    const newErrors = {
+      nim: validateNim(nim),
+      password: validatePassword(form.password),
+      konfirmasiPassword: validateKonfirmasiPassword(
         form.password,
         form.konfirmasiPassword
       ),
-    ];
+    };
 
-    const firstError = errors.find(Boolean);
+    setErrors(newErrors);
 
-    if (firstError) {
-      setError(firstError);
-      return;
-    }
+    setTouched({
+      nim: true,
+      password: true,
+      konfirmasiPassword: true,
+    });
+
+    const hasError = Object.values(newErrors).some(Boolean);
+    if (hasError) return;
 
     try {
       setLoading(true);
@@ -84,17 +138,25 @@ export default function RegisterPage() {
 
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
+        setServerError(err.message);
       } else {
-        setError('Aktivasi gagal.');
+        setServerError('Aktivasi gagal.');
       }
     } finally {
       setLoading(false);
     }
   }
 
+  if (booting) {
+    return <RegisterSkeleton />;
+  }
+
+  // ... kode di atasnya tetap sama ...
+
   return (
     <main className="auth-page">
+      {/* ❌ TAG <img> BACKGROUND SUDAH DIHAPUS */}
+
       <div className="auth-card auth-card--register">
 
         <div className="auth-illustration">
@@ -105,44 +167,59 @@ export default function RegisterPage() {
         </div>
 
         <div className="auth-form-col">
-
           <h1 className="auth-title">
-            Aktivasi Akun
+            Get Started!
           </h1>
 
-          <p className="auth-subtitle">
-            Masukkan NIM dan buat password untuk mengaktifkan akunmu.
-          </p>
-
-          <ErrorMessage message={error} />
           <SuccessMessage message={success} />
+          {serverError && <ErrorMessage message={serverError} />}
 
           <form onSubmit={handleSubmit} noValidate>
-
+            {/* Field NIM */}
             <InputField
               label="NIM"
               name="nim"
               value={form.nim}
               onChange={handleChange}
               placeholder="Masukkan NIM (10 digit)"
+              error={touched.nim ? errors.nim : ''}
               required
             />
+            {touched.nim && errors.nim && (
+              <ErrorMessage message={errors.nim} variant="field" />
+            )}
 
+            {/* Field Password */}
             <PasswordField
               label="Password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Minimal 8 karakter"
+              placeholder="Min. 8 Karakter, 1 Angka, 1 Simbol"
+              error={touched.password ? errors.password : ''}
+              showStrength
             />
+            {touched.password && errors.password && (
+              <ErrorMessage message={errors.password} variant="field" />
+            )}
 
+            {/* Field Konfirmasi Password */}
             <PasswordField
               label="Konfirmasi Password"
               name="konfirmasiPassword"
               value={form.konfirmasiPassword}
               onChange={handleChange}
-              placeholder="Ulangi password"
+              placeholder="Ulangi Password"
+              error={
+                touched.konfirmasiPassword ? errors.konfirmasiPassword : ''
+              }
             />
+            {touched.konfirmasiPassword && errors.konfirmasiPassword && (
+              <ErrorMessage
+                message={errors.konfirmasiPassword}
+                variant="field"
+              />
+            )}
 
             <button
               className="btn-primary"
@@ -151,14 +228,12 @@ export default function RegisterPage() {
             >
               {loading ? 'Mengaktifkan...' : 'Aktivasi'}
             </button>
-
           </form>
 
           <p className="auth-footer">
-            Sudah punya akun?{' '}
-            <Link to="/login">Login</Link>
+            Sudah punya akun? <strong>Masuk</strong>{' '}
+            <Link to="/login">disini</Link>
           </p>
-
         </div>
       </div>
     </main>
