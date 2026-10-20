@@ -1,45 +1,39 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { register } from '../../services/authService.js';
-import { ApiError } from '../../services/api.js';
+import { register } from "../../services/authService.js";
+import { ApiError } from "../../services/api.js";
 
-import InputField from '../../components/common/InputField.jsx';
-import PasswordField from '../../components/common/PasswordField.jsx';
-import ErrorMessage from '../../components/common/ErrorMessage.jsx';
-import SuccessMessage from '../../components/common/SuccessMessage.jsx';
-import RegisterSkeleton from '../../components/skeletons/RegisterSkeleton.jsx';
+import InputField from "../../components/common/InputField.jsx";
+import PasswordField from "../../components/common/PasswordField.jsx";
+import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import SuccessMessage from "../../components/common/SuccessMessage.jsx";
+import RegisterSkeleton from "../../components/skeletons/RegisterSkeleton.jsx";
 
-import {
-  validateNim,
-  validatePassword,
-  validateKonfirmasiPassword,
-} from '../../utils/validators.js';
-
+// ✅ Hanya import validasi NIM dan Password
+import { validateNim, validatePassword } from "../../utils/validators.js";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
 
+  // ✅ State hanya menyisakan nim dan password
   const [form, setForm] = useState({
-    nim: '',
-    password: '',
-    konfirmasiPassword: '',
+    nim: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({
-    nim: '',
-    password: '',
-    konfirmasiPassword: '',
+    nim: "",
+    password: "",
   });
 
   const [touched, setTouched] = useState({
     nim: false,
     password: false,
-    konfirmasiPassword: false,
   });
 
-  const [serverError, setServerError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [booting, setBooting] = useState(true);
@@ -64,22 +58,19 @@ export default function RegisterPage() {
 
     validateField(name, value);
 
-    if (serverError) setServerError('');
-    if (success) setSuccess('');
+    if (serverError) setServerError("");
+    if (success) setSuccess("");
   }
 
   function validateField(name, value) {
-    let errorMsg = '';
+    let errorMsg = "";
 
     switch (name) {
-      case 'nim':
+      case "nim":
         errorMsg = validateNim(value);
         break;
-      case 'password':
+      case "password":
         errorMsg = validatePassword(value);
-        break;
-      case 'konfirmasiPassword':
-        errorMsg = validateKonfirmasiPassword(form.password, value);
         break;
       default:
         break;
@@ -94,18 +85,15 @@ export default function RegisterPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    setServerError('');
-    setSuccess('');
+    setServerError("");
+    setSuccess("");
 
     const nim = form.nim.trim();
 
+    // ✅ Validasi hanya untuk nim dan password
     const newErrors = {
       nim: validateNim(nim),
       password: validatePassword(form.password),
-      konfirmasiPassword: validateKonfirmasiPassword(
-        form.password,
-        form.konfirmasiPassword
-      ),
     };
 
     setErrors(newErrors);
@@ -113,7 +101,6 @@ export default function RegisterPage() {
     setTouched({
       nim: true,
       password: true,
-      konfirmasiPassword: true,
     });
 
     const hasError = Object.values(newErrors).some(Boolean);
@@ -122,25 +109,22 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
+      // ✅ Kirim data tanpa konfirmasiPassword
       await register({
         nim,
         password: form.password,
-        konfirmasiPassword: form.konfirmasiPassword,
       });
 
-      setSuccess(
-        'Aktivasi berhasil. Mengarahkan ke halaman login...'
-      );
+      setSuccess("Aktivasi berhasil. Mengarahkan ke halaman login...");
 
       setTimeout(() => {
-        navigate('/login', { replace: true });
+        navigate("/login", { replace: true });
       }, 800);
-
     } catch (err) {
       if (err instanceof ApiError) {
         setServerError(err.message);
       } else {
-        setServerError('Aktivasi gagal.');
+        setServerError("Aktivasi gagal.");
       }
     } finally {
       setLoading(false);
@@ -151,87 +135,60 @@ export default function RegisterPage() {
     return <RegisterSkeleton />;
   }
 
-  // ... kode di atasnya tetap sama ...
-
   return (
     <main className="auth-page">
-      {/* ❌ TAG <img> BACKGROUND SUDAH DIHAPUS */}
-
       <div className="auth-card auth-card--register">
-
         <div className="auth-illustration">
-          <img
-            src="/assets/INF.png"
-            alt="INF-Learning"
-          />
+          <img src="/assets/INF.png" alt="INF-Learning" />
         </div>
 
         <div className="auth-form-col">
-          <h1 className="auth-title">
-            Get Started!
-          </h1>
+          {/* ✅ PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
+          <div className="auth-form-top">
+            <h1 className="auth-title">Get Started!</h1>
 
-          <SuccessMessage message={success} />
-          {serverError && <ErrorMessage message={serverError} />}
+            <SuccessMessage message={success} />
+            {serverError && <ErrorMessage message={serverError} />}
 
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Field NIM */}
-            <InputField
-              label="NIM"
-              name="nim"
-              value={form.nim}
-              onChange={handleChange}
-              placeholder="Masukkan NIM (10 digit)"
-              error={touched.nim ? errors.nim : ''}
-              required
-            />
-            {touched.nim && errors.nim && (
-              <ErrorMessage message={errors.nim} variant="field" />
-            )}
-
-            {/* Field Password */}
-            <PasswordField
-              label="Password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Min. 8 Karakter, 1 Angka, 1 Simbol"
-              error={touched.password ? errors.password : ''}
-              showStrength
-            />
-            {touched.password && errors.password && (
-              <ErrorMessage message={errors.password} variant="field" />
-            )}
-
-            {/* Field Konfirmasi Password */}
-            <PasswordField
-              label="Konfirmasi Password"
-              name="konfirmasiPassword"
-              value={form.konfirmasiPassword}
-              onChange={handleChange}
-              placeholder="Ulangi Password"
-              error={
-                touched.konfirmasiPassword ? errors.konfirmasiPassword : ''
-              }
-            />
-            {touched.konfirmasiPassword && errors.konfirmasiPassword && (
-              <ErrorMessage
-                message={errors.konfirmasiPassword}
-                variant="field"
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Field NIM */}
+              <InputField
+                label="NIM"
+                name="nim"
+                value={form.nim}
+                onChange={handleChange}
+                placeholder="Masukkan NIM (10 digit)"
+                error={touched.nim ? errors.nim : ""}
+                required
               />
-            )}
+              {touched.nim && errors.nim && (
+                <ErrorMessage message={errors.nim} variant="field" />
+              )}
 
-            <button
-              className="btn-primary"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? 'Mengaktifkan...' : 'Aktivasi'}
-            </button>
-          </form>
+              {/* Field Password */}
+              <PasswordField
+                label="Password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Min. 8 Karakter, 1 Angka, 1 Simbol"
+                error={touched.password ? errors.password : ""}
+                showStrength
+              />
+              {touched.password && errors.password && (
+                <ErrorMessage message={errors.password} variant="field" />
+              )}
 
+              <button className="btn-primary" type="submit" disabled={loading}>
+                {loading ? "Mendaftar..." : "Daftar"}
+              </button>
+            </form>
+          </div>
+          {/* ✅ BATAS AKHIR PEMBUNGKUS BARU */}
+
+          {/* Teks ini sekarang berada di luar bungkusan, jadi akan terdorong ke bawah */}
           <p className="auth-footer">
-            Sudah punya akun? <strong>Masuk</strong>{' '}
+            Sudah punya akun? <strong>Masuk</strong>{" "}
             <Link to="/login">disini</Link>
           </p>
         </div>

@@ -52,10 +52,6 @@ export async function mockRegister({
     throw new ApiError('Format NIM tidak dikenali', 422);
   }
 
-  if (password !== konfirmasiPassword) {
-    throw new ApiError('Konfirmasi kata sandi tidak cocok', 422);
-  }
-
   const exists = MOCK_USERS.some((u) => u.nim === nim);
 
   if (!exists) {

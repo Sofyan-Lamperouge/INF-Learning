@@ -6,16 +6,19 @@
   box-sizing: border-box;
 }
 
-/* ✅ KUNCI LAYAR: Body tidak boleh di-scroll */
+html {
+  scroll-behavior: smooth; /* ✅ KUNCI: Membuat scroll jadi mulus */
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
-  overflow: hidden; 
 }
 
 body {
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f5fbff;
+  background: #eef8fd;
+  background-color: #eef8fd; 
   color: #1a1a1a;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -34,14 +37,16 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
    ============================================================ */
 
 .auth-page {
-  height: 100vh;          /* Kunci tinggi pas 1 layar */
-  width: 100vw;           /* Kunci lebar pas 1 layar */
+  height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   background-color: #eaf5fc;
-  overflow: hidden;       /* Cegah scroll di halaman auth */
+  
+  /* ✅ PERBAIKAN: Kunci scroll HANYA untuk halaman ini */
+  overflow: hidden; 
 }
 
 /* Card utama */
@@ -52,10 +57,9 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   width: 100%;
   max-width: 1000px;
   
-  /* ✅ KUNCI TINGGI CARD */
   height: 100%;           
-  max-height: 820px;      /* Batas maksimal tinggi card */
-  min-height: 500px;      /* Batas minimal agar tidak terlalu pendek */
+  max-height: 820px;      
+  min-height: 500px;      
   
   background: #ffffff;
   border-radius: 28px;
@@ -66,7 +70,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 /* Modifier register */
 .auth-card--register {
   height: 100%;
-  max-height: 860px;      /* Sedikit lebih tinggi untuk akomodasi 3 field */
+  max-height: 860px;      
 }
 
 .auth-illustration {
@@ -91,14 +95,15 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-form-col {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Form di tengah vertikal */
+  justify-content: center; 
   gap: 0.5rem;
   height: 100%;
-  overflow-y: auto;        /* Jika layar sangat kecil, form bisa di-scroll DI DALAM card saja */
-  padding-right: 0.5rem;   /* Ruang untuk scrollbar dalam */
+  
+  /* ✅ Pengaman: Jika layar sangat kecil, form bisa di-scroll DI DALAM card saja */
+  overflow-y: auto;        
+  padding-right: 0.5rem;   
 }
 
-/* Menghilangkan scrollbar di dalam form (opsional, agar lebih rapi) */
 .auth-form-col::-webkit-scrollbar {
   width: 6px;
 }
@@ -251,44 +256,29 @@ body > .alert-success {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE (Agar di HP / Tablet tidak terkunci mati)
    ============================================================ */
-
-/* Laptop pendek (tinggi < 800px) */
-@media (max-height: 800px) and (min-width: 801px) {
-  .auth-card {
-    padding: 1.5rem;
-    gap: 1.5rem;
-  }
-  .auth-title { font-size: 1.6rem; }
-  .input-field { margin-bottom: 0.5rem; }
-}
-
-/* Tablet / Mobile */
 @media (max-width: 800px) {
   .auth-page {
     padding: 1rem;
-    height: auto;
-    overflow-y: auto;      /* Izinkan scroll di mobile */
-  }
-  
-  /* Di mobile, biarkan body di-scroll */
-  html, body, #root {
-    overflow: auto; 
+    height: auto;       /* Di HP, izinkan halaman memanjang */
+    overflow-y: auto;   /* Di HP, izinkan halaman di-scroll */
   }
 
   .auth-card, 
   .auth-card--register {
     grid-template-columns: 1fr;
-    height: auto;         /* Lepas kunci tinggi */
+    height: auto;         
     max-height: none;
     min-height: auto;
     padding: 1.5rem;
     gap: 1.5rem;
   }
+  
   .auth-illustration {
     height: 250px;
   }
+  
   .auth-form-col {
     overflow-y: visible; 
   }
@@ -2335,10 +2325,29 @@ body > .alert-success {
 }
 
 /* === Form column register: judul naik ke atas + gap rapat === */
+/* === Form column register === */
 .auth-card--register .auth-form-col {
-  justify-content: flex-start;    /* ← KUNCI: judul naik ke atas */
-  padding-top: 0.5rem;             /* ← jarak dari atas card */
+  justify-content: space-between !important; /* ✅ Tetap space-between agar footer di bawah */
+  padding-top: 0.5rem;
   gap: 0.25rem;
+  height: 100%; /* Pastikan memenuhi tinggi card */
+}
+
+/* ✅ CLASS BARU UNTUK BUNGKUSAN ATAS */
+.auth-card--register .auth-form-top {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* ✅ Memastikan isi form mulai dari atas */
+  gap: 0.25rem;
+}
+
+/* === Footer register === */
+.auth-card--register .auth-footer {
+  margin-top: auto; /* ✅ Memastikan footer selalu di paling bawah */
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  width: 100%;
+  text-align: center;
 }
 
 /* === Field group register: lebih rapat === */
@@ -2349,7 +2358,7 @@ body > .alert-success {
 /* === Label register: lebih kecil === */
 .auth-card--register .input-field label {
   font-size: 0.75rem;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.25rem;
 }
 
 /* === Input register: padding lebih kecil === */
@@ -2382,7 +2391,10 @@ body > .alert-success {
 /* === Footer register === */
 .auth-card--register .auth-footer {
   margin-top: 0.65rem;
-  font-size: 0.8rem;
+  margin-bottom: 1rem; 
+  font-size: 0.85rem;  
+  width: 100%;         
+  text-align: center;
 }
 
 /* === Responsive register === */
@@ -2496,7 +2508,7 @@ body > .alert-success {
   gap: 0.85rem;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  color: #4b5563;
+  color: #404040 !important;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
@@ -2505,20 +2517,24 @@ body > .alert-success {
 }
 
 .sidebar-menu-item:hover {
-  background: #f0f9ff;
-  color: #2f9fe0;
+  background: #f2f4f7 !important; /* ✅ Efek abu-abu muda */
+  color: #404040 !important;
   text-decoration: none;
 }
 
 /* === Active state === */
 .sidebar-menu-item--active {
-  background: #eaf5fc;
-  color: #2f9fe0;
+  background: #f2f4f7 !important; /* ✅ Background abu-abu muda */
+  color: #404040 !important;
   font-weight: 600;
 }
 
 .sidebar-menu-item--active:hover {
   background: #eaf5fc;
+}
+
+.sidebar-menu-icon svg {
+  stroke: #404040 !important;
 }
 
 .sidebar-menu-icon {
@@ -2594,8 +2610,8 @@ body > .alert-success {
   padding: 2rem 2.5rem;
 
   /* ✅ Background wave */
-  background-color: #f5f7fa;
-  background-image: url("/assets/background-wave.png");
+  background-color: #eef8fd; /* <-- Ubah ke warna yang diminta */
+  background-image: none;
   background-repeat: no-repeat;
   background-position: right bottom;
   background-size: cover;
@@ -2917,7 +2933,12 @@ body > .alert-success {
   justify-content: space-between;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
-  padding: 0.75rem 0;
+  
+  /* ✅ TAMBAHKAN KODE INI UNTUK NAVBAR PUTIH */
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;       /* Padding agar teks tidak mepet pinggir */
+  border-radius: 12px;        /* Sudut membulat seperti di gambar */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03); /* Bayangan halus */
 }
 
 .dashboard-header-title {
@@ -3021,13 +3042,18 @@ body > .alert-success {
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  
+  /* Efek transisi dan bayangan awal */
+  transition: all 0.2s ease-in-out;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* ✅ EFEK SAAT KURSOR DIARAHKAN KE TOMBOL UPLOAD */
 .btn-upload:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: #eaf5fc; /* Berubah jadi biru sangat muda */
+  color: #1e7ab8;      /* Teks biru agak gelap */
+  transform: translateY(-2px); /* Efek bubble terangkat */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Bayangan makin tebal */
 }
 
 /* === Row bawah: 3 Kartu Statistik === */
@@ -3046,7 +3072,18 @@ body > .alert-success {
   border-radius: 14px;
   padding: 1rem 1.15rem;
   color: #1a1a1a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  
+  /* ✅ EFEK CAHAYA PUTIH (GLOW) */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
+              0 4px 10px rgba(0, 0, 0, 0.05); 
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* (Opsional) Efek saat kotak statistik disentuh kursor */
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 
+              0 6px 15px rgba(0, 0, 0, 0.08); 
 }
 
 .stat-card-icon {
@@ -3423,7 +3460,7 @@ body > .alert-success {
 
 .landing-wrapper {
   font-family: 'Poppins', sans-serif;
-  background-color: #f4fbfd; /* Warna latar biru sangat muda */
+  background-color: #eef8fd; /* Warna latar biru sangat muda */
   min-height: 100vh;
 }
 
@@ -3450,13 +3487,25 @@ body > .alert-success {
 }
 
 .landing-logo {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
-  color: #1a4d7a;
-  text-decoration: none;
+  color: #1a4d7a;            /* Warna biru gelap untuk "INF" */
+  text-decoration: none !important; /* ✅ Paksa hilangkan garis bawah */
+  transition: color 0.3s ease; /* ✅ Transisi halus saat berubah warna */
 }
+
 .landing-logo span {
-  color: #7ec8f5;
+  color: #7ec8f5;            /* Warna biru muda untuk "orm" */
+  transition: color 0.3s ease; /* ✅ Transisi halus */
+}
+
+/* ✅ EFEK SAAT DI-HOVER (Gambar 3) */
+.landing-logo:hover {
+  color: #7ec8f5;            /* "INF" berubah jadi biru muda */
+}
+
+.landing-logo:hover span {
+  color: #1a4d7a;            /* "orm" berubah jadi biru gelap */
 }
 
 .landing-nav-links {
@@ -3464,15 +3513,45 @@ body > .alert-success {
   gap: 2rem;
 }
 
+/* === Menu Navigasi (Beranda, Fitur, Tentang, FAQ) === */
 .landing-nav-links a {
-  text-decoration: none;
-  color: #4b5563;
+  position: relative;        /* ✅ Wajib agar garis bawah bisa diposisikan */
+  text-decoration: none;     /* Hilangkan garis bawah bawaan link */
+  color: #1a1a1a !important;            /* Warna teks hitam (sesuai permintaan) */
   font-size: 0.95rem;
   font-weight: 500;
-  transition: color 0.2s;
+  padding-bottom: 4px;       /* Jarak antara teks dan garis bawah */
+  
+  /* ✅ Animasi transisi saat ditekan atau di-hover */
+  transition: transform 0.3s ease;
 }
+
+/* ✅ Membuat Garis Bawah Biru menggunakan pseudo-element */
+.landing-nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2.5px;             /* Ketebalan garis bawah */
+  background-color: #2f9fe0; /* Warna garis bawah biru */
+  border-radius: 2px;
+  
+  /* Efek garis muncul dari tengah */
+  transform: scaleX(0);      
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+/* ✅ Efek saat di-hover */
 .landing-nav-links a:hover {
-  color: #2f9fe0;
+  color: #1a1a1a !important;            /* Teks TETAP hitam */
+  transform: translateY(-3px); /* Efek bubble/terangkat ke atas */
+}
+
+/* ✅ Memunculkan garis bawah saat di-hover */
+.landing-nav-links a:hover::after {
+  transform: scaleX(1);
 }
 
 .landing-nav-actions {
@@ -3498,7 +3577,7 @@ body > .alert-success {
   padding: 0.5rem 1.5rem;
   border: 2px solid #7ec8f5;
   border-radius: 8px;
-  background-color: #7ec8f5;
+  background-color: #55B5EF;
   color: #ffffff;
   text-decoration: none;
   font-weight: 600;
@@ -3506,7 +3585,7 @@ body > .alert-success {
   transition: all 0.2s;
 }
 .btn-register-solid:hover {
-  background-color: #62b6e8;
+  background-color: #3f9cd6;
   border-color: #62b6e8;
 }
 
@@ -3521,17 +3600,45 @@ body > .alert-success {
 
 .landing-hero-text {
   flex: 1;
+  position: relative; 
+  z-index: 1;         
+}
+
+/* ✅ PENGATURAN DASAR BINTANG */
+.hero-star-bg {
+  position: absolute;
+  opacity: 0.6;        
+  z-index: -1;         
+  pointer-events: none;
+}
+
+/* ✅ BINTANG KIRI (Besar, di belakang tulisan "Belajar") */
+.hero-star-bg--left {
+  top: 0px;          
+  left: -80px;         
+  width: 300px;        
+}
+
+/* ✅ BINTANG KANAN (Kecil, di dekat "INForm") */
+.hero-star-bg--right {
+  bottom: -30px;       /* Menempel di bawah teks "INForm" */
+  right: -40px;        /* Digeser ke kanan melewati teks */
+  width: 150px;        /* Ukurannya lebih kecil dari yang kiri */
+  opacity: 0.8;
+  transform: rotate(15deg); /* Sedikit diputar agar dinamis */
 }
 
 .landing-badge {
   display: inline-block;
-  background-color: #eaf5fc;
-  color: #2f9fe0;
+  background-color: #ffffff; /* Latar putih */
+  color: #3aa8e0;            /* Teks biru */
   padding: 0.4rem 1rem;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #eaf5fc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .landing-title {
@@ -3555,18 +3662,34 @@ body > .alert-success {
 }
 
 .btn-hero {
-  display: inline-block;
-  background-color: #7ec8f5;
+  display: inline-flex;
+  align-items: center;
+  background-color: #55b5ef;
   color: #ffffff;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
   font-weight: 600;
   font-size: 1rem;
-  transition: background 0.2s;
+  text-decoration: none; 
+  
+  /* Efek bubble */
+  box-shadow: 0 4px 10px rgba(85, 181, 239, 0.3);
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  z-index: 2;
 }
+
 .btn-hero:hover {
-  background-color: #62b6e8;
+  background-color: #3aa8e0;
+  color: #ffffff;
+  
+  /* ✅ TAMBAHKAN INI JUGA: Memastikan saat di-hover tidak ada garis bawah */
+  text-decoration: none; 
+  
+  /* Efek terangkat */
+  transform: translateY(-4px); 
+  box-shadow: 0 8px 20px rgba(85, 181, 239, 0.5);
 }
 
 .landing-hero-image {
@@ -3590,21 +3713,23 @@ body > .alert-success {
 
 .landing-subtitle {
   display: block;
-  color: #2f9fe0;
+  color: #2f9fe0;           /* Warna biru cerah */
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .landing-section-title {
-  font-size: 2rem;
+  font-size: 2.5rem;        /* Sedikit diperkecil agar proporsional */
   font-weight: 800;
-  color: #1a1a1a;
+  color: #334155;           
   margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
+/* ✅ Warna Teks Deskripsi (Paragraf) */
 .landing-section-desc {
-  color: #6b7280;
+  color: #84748b;           /* Warna ungu keabuan (sesuai Hero) */
   font-size: 1rem;
   line-height: 1.6;
   max-width: 600px;
@@ -3715,7 +3840,7 @@ body > .alert-success {
 /* 1. BACKGROUND BIRU MUDA */
 .landing-wrapper {
   font-family: 'Poppins', sans-serif;
-  background-color: #CDEEFF;
+  background-color: #eef8fd;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -3739,8 +3864,16 @@ body > .alert-success {
   max-width: 1200px;
   margin: 0 auto;
   background-color: #ffffff; /* Putih */
+  border-bottom: 3px solid transparent;
   border-radius: 16px;       /* Sudut membulat */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05); /* Bayangan */
+  border-bottom: 3px solid #55B5EF; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-header:hover {
+  transform: translateY(-3px); /* Navbar sedikit terangkat ke atas */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Bayangan makin tebal/lebar */
 }
 
 .landing-nav {
@@ -3793,7 +3926,10 @@ body > .alert-success {
   transition: all 0.2s;
 }
 .btn-login-outline:hover {
-  background-color: #eaf5fc;
+  background-color: #55B5EF;  /* ✅ Warna biru lebih gelap dari putih */
+  border-color: #55B5EF;
+  color: #ffffff;
+  text-decoration: none; 
 }
 
 .btn-register-solid {
@@ -3808,8 +3944,9 @@ body > .alert-success {
   transition: all 0.2s;
 }
 .btn-register-solid:hover {
-  background-color: #62b6e8;
-  border-color: #62b6e8;
+  background-color: #3f9cd6;  /* Warna lebih gelap saat di-hover */
+  border-color: #3f9cd6;
+  text-decoration: none;  
 }
 
 /* 3. HERO SECTION */
@@ -3823,52 +3960,99 @@ body > .alert-success {
 
 .landing-hero-text {
   flex: 1;
+  position: relative; 
+  z-index: 1;         
+}
+
+/* ✅ PENGATURAN UMUM GAMBAR BINTANG */
+.hero-star-bg {
+  position: absolute;
+  opacity: 0.8;        /* Transparansi bintang */
+  z-index: -1;         /* Di belakang teks */
+  pointer-events: none;
+}
+
+/* ✅ BINTANG 1 (Kiri - di belakang Badge & "Belajar") */
+.hero-star-bg--left {
+  top: -40px;          
+  left: -60px;         
+  width: 280px;        
 }
 
 .landing-badge {
   display: inline-block;
-  background-color: #ffffff;
-  color: #2f9fe0;
+  background-color: #dceeff; /* ✅ Warna latar belakang baru */
+  color: #3aa8e0;            /* ✅ Warna teks baru */
   padding: 0.4rem 1rem;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  border-bottom: 3px solid #55B5EF; /* Garis bawah tegas */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Bayangan melayang */
+  
+  /* Opsional: Transisi jika kamu ingin menambahkan efek hover nanti */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
 .landing-title {
-  font-size: 3.5rem;
+  font-size: 2.5rem;         /* Diperkecil dari 3.5rem agar proporsional */
   font-weight: 800;
-  color: #1a1a1a;
+  color: #334155;            /* Warna teks utama (Belajar Lebih Mudah dengan) */
   line-height: 1.2;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  position: relative;        /* Agar bisa ditambahkan efek bintang di belakang */
 }
+
+.landing-title::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -20px;
+  width: 150px;
+  height: 150px;
+  background-image: radial-gradient(circle, #bae6fd 2px, transparent 2px);
+  background-size: 10px 10px; /* Pola titik-titik */
+  opacity: 0.6;
+  z-index: -1;
+  border-radius: 50%;
+}
+
 
 .landing-title .text-accent {
   color: #7ec8f5;
 }
 
 .landing-desc {
-  font-size: 1.1rem;
-  color: #4b5563;
+  font-size: 1rem;           /* Sedikit lebih kecil */
+  color: #84748b;            /* Warna ungu keabuan sesuai permintaan */
   line-height: 1.6;
   margin-bottom: 2rem;
-  max-width: 500px;
+  max-width: 480px;
 }
 
+/* ✅ 3. Warna Tombol Mulai Sekarang */
 .btn-hero {
-  display: inline-block;
-  background-color: #7ec8f5;
-  color: #ffffff;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
+  display: inline-flex;      /* Agar teks dan panah sejajar */
+  align-items: center;
+  background-color: #55b5ef; /* Warna biru tombol */
+  color: #ffffff;            /* Teks putih */
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;      /* Dibuat membulat panjang seperti gambar 2 */
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
 }
+
 .btn-hero:hover {
-  background-color: #62b6e8;
+  background-color: #3aa8e0; /* Sedikit lebih gelap saat di-hover */
+  color: #ffffff;
 }
 
 .landing-hero-image {
@@ -3891,27 +4075,30 @@ body > .alert-success {
   margin-bottom: 3rem;
 }
 
-.landing-subtitle {
-  display: block;
-  color: #2f9fe0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
+/* ✅ Ukuran Judul & Warna Teks Utama */
 .landing-section-title {
-  font-size: 2.5rem;
+  font-size: 2.5rem;        /* Sedikit diperkecil agar proporsional */
   font-weight: 800;
-  color: #1a1a1a;
+  color: #334155;           /* Warna abu-abu kebiruan gelap (sesuai Hero) */
   margin-bottom: 1rem;
   line-height: 1.2;
 }
 
+/* ✅ Warna Teks Deskripsi (Paragraf) */
 .landing-section-desc {
-  color: #4b5563;
+  color: #84748b;           /* Warna ungu keabuan (sesuai Hero) */
   font-size: 1rem;
   line-height: 1.6;
   max-width: 600px;
+}
+
+/* Warna untuk Subtitle "Keunggulan" */
+.landing-subtitle {
+  display: block;
+  color: #2f9fe0;           /* Warna biru cerah */
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .landing-features-grid {
@@ -3935,68 +4122,154 @@ body > .alert-success {
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* Bayangan halus */
+  transition: transform 0.2s ease;
 }
 
+.feature-icon:hover {
+  transform: translateY(-3px); /* Efek terangkat saat disentuh kursor */
+}
+
+/* ✅ Judul Fitur (Akses Fleksibel, dll) */
 .feature-item h3 {
-  font-size: 1.1rem;
+  font-size: 1.25rem;       /* Sedikit diperbesar agar tegas */
   font-weight: 700;
-  color: #1a1a1a;
+  color: #334155;           /* ✅ Warna abu-abu kebiruan gelap (sama seperti judul utama) */
+  margin-bottom: 0.5rem;
 }
 
+/* ✅ Deskripsi Fitur */
 .feature-item p {
-  font-size: 0.9rem;
-  color: #4b5563;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #84748b;           /* ✅ Warna ungu keabuan (sama seperti deskripsi Hero) */
+  line-height: 1.6;
 }
 
-/* 5. TENTANG SECTION */
+/* ============================================================
+   TENTANG SECTION
+   ============================================================ */
+
 .landing-about {
-  background-color: #ffffff;
-  padding: 6rem 2rem;
-  border-radius: 40px 40px 0 0; /* Lengkungan di atas */
+  background-color: #eef8fd;
+  padding: 6rem 2rem; /* Padding sedikit dikurangi agar proporsional */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ✅ PENGATURAN DASAR GAMBAR TANDA TANYA */
+.about-bg-question {
+  position: absolute;
+  opacity: 0.6;        /* Transparansi gambar */
+  z-index: 0;          /* Di belakang teks */
+  pointer-events: none;
+}
+
+/* ✅ Tanda Tanya 1 (Besar, di Tengah, Menghadap Kanan) */
+.about-bg-question--large {
+  top: 10%;
+  left: 45%;           /* ✅ Ditaruh di tengah (45% dari kiri) */
+  transform: translateX(-50%); /* Menariknya tepat ke tengah */
+  width: 300px;        /* Ukuran besar */
+}
+
+/* ✅ Tanda Tanya 2 (Kecil, di Kiri, Menghadap Kiri) */
+.about-bg-question--small {
+  top: 40%;
+  left: -30px;         /* ✅ Ditaruh di sebelah kiri teks */
+  width: 150px;        /* Ukuran lebih kecil */
+  transform: scaleX(-1); /* ✅ Dibalik (mirror) agar menghadap ke kiri */
 }
 
 .landing-about-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 4rem;
+  position: relative;
+  z-index: 1;
 }
 
 .landing-about-text {
   flex: 1;
+  max-width: 550px; /* Membatasi lebar teks agar tidak terlalu melebar */
 }
 
+/* ✅ UKURAN JUDUL DIPERKECIL */
+.landing-about-text .landing-section-title {
+  font-size: 2.2rem;        /* Dikecilkan dari 2.75rem */
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 1.25rem;
+  line-height: 1.2;
+}
+
+.landing-about-text .landing-subtitle {
+  color: #3aa8e0;
+  font-weight: 700;
+  font-size: 0.85rem;       /* Dikecilkan sedikit */
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ✅ UKURAN DESKRIPSI DIPERKECIL */
+.landing-about-text .landing-section-desc {
+  font-size: 0.95rem;       /* Dikecilkan dari 1.1rem */
+  color: #64748b;           /* Warna disamakan dengan gambar Figma */
+  line-height: 1.6;
+}
+
+/* --- Bagian Kotak (Mahasiswa & Admin) --- */
 .landing-about-cards {
   flex: 1;
+  max-width: 500px;         /* Membatasi lebar kotak kanan */
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;             /* Jarak antar kotak sedikit dirapatkan */
 }
 
 .about-card {
-  background: #f5fbff;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+  border: none;
+
+  /* ✅ TAMBAHKAN INI: Agar pergerakannya halus (smooth) */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* ✅ TAMBAHKAN INI: Efek saat kursor diarahkan (Hover) */
+.about-card:hover {
+  transform: translateY(-5px); /* Kotak terangkat 5px ke atas */
+  
+  /* Memancarkan cahaya/bayangan biru (warna #3aa8e0 dengan opacity 0.15) */
+  box-shadow: 0 12px 25px rgba(58, 168, 224, 0.15), 
+              0 4px 10px rgba(58, 168, 224, 0.1); 
+}
+
+/* ✅ UKURAN JUDUL KOTAK DIPERKECIL */
 .about-card-title {
-  color: #2f9fe0;
-  font-size: 1.1rem;
+  color: #3aa8e0;
+  font-size: 1.1rem;        /* Dikecilkan dari 1.35rem */
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
+/* ✅ UKURAN DESKRIPSI KOTAK DIPERKECIL */
 .about-card-desc {
-  color: #6b7280;
-  font-size: 0.9rem;
+  color: #64748b;
+  font-size: 0.9rem;        /* Dikecilkan dari 1rem */
   line-height: 1.5;
+  margin: 0;
 }
 
-/* 6. FAQ SECTION */
+/* ============================================================
+   FAQ SECTION
+   ============================================================ */
+
 .landing-faq {
+  background-color: #f5fcff; /* ✅ Background FAQ */
   padding: 6rem 2rem;
-  background-color: #ffffff;
 }
 
 .landing-faq-inner {
@@ -4008,71 +4281,116 @@ body > .alert-success {
 .landing-faq-text {
   flex: 1;
   position: sticky;
-  top: 120px;
+  top: 120px; /* Agar teks kiri tetap terlihat saat scroll */
 }
 
+.landing-faq-text .landing-section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.landing-faq-text .landing-section-desc {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.landing-faq-text .landing-subtitle {
+  color: #3aa8e0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* --- List FAQ Kanan --- */
 .landing-faq-list {
-  flex: 1.5;
+  flex: 1.2;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+/* Kotak FAQ Putih */
 .faq-item {
-  background: #ffffff;
+  background-color: #ffffff; /* ✅ Warna kotak putih */
   border-radius: 12px;
   padding: 1.5rem;
   cursor: pointer;
-  border: 1px solid #eaf5fc;
-  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  
+  /* ✅ EFEK BUBBLE & GLOW (Smooth) */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
+/* ✅ Efek saat di-hover (terangkat & memancarkan cahaya biru) */
+.faq-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(58, 168, 224, 0.15); 
+  border-color: rgba(58, 168, 224, 0.3);
+}
+
+/* ✅ Efek saat FAQ sedang dibuka (Active) */
 .faq-item.active {
+  transform: translateY(-3px);
   border-color: #7ec8f5;
-  box-shadow: 0 8px 24px rgba(126, 200, 245, 0.15);
+  box-shadow: 0 12px 30px rgba(58, 168, 224, 0.2); /* Cahaya lebih terang */
 }
 
 .faq-question {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #334155;
 }
 
 .faq-icon {
-  color: #9ca3af;
-  transition: transform 0.3s;
+  color: #94a3b8;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
 }
 
 .faq-item.active .faq-icon {
-  color: #7ec8f5;
+  color: #3aa8e0;
 }
 
+/* ✅ ANIMASI SMOOTH BUKA-TUTUP */
 .faq-answer {
   max-height: 0;
+  opacity: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  /* Transisi height, opacity, dan margin agar mulus */
+  transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
 }
 
 .faq-item.active .faq-answer {
   max-height: 200px;
+  opacity: 1;
   margin-top: 1rem;
 }
 
 .faq-answer p {
-  color: #6b7280;
+  color: #64748b;
   font-size: 0.95rem;
   line-height: 1.6;
+  margin: 0;
 }
 
-/* 7. FOOTER */
+
+/* ============================================================
+   FOOTER SECTION
+   ============================================================ */
+
 .landing-footer {
-  background-color: #3b82f6;
+  background-color: #2988c2; /* ✅ Warna background biru footer */
   color: #ffffff;
   padding: 4rem 2rem 2rem;
-  border-radius: 40px 40px 0 0;
 }
 
 .landing-footer-inner {
@@ -4083,92 +4401,92 @@ body > .alert-success {
 }
 
 .footer-logo {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
+  color: #ffffff;
 }
 .footer-logo span {
-  color: #bae6fd;
+  color: #bae6fd; /* Warna "orm" tetap biru muda */
 }
 
 .footer-desc {
-  color: #bfdbfe;
-  font-size: 0.9rem;
+  color: #dbeafe; /* Teks deskripsi putih kebiruan */
+  font-size: 0.95rem;
   line-height: 1.6;
   max-width: 300px;
 }
 
 .footer-links h4,
 .footer-contact h4 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
+  color: #ffffff;
 }
 
 .footer-links a {
   display: block;
-  color: #bfdbfe;
+  color: #dbeafe;
   text-decoration: none;
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
+  margin-bottom: 0.85rem;
+  font-size: 1rem;
+  transition: color 0.2s;
 }
 
 .footer-links a:hover {
   color: #ffffff;
+  text-decoration: underline;
 }
 
 .footer-contact p {
-  color: #bfdbfe;
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
+  color: #dbeafe;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+/* Ikon di footer */
+.footer-contact svg {
+  width: 20px;
+  height: 20px;
+  stroke: #dbeafe;
 }
 
 .footer-bottom {
-  border-top: 1px solid #60a5fa;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Garis pemisah transparan */
   padding-top: 2rem;
   text-align: center;
 }
 
 .footer-bottom p {
   color: #bfdbfe;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
-/* 8. RESPONSIVE */
+/* Responsive */
 @media (max-width: 900px) {
-  .landing-hero {
-    flex-direction: column;
-    text-align: center;
-    padding: 4rem 1rem;
-  }
-  .landing-desc {
-    margin: 0 auto 2rem;
-  }
-  .landing-hero-image {
-    justify-content: center;
-  }
-  .landing-features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .landing-about-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-  .landing-nav-links {
-    display: none;
-  }
   .landing-faq-inner {
     flex-direction: column;
+  }
+  .landing-faq-text {
+    position: relative;
+    top: 0;
+    margin-bottom: 2rem;
   }
   .landing-footer-inner {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 2rem;
   }
   .footer-desc {
     margin: 0 auto;
+  }
+  .footer-contact p {
+    justify-content: center;
   }
 }
 

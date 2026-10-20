@@ -43,18 +43,14 @@ export async function login({ nim, password }) {
 
 /* ============================================================
    REGISTER (Aktivasi Akun)
-   ✅ Kirim konfirmasi_kata_sandi
+   ✅ HAPUS konfirmasiPassword
    ============================================================ */
-export async function register({
-  nim,
-  password,
-  konfirmasiPassword,
-}) {
+export async function register({ nim, password }) { // <-- Ubah parameter
   if (USE_MOCK) {
     return mockRegister({
       nim,
       password,
-      konfirmasiPassword,
+      // konfirmasiPassword, <-- Hapus ini jika mock-nya juga tidak butuh
     });
   }
 
@@ -63,7 +59,7 @@ export async function register({
     body: JSON.stringify({
       nomor_induk: nim,
       kata_sandi: password,
-      konfirmasi_kata_sandi: konfirmasiPassword,
+      // konfirmasi_kata_sandi: konfirmasiPassword, <-- Hapus ini
     }),
   });
 }
