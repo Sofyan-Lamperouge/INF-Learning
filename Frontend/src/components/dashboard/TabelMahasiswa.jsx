@@ -4,46 +4,49 @@ import { Link } from 'react-router-dom';
 
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
   return (
+    // ✅ Bungkus dengan class rekap-card (sama seperti Rekap Kuis)
     <div className="rekap-card">
-
-      {/* Header */}
+      
+      {/* ✅ Header Judul & Link */}
       <div className="rekap-header">
         <h3 className="rekap-title">Mahasiswa</h3>
-        <Link to="/dashboard/mahasiswa" className="rekap-link">
-          Lihat semua
-        </Link>
+        <a href="/dashboard/mahasiswa" className="rekap-link">Lihat semua</a>
       </div>
-
+      
+      {/* Garis pemisah */}
       <div className="rekap-divider"></div>
 
-      {/* Body: Tabel */}
+      {/* ✅ Area isi tabel */}
       <div className="rekap-body">
-        {mahasiswaList.length === 0 ? (
-          <div className="rekap-empty">
-            <p className="rekap-empty-text">Belum ada mahasiswa terdaftar</p>
-          </div>
-        ) : (
-          <table className="tabel-mahasiswa">
-            <thead>
+        <table className="tabel-mahasiswa">
+          <thead>
+            <tr>
+              <th>NIM</th>
+              <th>Nama</th>
+              <th>Angkatan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* ✅ JIKA DATA KOSONG */}
+            {mahasiswaList.length === 0 ? (
               <tr>
-                <th>NIM</th>
-                <th>Nama</th>
-                <th>Angkatan</th>
+                <td colSpan="3" className="tabel-kosong">
+                  Belum ada data mahasiswa dari backend.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {mahasiswaList.map((mhs) => (
-                <tr key={mhs.nomor_induk || mhs.id}>
-                  <td>{mhs.nomor_induk}</td>
+            ) : (
+              /* ✅ JIKA DATA ADA */
+              mahasiswaList.map((mhs, index) => (
+                <tr key={mhs.id || mhs.nomor_induk || index}>
+                  <td>{mhs.nomor_induk || mhs.nim}</td>
                   <td>{mhs.nama}</td>
-                  <td>{mhs.angkatan || '-'}</td>
+                  <td>{mhs.angkatan}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-
     </div>
   );
 }

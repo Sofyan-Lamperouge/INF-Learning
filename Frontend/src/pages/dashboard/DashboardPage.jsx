@@ -16,23 +16,46 @@ export default function DashboardPage() {
 
   const [search, setSearch] = useState('');
 
+  // ✅ 1. State Statistik (Awalnya 0 semua)
   const [stats, setStats] = useState({
     totalMateri: 0,
     totalKuis: 0,
-    totalMahasiswa: 4,
+    totalMahasiswa: 0, // Ubah dari 4 menjadi 0
   });
 
-  const [materiList] = useState([]);
-  const [kuisList] = useState([]);
+  // ✅ 2. State List (Awalnya Kosong)
+  const [materiList, setMateriList] = useState([]); // Tambah setMateriList
+  const [kuisList, setKuisList] = useState([]);     // Tambah setKuisList
+  const [mahasiswaList, setMahasiswaList] = useState([]); // Mahasiswa jadi kosong
 
-  // Mock mahasiswa data — nanti fetch dari backend
-  const [mahasiswaList] = useState([
-    { id: 1, nomor_induk: '2488010024', nama: 'Nisa Naila', angkatan: 2024 },
-    { id: 2, nomor_induk: '2488010031', nama: 'Mohammad Sofyan Nurseha', angkatan: 2024 },
-    { id: 3, nomor_induk: '2488010038', nama: 'Haikal Azkal Azkiya', angkatan: 2024 },
-    { id: 4, nomor_induk: '2488010048', nama: 'Dzaky Muhammad Nafis', angkatan: 2024 },
-    { id: 5, nomor_induk: '2488010071', nama: 'Mohammad Rizky Saputra', angkatan: 2024 },
-  ]);
+  // ✅ 3. Fungsi untuk menarik data dari Backend
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // ==========================================
+        // 👇 HAPUS KOMENTAR DI BAWAH INI JIKA BACKEND SUDAH SIAP 👇
+        // ==========================================
+        
+        /* 
+        const responseMahasiswa = await fetch('http://localhost:8000/api/mahasiswa');
+        const dataMahasiswa = await responseMahasiswa.json();
+        
+        setMahasiswaList(dataMahasiswa);
+        
+        // Update statistik secara otomatis berdasarkan jumlah data
+        setStats(prev => ({
+          ...prev,
+          totalMahasiswa: dataMahasiswa.length,
+        }));
+        */
+
+      } catch (error) {
+        console.error("Gagal mengambil data dashboard:", error);
+      }
+    }
+
+    fetchDashboardData();
+  }, []); // Array kosong artinya fungsi ini jalan sekali saat halaman dibuka
 
   function handleUpload() {
     navigate('/dashboard/materi');
@@ -60,6 +83,8 @@ export default function DashboardPage() {
       {/* ✅ Rekap Kuis + Mahasiswa (2 kolom) */}
       <div className="dashboard-bottom-grid">
         <RekapKuis kuisList={kuisList} />
+        
+        {/* Pastikan komponen TabelMahasiswa menerima prop 'mahasiswaList' */}
         <TabelMahasiswa mahasiswaList={mahasiswaList} />
       </div>
 

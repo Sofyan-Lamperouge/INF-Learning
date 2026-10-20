@@ -3313,13 +3313,20 @@ body > .alert-success {
   margin-bottom: 1.25rem;
 }
 
-/* === Body: Empty state === */
 .rekap-body {
-  min-height: 180px;
+  min-height: 200px; /* Menyamakan tinggi dengan Rekap Kuis */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0.5rem;
+}
+
+.tabel-kosong {
+  text-align: center;
+  padding: 5rem 1rem !important;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.95rem;
 }
 
 .rekap-empty {
@@ -3389,6 +3396,7 @@ body > .alert-success {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+  margin-top: 0; /* ✅ Pastikan tidak ada margin Atas */
 }
 
 .tabel-mahasiswa thead th {
