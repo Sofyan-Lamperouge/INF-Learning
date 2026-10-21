@@ -68,6 +68,7 @@ export function validateNimAdmin(value) {
 /* ============================================================
    VALIDASI PASSWORD
    ============================================================ */
+   
 export function validatePassword(value) {
   const password = String(value ?? '');
 
@@ -79,16 +80,6 @@ export function validatePassword(value) {
   }
   if (password.length > 72) {
     return 'Password maksimal 72 karakter.';
-  }
-  return '';
-}
-
-export function validateKonfirmasiPassword(password, confirmation) {
-  if (!confirmation) {
-    return 'Konfirmasi password wajib diisi.';
-  }
-  if (password !== confirmation) {
-    return 'Konfirmasi password tidak sama.';
   }
   return '';
 }

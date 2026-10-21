@@ -43,14 +43,13 @@ export async function login({ nim, password }) {
 
 /* ============================================================
    REGISTER (Aktivasi Akun)
-   ✅ HAPUS konfirmasiPassword
    ============================================================ */
-export async function register({ nim, password }) { // <-- Ubah parameter
+export async function register({ nim, password }) { 
   if (USE_MOCK) {
     return mockRegister({
       nim,
       password,
-      // konfirmasiPassword, <-- Hapus ini jika mock-nya juga tidak butuh
+      konfirmasiPassword,
     });
   }
 

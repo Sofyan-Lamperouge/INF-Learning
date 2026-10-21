@@ -146,7 +146,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="auth-form-col">
-          {/* ✅ PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
+          {/* PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
           <div className="auth-form-top">
             <h1 className="auth-title">Get Started!</h1>
 
@@ -187,7 +187,7 @@ export default function RegisterPage() {
               </button>
             </form>
           </div>
-          {/* ✅ BATAS AKHIR PEMBUNGKUS BARU */}
+          {/* BATAS AKHIR PEMBUNGKUS BARU */}
 
           {/* Teks ini sekarang berada di luar bungkusan, jadi akan terdorong ke bawah */}
           <p className="auth-footer">
