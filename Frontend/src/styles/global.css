@@ -40,12 +40,12 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   height: 100vh;
   width: 100vw;
   display: flex;
-  align-items: center;
+  flex-direction: column; /* ✅ Ubah jadi vertikal agar notifikasi bisa di atas */
+  align-items: center;    /* ✅ Tengahkan secara horizontal */
   justify-content: center;
-  padding: 1.5rem;
+  padding: 112px 120px;
   background-color: #eaf5fc;
-  
-  /* ✅ PERBAIKAN: Kunci scroll HANYA untuk halaman ini */
+  box-sizing: border-box;
   overflow: hidden; 
 }
 
@@ -258,6 +258,7 @@ body > .alert-success {
 /* ============================================================
    RESPONSIVE (Agar di HP / Tablet tidak terkunci mati)
    ============================================================ */
+
 @media (max-width: 800px) {
   .auth-page {
     padding: 1rem;
@@ -2426,7 +2427,7 @@ body > .alert-success {
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #eef8fd;
 }
 
 /* ============================================================
@@ -2441,9 +2442,10 @@ body > .alert-success {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 100vh;
+  height: 100vh; 
   position: sticky;
   top: 0;
+  overflow-y: auto;
 }
 
 /* === Logo === */
@@ -2499,7 +2501,6 @@ body > .alert-success {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  flex: 1;
 }
 
 .sidebar-menu-item {
@@ -2608,9 +2609,10 @@ body > .alert-success {
   flex: 1;
   min-width: 0;
   padding: 2rem 2.5rem;
-
-  /* ✅ Background wave */
-  background-color: #eef8fd; /* <-- Ubah ke warna yang diminta */
+  min-height: 100vh;
+  
+  /* Background wave */
+  background-color: #eef8fd; 
   background-image: none;
   background-repeat: no-repeat;
   background-position: right bottom;
@@ -3034,18 +3036,24 @@ body > .alert-success {
 /* === Tombol Upload === */
 .btn-upload {
   background: #ffffff;
-  color: #2f9fe0;
+  color: #1e6f9e;
   border: none;
-  padding: 0.65rem 1.25rem;
+  padding: 0.75rem 1.5rem; 
   border-radius: 10px;
-  font-size: 0.85rem;
+  font-size: 0.95rem; 
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  
-  /* Efek transisi dan bayangan awal */
-  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-upload-icon {
+  flex-shrink: 0;
 }
 
 /* ✅ EFEK SAAT KURSOR DIARAHKAN KE TOMBOL UPLOAD */
@@ -3181,7 +3189,7 @@ body > .alert-success {
 .sidebar-logout {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0;
   padding: 0.75rem 1rem;
   background: transparent;
   border: none;
@@ -3758,12 +3766,15 @@ body > .alert-success {
 .feature-icon {
   width: 56px;
   height: 56px;
-  background-color: #eaf5fc;
+  background-color: #ffffff;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease;
+  color: #1E6F9E; 
 }
 
 .feature-item h3 {
@@ -4396,7 +4407,7 @@ body > .alert-success {
    ============================================================ */
 
 .landing-footer {
-  background-color: #2988c2; /* ✅ Warna background biru footer */
+  background: linear-gradient(to bottom, #2a8ac5 0%, #1e709f 100%);
   color: #ffffff;
   padding: 4rem 2rem 2rem;
 }
@@ -4444,7 +4455,7 @@ body > .alert-success {
 
 .footer-links a:hover {
   color: #ffffff;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .footer-contact p {
@@ -4503,4 +4514,619 @@ body > .alert-success {
   .landing-title { font-size: 2.2rem; }
   .landing-section-title { font-size: 1.8rem; }
   .landing-features-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   LANDING PAGE SKELETON (Animasi Loading)
+   ============================================================ */
+
+.ls-wrapper {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Animasi Shimmer */
+.ls-box {
+  background: #e2e8f0;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ls-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.4) 20%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: ls-shimmer 1.5s infinite;
+}
+
+@keyframes ls-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Container */
+.ls-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* --- 1. Navbar --- */
+.ls-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+.ls-logo { width: 100px; height: 35px; }
+.ls-nav-links { display: flex; gap: 1.5rem; }
+.ls-link { width: 60px; height: 16px; }
+.ls-nav-actions { display: flex; gap: 1rem; }
+.ls-btn-outline { width: 80px; height: 36px; border-radius: 20px; }
+.ls-btn-solid { width: 90px; height: 36px; border-radius: 20px; background: #cbd5e1; }
+
+/* --- 2. Hero --- */
+.ls-hero {
+  display: flex;
+  padding: 5rem 2rem;
+  gap: 4rem;
+  align-items: center;
+}
+.ls-hero-text { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+.ls-hero-img { flex: 1; }
+.ls-img-large { width: 100%; height: 350px; border-radius: 20px; }
+.ls-text-sm { width: 40%; height: 14px; }
+.ls-text-md { width: 70%; height: 22px; }
+.ls-text-lg { width: 100%; height: 45px; }
+.ls-badge { width: 120px; height: 30px; border-radius: 20px; }
+.ls-btn-hero { width: 150px; height: 45px; border-radius: 20px; margin-top: 1rem; }
+
+/* --- 3. Fitur --- */
+.ls-features { padding: 4rem 2rem; }
+.ls-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.ls-feature-item { display: flex; flex-direction: column; gap: 0.75rem; }
+.ls-icon { width: 60px; height: 60px; border-radius: 12px; }
+.ls-text-xs { width: 80%; height: 10px; }
+
+/* --- 4. Tentang --- */
+.ls-section-bg { background: #f1f5f9; padding: 5rem 0; }
+.ls-about { display: flex; gap: 4rem; align-items: center; }
+.ls-about-text { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+.ls-about-cards { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+.ls-card { width: 100%; height: 120px; border-radius: 12px; }
+
+/* --- 5. FAQ --- */
+.ls-faq { display: flex; gap: 4rem; padding: 5rem 2rem; }
+.ls-faq-text { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+.ls-faq-list { flex: 1.2; display: flex; flex-direction: column; gap: 1rem; }
+.ls-faq-item { width: 100%; height: 70px; border-radius: 10px; }
+
+/* --- 6. Footer --- */
+.ls-footer { background: #e2e8f0; padding: 4rem 0 2rem; margin-top: auto; }
+.ls-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+.ls-footer-brand, .ls-footer-links, .ls-footer-contact { display: flex; flex-direction: column; gap: 1rem; }
+.ls-copyright { width: 250px; height: 14px; margin: 0 auto; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ls-hero, .ls-about, .ls-faq { flex-direction: column; }
+  .ls-features-grid { grid-template-columns: repeat(2, 1fr); }
+  .ls-footer-grid { grid-template-columns: 1fr; text-align: center; align-items: center; }
+  .ls-copyright { margin: 2rem auto 0; }
+}
+
+/* ============================================================
+   MATERI PAGE (Dashboard Admin)
+   ============================================================ */
+
+/* Container Utama */
+.materi-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --- Header Card --- */
+.materi-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.materi-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.materi-icon-bg {
+  width: 56px;
+  height: 56px;
+  background: #eaf5fc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e6f9e;
+}
+
+.materi-title h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.materi-title p {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.btn-upload-materi {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #55b5ef;
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-upload-materi:hover {
+  background: #3aa8e0;
+}
+
+/* --- Filter Bar --- */
+.materi-filter-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1rem;
+}
+
+.filter-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-item select,
+.filter-item input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #404040;
+  background: #ffffff;
+  outline: none;
+  appearance: none; /* Hilangkan panah default select */
+}
+
+.filter-item select {
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.filter-item .icon-dropdown {
+  position: absolute;
+  right: 1rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.filter-item .icon-search {
+  position: absolute;
+  left: 1rem;
+  color: #9ca3af;
+}
+
+.filter-item input {
+  padding-left: 2.5rem;
+}
+
+.filter-item input:focus,
+.filter-item select:focus {
+  border-color: #7ec8f5;
+  box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.2);
+}
+
+/* --- Tabel Card --- */
+.materi-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  overflow: hidden; /* Agar border-radius bekerja di tabel */
+}
+
+.materi-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.materi-table th {
+  background: #f8fafc;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.materi-table td {
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Empty State (Saat Data Kosong) */
+.materi-empty-state {
+  text-align: center;
+  padding: 4rem 2rem !important;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Badge Semester */
+.badge-semester {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.badge-s1 { background: #ef4444; } /* Merah */
+.badge-s2 { background: #f59e0b; } /* Orange */
+.badge-s3 { background: #eab308; } /* Kuning */
+.badge-s4 { background: #10b981; } /* Hijau */
+.badge-s5 { background: #14b8a6; } /* Teal */
+
+/* --- Footer Paginasi --- */
+.materi-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pagination-text {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-page {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.btn-page.active {
+  background: #55b5ef;
+  color: #ffffff;
+  border-color: #55b5ef;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   UPLOAD MATERI PAGE
+   ============================================================ */
+.upload-form-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.upload-section {
+  margin-bottom: 1rem;
+}
+
+.upload-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.upload-section-desc {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.upload-box {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.upload-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.required {
+  color: #ef4444; /* Warna merah untuk bintang */
+}
+
+.input-text {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #404040;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input-text:focus {
+  border-color: #7ec8f5;
+  box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.2);
+}
+
+/* Desain Upload File Khusus */
+.file-upload-wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.file-input-display {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name {
+  color: #1a1a1a;
+}
+
+.btn-pilih-file {
+  background: #55b5ef;
+  color: #ffffff !important;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-pilih-file:hover {
+  background: #3aa8e0;
+}
+
+.file-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .upload-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .file-upload-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ============================================================
+   DASHBOARD SKELETON
+   ============================================================ */
+
+.ds-skeleton-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Animasi Shimmer Dasar */
+.ds-box {
+  background: #e2e8f0;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ds-box::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: ds-shimmer 1.5s infinite;
+}
+
+@keyframes ds-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* 1. Header */
+.ds-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+}
+.ds-title { width: 200px; height: 28px; }
+.ds-search { width: 300px; height: 42px; border-radius: 999px; }
+
+/* 2. Main Panel */
+.ds-skeleton-main-panel {
+  background: #bae6fd; /* Warna biru muda sebagai placeholder */
+  border-radius: 20px;
+  padding: 1.75rem;
+}
+.ds-panel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.ds-btn-upload { width: 140px; height: 42px; border-radius: 10px; }
+.ds-panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.ds-stat-card {
+  display: flex;
+  gap: 0.85rem;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+}
+.ds-icon { width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0; }
+.ds-stat-content { display: flex; flex-direction: column; gap: 0.4rem; width: 100%; }
+
+/* 3 & 4. Card Rekap */
+.ds-skeleton-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.ds-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.ds-divider { width: 100%; height: 1px; margin-bottom: 1.5rem; }
+.ds-card-body-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+.ds-empty-icon { width: 48px; height: 48px; border-radius: 50%; }
+
+.ds-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Tabel Mahasiswa Skeleton */
+.ds-table-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.ds-table-head {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+.ds-table-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Ukuran Teks Skeleton */
+.ds-text-lg { height: 24px; }
+.ds-text-md { height: 18px; }
+.ds-text-sm { height: 14px; }
+.ds-text-xs { height: 12px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ds-panel-top { flex-direction: column; gap: 1rem; }
+  .ds-panel-stats { grid-template-columns: 1fr; }
+  .ds-bottom-grid { grid-template-columns: 1fr; }
+  .ds-skeleton-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .ds-search { width: 100%; }
 }

@@ -1,10 +1,10 @@
 // src/components/dashboard/Sidebar.jsx
 // Sidebar dashboard admin
 
-import { Link, useNavigate } from 'react-router-dom';
-import SidebarMenu from './SidebarMenu.jsx';
-import SidebarUser from './SidebarUser.jsx';
-import { useAuth } from '../../hooks/useAuth.js';
+import { Link, useNavigate } from "react-router-dom";
+import SidebarMenu from "./SidebarMenu.jsx";
+import SidebarUser from "./SidebarUser.jsx";
+import { useAuth } from "../../hooks/useAuth.js";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -12,12 +12,11 @@ export default function Sidebar() {
 
   function handleLogout() {
     logout();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   }
 
   return (
     <aside className="sidebar">
-
       {/* === LOGO (Teks) === */}
       <div className="sidebar-brand">
         <Link to="/dashboard" className="sidebar-logo">
@@ -38,11 +37,7 @@ export default function Sidebar() {
       <div className="sidebar-divider"></div>
 
       {/* === TOMBOL KELUAR === */}
-      <button
-        type="button"
-        className="sidebar-logout"
-        onClick={handleLogout}
-      >
+      <button type="button" className="sidebar-logout" onClick={handleLogout}>
         <span className="sidebar-logout-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +62,6 @@ export default function Sidebar() {
 
       {/* === USER CARD === */}
       <SidebarUser />
-
     </aside>
   );
 }

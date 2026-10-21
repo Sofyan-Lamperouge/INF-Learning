@@ -32,6 +32,7 @@ import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import MateriPage from './pages/dashboard/MateriPage.jsx';
 import KuisPage from './pages/dashboard/KuisPage.jsx';
 import MahasiswaPage from './pages/dashboard/MahasiswaPage.jsx';
+import UploadMateriPage from './pages/dashboard/UploadMateriPage.jsx';
 
 // ✅ Preview Skeleton
 import PreviewSkeletonPage from './pages/PreviewSkeletonPage.jsx';
@@ -112,6 +113,9 @@ export default function App() {
 
       {/* ✅ === PREVIEW SKELETON === */}
       <Route path="/preview/skeleton" element={<PreviewSkeletonPage />} />
+      
+      {/* === UPLOAD MATERI === */}
+      <Route path="/dashboard/materi/upload" element={<UploadMateriPage />} />
 
       {/* Fallback — redirect ke Landing Page */}
       <Route path="*" element={<Navigate to="/" replace />} />

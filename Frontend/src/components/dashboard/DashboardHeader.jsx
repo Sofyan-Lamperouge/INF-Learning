@@ -1,12 +1,15 @@
 // src/components/dashboard/DashboardHeader.jsx
 // Header halaman dashboard — judul + search bar
+import { useState } from 'react';
 
 export default function DashboardHeader({
   title = 'Dashboard Admin',
   searchPlaceholder = 'Cari materi, kuis...',
-  searchValue = '',
+  searchValue = '', 
   onSearchChange,
 }) {
+  // ...
+  const [isFocused, setIsFocused] = useState(false);
   return (
     <header className="dashboard-header">
 
@@ -35,7 +38,9 @@ export default function DashboardHeader({
         <input
           type="text"
           className="dashboard-search-input"
-          placeholder={searchPlaceholder}
+          placeholder={isFocused ? '' : searchPlaceholder}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           value={searchValue}
           onChange={onSearchChange}
         />

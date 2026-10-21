@@ -132,7 +132,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} noValidate>
             {/* Field NIM/NIP */}
             <InputField
-              label="NIM/NIP"
+              label="NIM"
               name="nim"
               value={form.nim}
               onChange={handleChange}

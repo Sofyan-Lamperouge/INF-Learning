@@ -157,7 +157,7 @@ export default function RegisterPage() {
                 name="nim"
                 value={form.nim}
                 onChange={handleChange}
-                placeholder="Masukkan NIM (10 digit)"
+                placeholder="Contoh: 24880100XX"
                 error={touched.nim ? errors.nim : ""}
                 required
               />
@@ -171,7 +171,7 @@ export default function RegisterPage() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Min. 8 Karakter, 1 Angka, 1 Simbol"
+                placeholder="Masukan Password"
                 error={touched.password ? errors.password : ""}
                 showStrength
               />
