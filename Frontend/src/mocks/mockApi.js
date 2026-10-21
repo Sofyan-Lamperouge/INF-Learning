@@ -39,25 +39,30 @@ export async function mockLogin({ nim, password }) {
 
 /* ============================================================
    POST /auth/registrasi (Aktivasi Akun)
-   ✅ Validasi konfirmasi kata sandi
+   Hanya menerima nim & password (konfirmasi opsional)
    ============================================================ */
-export async function mockRegister({
-  nim,
-  password,
-  konfirmasiPassword,
-}) {
+   
+export async function mockRegister({ nim, password, konfirmasiPassword }) {
   await delay(DELAY);
 
+  // 1. Cek format NIM
   if (!/^2\d88\d{6}$/.test(nim)) {
     throw new ApiError('Format NIM tidak dikenali', 422);
   }
 
+  // 2. (OPSIONAL) Cek apakah konfirmasi password cocok
+  if (konfirmasiPassword && password !== konfirmasiPassword) {
+    throw new ApiError('Konfirmasi kata sandi tidak cocok', 422);
+  }
+
+  // 3. Cek apakah NIM terdaftar di sistem
   const exists = MOCK_USERS.some((u) => u.nim === nim);
 
   if (!exists) {
     throw new ApiError('NIM tidak terdaftar. Hubungi admin.', 404);
   }
 
+  // 4. Kembalikan data sukses
   return {
     id: 1,
     peran: 'mahasiswa',

@@ -84,7 +84,6 @@ export default function RegisterPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setServerError("");
     setSuccess("");
 
@@ -95,8 +94,10 @@ export default function RegisterPage() {
       nim: validateNim(nim),
       password: validatePassword(form.password),
     };
-
     setErrors(newErrors);
+    setTouched({ nim: true, password: true });
+
+    if (Object.values(newErrors).some(Boolean)) return;
 
     setTouched({
       nim: true,
@@ -113,9 +114,11 @@ export default function RegisterPage() {
       await register({
         nim,
         password: form.password,
+        konfirmasiPassword: form.password, 
       });
 
       setSuccess("Aktivasi berhasil. Mengarahkan ke halaman login...");
+      setTimeout(() => navigate("/login", { replace: true }), 800);
 
       setTimeout(() => {
         navigate("/login", { replace: true });

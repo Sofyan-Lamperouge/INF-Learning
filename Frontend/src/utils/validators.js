@@ -82,3 +82,13 @@ export function validatePassword(value) {
   }
   return '';
 }
+
+export function validateKonfirmasiPassword(password, confirmation) {
+  if (!confirmation) {
+    return 'Konfirmasi password wajib diisi.';
+  }
+  if (password !== confirmation) {
+    return 'Konfirmasi password tidak sama.';
+  }
+  return '';
+}

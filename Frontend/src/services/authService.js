@@ -59,7 +59,7 @@ export async function register({ nim, password }) { // <-- Ubah parameter
     body: JSON.stringify({
       nomor_induk: nim,
       kata_sandi: password,
-      // konfirmasi_kata_sandi: konfirmasiPassword, <-- Hapus ini
+      konfirmasi_kata_sandi: konfirmasiPassword, 
     }),
   });
 }
