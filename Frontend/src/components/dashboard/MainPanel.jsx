@@ -1,24 +1,25 @@
 // src/components/dashboard/MainPanel.jsx
 // Panel biru berisi welcome + tombol upload + statistik
 
-import StatCard from './StatCard.jsx';
+import StatCard from "./StatCard.jsx";
 
 // Icon SVG inline
 function MateriIcon() {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      viewBox="0 0 50 50"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      <path
+        d="M25 41.6666C25 41.6666 28.125 39.5833 35.4166 39.5833C42.7083 39.5833 45.8333 41.6666 45.8333 41.6666V12.4999C45.8333 12.4999 42.7083 8.33325 35.4166 8.33325C28.125 8.33325 25 12.4999 25 12.4999C25 12.4999 21.875 8.33325 14.5833 8.33325C7.29163 8.33325 4.16663 12.4999 4.16663 12.4999V41.6666C4.16663 41.6666 7.29163 39.5833 14.5833 39.5833C21.875 39.5833 25 41.6666 25 41.6666ZM25 12.4999V41.6666"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -26,18 +27,26 @@ function MateriIcon() {
 function KuisIcon() {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      viewBox="0 0 50 50"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <rect x="3" y="3" width="18" height="18" rx="3" />
-      <path d="m9 12 2 2 4-4" />
+      <path
+        d="M14.5833 6.25H35.4167C40.019 6.25 43.75 9.98096 43.75 14.5833V35.4167C43.75 40.019 40.019 43.75 35.4167 43.75H14.5833C9.98096 43.75 6.25 40.019 6.25 35.4167V14.5833C6.25 9.98096 9.98096 6.25 14.5833 6.25Z"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18.75 24.9999L23.4375 29.1666L31.25 20.8333"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -45,27 +54,22 @@ function KuisIcon() {
 function MahasiswaIcon() {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      viewBox="0 0 50 43"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 0 0 7.75" />
+      <path
+        d="M22.87 26.9724C25.0008 25.5458 26.6185 23.4676 27.4839 21.0449C28.3493 18.6223 28.4164 15.9839 27.6754 13.5199C26.9345 11.0559 25.4246 8.89708 23.3693 7.36275C21.3139 5.82842 18.8221 5 16.2623 5C13.7026 5 11.2108 5.82842 9.1554 7.36275C7.10003 8.89708 5.59022 11.0559 4.84922 13.5199C4.10823 15.9839 4.17541 18.6223 5.04081 21.0449C5.90622 23.4676 7.52391 25.5458 9.65466 26.9724C5.80033 28.401 2.50865 31.0446 0.270771 34.5087C0.153156 34.6845 0.0714603 34.882 0.030433 35.0899C-0.0105943 35.2977 -0.010135 35.5116 0.0317844 35.7193C0.0737037 35.9269 0.156247 36.1241 0.274616 36.2994C0.392984 36.4747 0.544818 36.6246 0.72129 36.7403C0.897763 36.8561 1.09535 36.9354 1.30258 36.9737C1.5098 37.012 1.72253 37.0084 1.92838 36.9633C2.13424 36.9182 2.32913 36.8324 2.50172 36.7108C2.6743 36.5893 2.82115 36.4345 2.93371 36.2554C4.37725 34.0226 6.35253 32.1879 8.68018 30.9177C11.0078 29.6476 13.6141 28.9823 16.2623 28.9823C18.9106 28.9823 21.5168 29.6476 23.8445 30.9177C26.1721 32.1879 28.1474 34.0226 29.591 36.2554C29.8241 36.6039 30.1843 36.8461 30.5937 36.9297C31.003 37.0133 31.4287 36.9315 31.7785 36.702C32.1284 36.4725 32.3744 36.1138 32.4633 35.7034C32.5523 35.2929 32.4771 34.8638 32.2539 34.5087C30.016 31.0446 26.7243 28.401 22.87 26.9724ZM7.51834 16.9959C7.51834 15.2567 8.03117 13.5566 8.99197 12.1105C9.95278 10.6644 11.3184 9.53737 12.9162 8.87182C14.5139 8.20627 16.272 8.03213 17.9682 8.37143C19.6644 8.71072 21.2224 9.54821 22.4453 10.778C23.6681 12.0078 24.5009 13.5746 24.8383 15.2803C25.1757 16.9861 25.0025 18.7542 24.3407 20.3609C23.6789 21.9677 22.5582 23.3411 21.1202 24.3073C19.6823 25.2735 17.9917 25.7892 16.2623 25.7892C13.9441 25.7866 11.7216 24.8593 10.0823 23.2108C8.44306 21.5623 7.52098 19.3272 7.51834 16.9959ZM49.2788 36.721C48.9257 36.9526 48.4956 37.0337 48.083 36.9463C47.6705 36.859 47.3093 36.6105 47.0789 36.2554C45.6371 34.0213 43.6621 32.1858 41.334 30.9161C39.0059 29.6465 36.3987 28.9833 33.7503 28.9868C33.3287 28.9868 32.9243 28.8184 32.6261 28.5186C32.328 28.2187 32.1605 27.8121 32.1605 27.388C32.1605 26.964 32.328 26.5574 32.6261 26.2575C32.9243 25.9577 33.3287 25.7892 33.7503 25.7892C35.038 25.788 36.3095 25.5008 37.474 24.9481C38.6386 24.3954 39.6673 23.5909 40.4868 22.592C41.3063 21.5931 41.8963 20.4245 42.2146 19.1698C42.533 17.915 42.5718 16.605 42.3284 15.3334C42.0849 14.0618 41.5652 12.8599 40.8063 11.8137C40.0475 10.7675 39.0682 9.9028 37.9385 9.28132C36.8088 8.65984 35.5565 8.29695 34.2712 8.21858C32.9859 8.14022 31.6992 8.34831 30.5031 8.82799C30.3081 8.91277 30.0982 8.95739 29.8857 8.95919C29.6733 8.961 29.4626 8.91996 29.2662 8.83851C29.0698 8.75705 28.8916 8.63683 28.7421 8.48495C28.5927 8.33307 28.4751 8.15261 28.3962 7.95423C28.3173 7.75585 28.2787 7.54358 28.2827 7.32996C28.2868 7.11633 28.3334 6.9057 28.4198 6.71049C28.5061 6.51528 28.6305 6.33946 28.7856 6.19342C28.9407 6.04738 29.1233 5.93408 29.3227 5.86022C32.0601 4.76235 35.1048 4.72284 37.8694 5.74932C40.634 6.7758 42.9227 8.79553 44.294 11.4189C45.6652 14.0422 46.0218 17.0833 45.295 19.9555C44.5681 22.8276 42.8094 25.3273 40.358 26.9724C44.2123 28.401 47.504 31.0446 49.7419 34.5087C49.9722 34.8638 50.0527 35.2964 49.9659 35.7113C49.8791 36.1262 49.6319 36.4894 49.2788 36.721Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
 
-
 export default function MainPanel({ user, stats, onUpload }) {
-  const nama = user?.namaLengkap || 'Admin';
+  const nama = user?.namaLengkap || "Admin";
 
   const totalMateri = stats?.totalMateri ?? 0;
   const totalKuis = stats?.totalKuis ?? 0;
@@ -73,56 +77,74 @@ export default function MainPanel({ user, stats, onUpload }) {
 
   return (
     <div className="main-panel">
-
       {/* === ROW ATAS: Welcome + Tombol Upload === */}
       <div className="main-panel-header">
-
         <div className="main-panel-welcome">
-          <h2 className="main-panel-title">
-            Selamat Datang, {nama}!
-          </h2>
+          <h2 className="main-panel-title">Selamat Datang, {nama}!</h2>
           <p className="main-panel-subtitle">
-            Ringkasan materi, kuis, dan mahasiswa yang terbaru
-            diambahkan atau diperbarui
+            Ringkasan materi, kuis, dan mahasiswa yang terbaru diambahkan atau
+            diperbarui
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn-upload"
-          onClick={onUpload}
-        >
-          + Upload materi
+        <button type="button" className="btn-upload" onClick={onUpload}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 28 27"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="btn-upload-icon"
+          >
+            <path
+              d="M14.4968 14.2758V25.5326M17.6236 16.7773L14.4968 14.2758L11.3699 16.7773M5.78404 10.6699C4.60109 10.9676 3.56756 11.687 2.87761 12.6929C2.18767 13.6989 1.88881 14.9222 2.03718 16.1329C2.18555 17.3437 2.77094 18.4586 3.68336 19.2682C4.59579 20.0778 5.77245 20.5264 6.99226 20.5296H8.24301"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M19.2872 8.19479C18.8597 6.50199 17.8045 5.03508 16.3355 4.0914C14.8666 3.14773 13.0938 2.79792 11.3765 3.11288C9.65918 3.42783 8.12589 4.38399 7.08742 5.78752C6.04895 7.19106 5.58301 8.93695 5.78406 10.6713C5.78406 10.6713 5.97542 11.7744 6.36691 12.3998"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M20.7504 20.5297C21.6335 20.5291 22.5064 20.3415 23.3118 19.9792C24.1171 19.6169 24.8366 19.0882 25.4229 18.4278C26.0091 17.7674 26.4489 16.9903 26.7132 16.1477C26.9775 15.3052 27.0604 14.4161 26.9563 13.5392C26.8523 12.6623 26.5637 11.8173 26.1096 11.06C25.6555 10.3026 25.0461 9.65 24.3216 9.14512C23.5971 8.64024 22.7739 8.29453 21.9061 8.13073C21.0383 7.96694 20.1457 7.98878 19.287 8.19482L17.6235 8.64759"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>Upload materi</span>
         </button>
-
       </div>
 
       {/* === ROW BAWAH: 3 Kartu Statistik === */}
       <div className="main-panel-stats">
-
         <StatCard
           icon={<MateriIcon />}
           title="Total Materi"
-          value={String(totalMateri).padStart(2, '0')}
+          value={String(totalMateri).padStart(2, "0")}
           subtitle="(+) 0 Materi ditambahkan hari ini"
         />
 
         <StatCard
           icon={<KuisIcon />}
           title="Total Kuis"
-          value={String(totalKuis).padStart(2, '0')}
+          value={String(totalKuis).padStart(2, "0")}
           subtitle="(+) 0 Kuis ditambahkan hari ini"
         />
 
         <StatCard
           icon={<MahasiswaIcon />}
           title="Total Mahasiswa"
-          value={String(totalMahasiswa).padStart(2, '0')}
+          value={String(totalMahasiswa).padStart(2, "0")}
           subtitle="(+) 0 Mahasiswa bergabung hari ini"
         />
-
       </div>
-
     </div>
   );
 }

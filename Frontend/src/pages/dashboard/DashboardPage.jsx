@@ -8,39 +8,57 @@ import RekapMateri from '../../components/dashboard/RekapMateri.jsx';
 import RekapKuis from '../../components/dashboard/RekapKuis.jsx';
 import TabelMahasiswa from '../../components/dashboard/TabelMahasiswa.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
-
+import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton.jsx';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // ✅ 1. Semua State diletakkan di atas
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
   const [stats, setStats] = useState({
     totalMateri: 0,
     totalKuis: 0,
-    totalMahasiswa: 4,
+    totalMahasiswa: 0,
   });
+  const [materiList, setMateriList] = useState([]);
+  const [kuisList, setKuisList] = useState([]);
+  const [mahasiswaList, setMahasiswaList] = useState([]);
 
-  const [materiList] = useState([]);
-  const [kuisList] = useState([]);
+  // ✅ 2. Satu useEffect untuk mengambil semua data
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  // Mock mahasiswa data — nanti fetch dari backend
-  const [mahasiswaList] = useState([
-    { id: 1, nomor_induk: '2488010024', nama: 'Nisa Naila', angkatan: 2024 },
-    { id: 2, nomor_induk: '2488010031', nama: 'Mohammad Sofyan Nurseha', angkatan: 2024 },
-    { id: 3, nomor_induk: '2488010038', nama: 'Haikal Azkal Azkiya', angkatan: 2024 },
-    { id: 4, nomor_induk: '2488010048', nama: 'Dzaky Muhammad Nafis', angkatan: 2024 },
-    { id: 5, nomor_induk: '2488010071', nama: 'Mohammad Rizky Saputra', angkatan: 2024 },
-  ]);
+      } catch (error) {
+        console.error("Gagal mengambil data dashboard:", error);
+      } finally {
+        // ✅ Loading diset false setelah data selesai diambil
+        setLoading(false); 
+      }
+    }
+
+    fetchDashboardData();
+  }, []);
 
   function handleUpload() {
     navigate('/dashboard/materi');
   }
 
+  // ✅ 3. Jika masih loading, tampilkan Skeleton
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <DashboardSkeleton />
+      </DashboardLayout>
+    );
+  }
+
+  // ✅ 4. Jika sudah selesai, tampilkan halaman asli
   return (
     <DashboardLayout>
-
       <DashboardHeader
         title="Dashboard Admin"
         searchPlaceholder="Cari materi, kuis..."
@@ -62,7 +80,6 @@ export default function DashboardPage() {
         <RekapKuis kuisList={kuisList} />
         <TabelMahasiswa mahasiswaList={mahasiswaList} />
       </div>
-
     </DashboardLayout>
   );
 }
