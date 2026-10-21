@@ -7,7 +7,6 @@ from app.core.config import settings
 from app.core.security import (
     buat_access_token,
     hash_kata_sandi,
-    verifikasi_kata_sandi,
 )
 from app.crud import pengguna as crud_pengguna
 from app.models.pengguna import Pengguna
