@@ -18,6 +18,13 @@ class RegistrasiRequest(BaseModel):
             raise ValueError("Format NIM tidak dikenali")
         return v
 
+    @model_validator(mode="after")
+    def cek_konfirmasi_kata_sandi(self):
+        if self.kata_sandi != self.konfirmasi_kata_sandi:
+            raise ValueError("Konfirmasi kata sandi tidak cocok")
+        return self
+
+
 class RegistrasiResponse(BaseModel):
     id: int
     peran: str
