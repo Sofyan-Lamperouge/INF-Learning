@@ -110,7 +110,7 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      // ✅ Kirim data tanpa konfirmasiPassword
+      // Kirim data 
       await register({
         nim,
         password: form.password,

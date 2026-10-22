@@ -1,25 +1,94 @@
 // src/pages/dashboard/MateriPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
-// import DashboardHeader from '../../components/dashboard/DashboardHeader.jsx'; // Jika butuh header atas
+import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
+
+const DUMMY_MATERI = [
+  {
+    id: 1,
+    semester: "Semester 1",
+    matkul: "Struktur Data",
+    nama: "Pengantar Algoritma",
+    file: "pengantar_algoritma.pdf",
+  },
+  {
+    id: 2,
+    semester: "Semester 2",
+    matkul: "Algoritma dan Pemrograman 2",
+    nama: "Returning a Result from a Function",
+    file: "algo2_ptmn11.pdf",
+  },
+  {
+    id: 3,
+    semester: "Semester 3",
+    matkul: "Pemrograman Berorientasi Objek",
+    nama: "Konsep Dasar OOP dan Class Object",
+    file: "pbo_ptmn2.pdf",
+  },
+  {
+    id: 4,
+    semester: "Semester 4",
+    matkul: "Kriptografi",
+    nama: "Algoritma Kriptografi Klasik dan Modern",
+    file: "kripto_ptmn2.pdf",
+  },
+  {
+    id: 5,
+    semester: "Semester 5",
+    matkul: "Manajemen Proyek",
+    nama: "Lanskap Proyek Perangkat Lunak dan Pembentukan Tim",
+    file: "mppl_ptmn1.pdf",
+  },
+  {
+    id: 6,
+    semester: "Semester 5",
+    matkul: "Manajemen Proyek",
+    nama: "Kerangka Kerja Manajemen Proyek",
+    file: "mppl_ptmn1.pdf",
+  },
+];
 
 export default function MateriPage() {
-  // State untuk data materi (Masih kosong)
-  const [materiList] = useState([]);
 
-  // State untuk filter
+  const [loading, setLoading] = useState(true);
+  const [materiList] = useState(DUMMY_MATERI);
   const [search, setSearch] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <MateriSkeleton />
+      </DashboardLayout>
+    );
+  }
+
+  // Fungsi getSemesterBadge (jangan lupa dideklarasikan)
+  const getSemesterBadge = (semester) => {
+    switch (semester) {
+      case "Semester 1":
+        return "badge-s1";
+      case "Semester 2":
+        return "badge-s2";
+      case "Semester 3":
+        return "badge-s3";
+      case "Semester 4":
+        return "badge-s4";
+      case "Semester 5":
+        return "badge-s5";
+      default:
+        return "badge-s1";
+    }
+  };
+
   return (
     <DashboardLayout>
-      {/* <DashboardHeader 
-        title="Dashboard Admin" 
-        searchValue={search}
-        onSearchChange={(e) => setSearch(e.target.value)}
-      /> */}
-
       <div className="materi-container">
         {/* === 1. KARTU HEADER MATERI KULIAH === */}
         <div className="materi-header-card">
@@ -34,9 +103,9 @@ export default function MateriPage() {
               >
                 <path
                   d="M25 41.6666C25 41.6666 28.125 39.5833 35.4166 39.5833C42.7083 39.5833 45.8333 41.6666 45.8333 41.6666V12.4999C45.8333 12.4999 42.7083 8.33325 35.4166 8.33325C28.125 8.33325 25 12.4999 25 12.4999C25 12.4999 21.875 8.33325 14.5833 8.33325C7.29163 8.33325 4.16663 12.4999 4.16663 12.4999V41.6666C4.16663 41.6666 7.29163 39.5833 14.5833 39.5833C21.875 39.5833 25 41.6666 25 41.6666ZM25 12.4999V41.6666"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   stroke="#1E6F9E"
                 />
               </svg>
@@ -53,8 +122,8 @@ export default function MateriPage() {
             style={{ textDecoration: "none" }}
           >
             <svg
-              width="24"
-              height="24"
+              width="30"
+              height="25"
               viewBox="0 0 28 27"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +157,6 @@ export default function MateriPage() {
 
         {/* === 2. FILTER & PENCARIAN === */}
         <div className="materi-filter-bar">
-          {/* Filter Semester */}
           <div className="filter-item">
             <select>
               <option value="">Semester</option>
@@ -113,7 +181,6 @@ export default function MateriPage() {
             </svg>
           </div>
 
-          {/* Filter Mata Kuliah */}
           <div className="filter-item">
             <select>
               <option value="">Mata Kuliah</option>
@@ -135,7 +202,6 @@ export default function MateriPage() {
             </svg>
           </div>
 
-          {/* Pencarian */}
           <div className="filter-item">
             <svg
               className="icon-search"
@@ -153,7 +219,7 @@ export default function MateriPage() {
             </svg>
             <input
               type="text"
-              placeholder={isSearchFocused ? '' : 'Cari materi...'} 
+              placeholder={isSearchFocused ? "" : "Cari materi..."}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               value={search}
@@ -168,9 +234,9 @@ export default function MateriPage() {
             <thead>
               <tr>
                 <th width="5%">No</th>
-                <th width="15%">Semester</th>
-                <th width="20%">Mata Kuliah</th>
-                <th width="30%">Nama Materi</th>
+                <th width="20%">Semester</th>
+                <th width="25%">Mata Kuliah</th>
+                <th width="40%">Nama Materi</th>
                 <th width="20%">File</th>
                 <th width="10%">Aksi</th>
               </tr>
@@ -184,21 +250,97 @@ export default function MateriPage() {
                 </tr>
               ) : (
                 materiList.map((materi, index) => (
-                  <tr key={index}>
+                  <tr key={materi.id}>
                     <td>{index + 1}</td>
                     <td>
-                      {/* Contoh badge, sesuaikan dengan data asli nanti */}
-                      <span className="badge-semester badge-s1">
+                      {/*  2. Panggil fungsi getSemesterBadge */}
+                      <span
+                        className={`badge-semester ${getSemesterBadge(materi.semester)}`}
+                      >
                         {materi.semester}
                       </span>
                     </td>
-                    <td>{materi.matkul}</td>
-                    <td>{materi.nama}</td>
-                    <td>{materi.file}</td>
+                    <td style={{ color: "#6b7280" }}>{materi.matkul}</td>
+                    <td style={{ color: "#4b5563" }}>{materi.nama}</td>
+                    <td style={{ color: "#6b7280" }}>{materi.file}</td>
                     <td>
-                      {/* Tombol Aksi (Edit/Hapus) */}
-                      <button className="btn-icon-edit">✏️</button>
-                      <button className="btn-icon-delete">🗑️</button>
+                      {/*  3. Tombol Edit & Hapus dengan SVG */}
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 30 26"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M20.9531 17.5183L22.6198 15.8933C22.8802 15.6394 23.3333 15.8171 23.3333 16.1827V23.5663C23.3333 24.912 22.2135 26.0038 20.8333 26.0038H2.5C1.11979 26.0038 0 24.912 0 23.5663V5.69131C0 4.34561 1.11979 3.25381 2.5 3.25381H16.7448C17.1146 3.25381 17.3021 3.69053 17.0417 3.94951L15.375 5.57451C15.2969 5.65068 15.1927 5.69131 15.0781 5.69131H2.5V23.5663H20.8333V17.8026C20.8333 17.696 20.875 17.5944 20.9531 17.5183ZM29.1094 7.27061L15.4323 20.6058L10.724 21.1136C9.35937 21.2608 8.19792 20.1386 8.34896 18.798L8.86979 14.2073L22.5469 0.872168C23.7396 -0.290723 25.6667 -0.290723 26.8542 0.872168L29.1042 3.06592C30.2969 4.22881 30.2969 6.11279 29.1094 7.27061ZM23.9635 8.83975L20.9375 5.88936L11.2604 15.3296L10.8802 18.6456L14.2812 18.2749L23.9635 8.83975ZM27.3385 4.79248L25.0885 2.59873C24.875 2.39053 24.526 2.39053 24.3177 2.59873L22.7083 4.16787L25.7344 7.11826L27.3438 5.54912C27.5521 5.33584 27.5521 5.00068 27.3385 4.79248Z"
+                              fill="#55B5EF"
+                            />
+                          </svg>
+                        </button>
+
+                        <button
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            display: "flex",
+                          }}
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 50 50"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect
+                              width="50"
+                              height="50"
+                              rx="18"
+                              fill="#FEE2E2"
+                            />
+                            <path
+                              d="M16.5625 16.5625L17.7344 35.3125C17.79 36.3959 18.5781 37.1875 19.6094 37.1875H30.3906C31.426 37.1875 32.1994 36.3959 32.2656 35.3125L33.4375 16.5625"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              stroke="#DC2626"
+                            />
+                            <path
+                              d="M14.6875 16.5625H35.3125Z"
+                              fill="#DC2626"
+                            />
+                            <path
+                              d="M14.6875 16.5625H35.3125"
+                              strokeWidth="3"
+                              strokeMiterlimit="10"
+                              strokeLinecap="round"
+                              stroke="#DC2626"
+                            />
+                            <path
+                              d="M21.25 16.5625V14.2188C21.2495 14.0339 21.2855 13.8508 21.3559 13.68C21.4264 13.5091 21.53 13.3539 21.6607 13.2232C21.7914 13.0925 21.9466 12.9889 22.1175 12.9184C22.2883 12.848 22.4714 12.812 22.6562 12.8125H27.3438C27.5286 12.812 27.7117 12.848 27.8825 12.9184C28.0534 12.9889 28.2086 13.0925 28.3393 13.2232C28.47 13.3539 28.5736 13.5091 28.6441 13.68C28.7145 13.8508 28.7505 14.0339 28.75 14.2188V16.5625M25 20.3125V33.4375M20.7812 20.3125L21.25 33.4375M29.2188 20.3125L28.75 33.4375"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              stroke="#DC2626"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

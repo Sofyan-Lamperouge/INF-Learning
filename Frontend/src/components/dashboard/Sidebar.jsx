@@ -1,18 +1,34 @@
 // src/components/dashboard/Sidebar.jsx
 // Sidebar dashboard admin
 
+import { useState, useEffect } from "react"; // ✅ 1. Tambahkan import useState & useEffect
 import { Link, useNavigate } from "react-router-dom";
 import SidebarMenu from "./SidebarMenu.jsx";
 import SidebarUser from "./SidebarUser.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
+import SidebarSkeleton from "../skeletons/SidebarSkeleton.jsx";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    // Sembunyikan skeleton setelah 1 detik
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Pindahkan handleLogout ke ATAS if(loading) agar tidak melanggar aturan React Hooks
   function handleLogout() {
     logout();
     navigate("/login", { replace: true });
+  }
+
+  // ✅ 3. Pengecekan loading diletakkan setelah semua fungsi dideklarasikan
+  if (loading) {
+    return <SidebarSkeleton />;
   }
 
   return (
