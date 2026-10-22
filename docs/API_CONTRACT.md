@@ -432,7 +432,6 @@ Response:
         "peran": "mahasiswa",
         "nomor_induk": "2488010001",
         "nama": "Budi Santoso",
-        "email": "budi@example.com",
         "status": "aktif"
     }
 }
@@ -492,7 +491,6 @@ Response:
     "peran": "mahasiswa",
     "nomor_induk": "2488010001",
     "nama": "Budi Santoso",
-    "email": "budi@example.com",
     "status": "aktif"
 }
 ```
@@ -665,7 +663,6 @@ Object pengguna standar:
     "peran": "mahasiswa",
     "nomor_induk": "2488010001",
     "nama": "Budi Santoso",
-    "email": "budi@example.com",
     "status": "aktif"
 }
 ```

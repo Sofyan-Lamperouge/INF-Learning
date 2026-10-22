@@ -1,0 +1,4 @@
+name: INF-Learning Lokal
+values:
+  - key: base_url
+    value: ''
