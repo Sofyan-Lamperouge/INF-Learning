@@ -1,10 +1,14 @@
 // src/components/dashboard/TabelMahasiswa.jsx
 
 import { Link } from 'react-router-dom';
+const DUMMY_MAHASISWA = [
+  { nim: '12345678', nama: 'Muhammad Sofyan Nurseha', angkatan: '2024' },
+  { nim: '87654321', nama: 'Muhammad Rizky Saputra', angkatan: '2024' },
+];
 
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
   return (
-    //  Bungkus dengan class rekap-card (sama seperti Rekap Kuis)
+    
     <div className="rekap-card">
       
       {/* Header Judul & Link */}
@@ -27,25 +31,24 @@ export default function TabelMahasiswa({ mahasiswaList = [] }) {
             </tr>
           </thead>
           <tbody>
-            {/*
-             JIKA DATA KOSONG */}
-            {mahasiswaList.length === 0 ? (
-              <tr>
-                <td colSpan="3" className="tabel-kosong">
-                  Belum ada data mahasiswa dari backend.
-                </td>
-              </tr>
-            ) : (
-              /* ✅ JIKA DATA ADA */
-              mahasiswaList.map((mhs, index) => (
-                <tr key={mhs.id || mhs.nomor_induk || index}>
-                  <td>{mhs.nomor_induk || mhs.nim}</td>
-                  <td>{mhs.nama}</td>
-                  <td>{mhs.angkatan}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
+        {mahasiswaList.length === 0 ? (
+          <tr>
+            {/* ✅ Tampilkan pesan jika kosong */}
+            <td colSpan="3" className="tabel-kosong">
+              Belum ada data mahasiswa dari backend.
+            </td>
+          </tr>
+        ) : (
+          // ✅ 2. Lakukan perulangan (map) untuk menampilkan data
+          mahasiswaList.map((mhs, index) => (
+            <tr key={mhs.nim || index}>
+              <td>{mhs.nim}</td>
+              <td>{mhs.nama}</td>
+              <td>{mhs.angkatan}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
         </table>
       </div>
     </div>
