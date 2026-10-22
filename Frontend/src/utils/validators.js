@@ -49,7 +49,7 @@ export function validateNimLogin(value) {
 
 
 /* ============================================================
-   VALIDASI NIM — Admin only (kalau perlu)
+   VALIDASI NIM — Admin only 
    ============================================================ */
 export function validateNimAdmin(value) {
   const nim = String(value ?? '').trim();
@@ -68,6 +68,7 @@ export function validateNimAdmin(value) {
 /* ============================================================
    VALIDASI PASSWORD
    ============================================================ */
+   
 export function validatePassword(value) {
   const password = String(value ?? '');
 

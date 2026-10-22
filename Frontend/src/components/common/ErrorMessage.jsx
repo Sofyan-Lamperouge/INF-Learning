@@ -1,9 +1,3 @@
-// src/components/common/ErrorMessage.jsx
-//
-// ErrorMessage — pesan error dengan 2 varian:
-// - "default": alert merah dengan background (untuk error global / jaringan)
-// - "field":   teks kecil merah (untuk error per field)
-
 export default function ErrorMessage({ message, variant = 'default' }) {
   if (!message) return null;
 

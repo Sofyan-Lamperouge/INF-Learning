@@ -84,7 +84,6 @@ export default function RegisterPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setServerError("");
     setSuccess("");
 
@@ -95,8 +94,10 @@ export default function RegisterPage() {
       nim: validateNim(nim),
       password: validatePassword(form.password),
     };
-
     setErrors(newErrors);
+    setTouched({ nim: true, password: true });
+
+    if (Object.values(newErrors).some(Boolean)) return;
 
     setTouched({
       nim: true,
@@ -109,13 +110,15 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      // ✅ Kirim data tanpa konfirmasiPassword
+      // Kirim data 
       await register({
         nim,
         password: form.password,
+        konfirmasiPassword: form.password, 
       });
 
       setSuccess("Aktivasi berhasil. Mengarahkan ke halaman login...");
+      setTimeout(() => navigate("/login", { replace: true }), 800);
 
       setTimeout(() => {
         navigate("/login", { replace: true });
@@ -143,7 +146,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="auth-form-col">
-          {/* ✅ PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
+          {/* PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
           <div className="auth-form-top">
             <h1 className="auth-title">Get Started!</h1>
 
@@ -184,7 +187,7 @@ export default function RegisterPage() {
               </button>
             </form>
           </div>
-          {/* ✅ BATAS AKHIR PEMBUNGKUS BARU */}
+          {/* BATAS AKHIR PEMBUNGKUS BARU */}
 
           {/* Teks ini sekarang berada di luar bungkusan, jadi akan terdorong ke bawah */}
           <p className="auth-footer">

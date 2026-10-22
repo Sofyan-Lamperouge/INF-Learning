@@ -6,7 +6,7 @@ export const MOCK_USERS = [
   {
     id: 1,
     nama: 'Budi Santoso',
-    nim: '2488010071',     // 10 digit, pola ^2\d88\d{6}$
+    nim: '2488010071',    
     password: 'rahasia123',
     role: 'mahasiswa',
   },
