@@ -1,5 +1,7 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.core.config import settings
@@ -30,6 +32,12 @@ app.include_router(admin.router, prefix="/api/v1")
 app.include_router(mahasiswa.router, prefix="/api/v1")
 app.include_router(kuis.router, prefix="/api/v1")
 
+# ====================================================
+# TAMBAHKAN 2 BARIS INI UNTUK MENGAKSES FILE UPLOAD
+# ====================================================
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# ====================================================
 
 @app.get("/", tags=["root"])
 def root():

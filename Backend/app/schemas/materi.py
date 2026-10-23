@@ -1,7 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
-VALID_JENIS = {"pdf", "ppt", "video", "link", "lainnya"}
+
+VALID_JENIS = {"pdf", "ppt", "pptx", "doc", "docx", "xls", "xlsx"}
 
 
 class MateriCreateRequest(BaseModel):
