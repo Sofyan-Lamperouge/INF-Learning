@@ -88,7 +88,7 @@ export default function LoginPage() {
       loginSuccess(result.token, result.role);
 
       setTimeout(() => {
-        // ✅ PERBAIKAN: Cek role sebelum pindah halaman
+        // 
         if (result.role === "admin") {
           navigate("/dashboard", { replace: true });
         } else {
@@ -114,7 +114,7 @@ export default function LoginPage() {
 
   return (
     <main className="auth-page">
-      {/* ❌ TAG <img> BACKGROUND SUDAH DIHAPUS */}
+      {/*  */}
 
       <div className="auth-card">
         <div className="auth-illustration">
