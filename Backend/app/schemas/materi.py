@@ -88,3 +88,10 @@ class MateriResponse(BaseModel):
     diubah_pada: datetime
 
     model_config = {"from_attributes": True}
+
+class MateriListResponse(BaseModel):
+    items: list[MateriResponse]
+    total: int
+    page: int
+    limit: int
+    total_pages: int

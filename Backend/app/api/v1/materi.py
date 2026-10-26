@@ -64,3 +64,46 @@ def create_materi(
     return materi_service.create_materi(db, data, admin.id)
 
 # ... (biarkan endpoint PUT dan DELETE tetap sama) ...
+@router.get("", response_model=MateriListResponse, summary="List materi")
+def list_materi(
+    mata_kuliah: str | None = Query(None),
+    semester: int | None = Query(None, ge=1, le=8),
+    jenis: str | None = Query(None),
+    q: str | None = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    user: Pengguna = Depends(get_current_user),
+):
+    return materi_service.list_materi(
+        db, mata_kuliah=mata_kuliah, semester=semester,
+        jenis=jenis, q=q, page=page, limit=limit,
+    )
+
+
+@router.get("/{materi_id}", response_model=MateriResponse)
+def detail_materi(
+    materi_id: int,
+    db: Session = Depends(get_db),
+    user: Pengguna = Depends(get_current_user),
+):
+    return materi_service.get_materi(db, materi_id)
+
+
+@router.put("/{materi_id}", response_model=MateriResponse)
+def edit_materi(
+    materi_id: int,
+    data: MateriUpdateRequest,
+    db: Session = Depends(get_db),
+    admin: Pengguna = Depends(require_role("admin")),
+):
+    return materi_service.update_materi(db, materi_id, data)
+
+
+@router.delete("/{materi_id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_materi(
+    materi_id: int,
+    db: Session = Depends(get_db),
+    admin: Pengguna = Depends(require_role("admin")),
+):
+    materi_service.delete_materi(db, materi_id)
