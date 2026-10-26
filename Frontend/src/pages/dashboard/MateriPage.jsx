@@ -4,51 +4,6 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
 
-const DUMMY_MATERI = [
-  {
-    id: 1,
-    semester: "Semester 1",
-    matkul: "Struktur Data",
-    nama: "Pengantar Algoritma",
-    file: "pengantar_algoritma.pdf",
-  },
-  {
-    id: 2,
-    semester: "Semester 2",
-    matkul: "Algoritma dan Pemrograman 2",
-    nama: "Returning a Result from a Function",
-    file: "algo2_ptmn11.pdf",
-  },
-  {
-    id: 3,
-    semester: "Semester 3",
-    matkul: "Pemrograman Berorientasi Objek",
-    nama: "Konsep Dasar OOP dan Class Object",
-    file: "pbo_ptmn2.pdf",
-  },
-  {
-    id: 4,
-    semester: "Semester 4",
-    matkul: "Kriptografi",
-    nama: "Algoritma Kriptografi Klasik dan Modern",
-    file: "kripto_ptmn2.pdf",
-  },
-  {
-    id: 5,
-    semester: "Semester 5",
-    matkul: "Manajemen Proyek",
-    nama: "Lanskap Proyek Perangkat Lunak dan Pembentukan Tim",
-    file: "mppl_ptmn1.pdf",
-  },
-  {
-    id: 6,
-    semester: "Semester 5",
-    matkul: "Manajemen Proyek",
-    nama: "Kerangka Kerja Manajemen Proyek",
-    file: "mppl_ptmn1.pdf",
-  },
-];
-
 export default function MateriPage() {
 
   const [loading, setLoading] = useState(true);
