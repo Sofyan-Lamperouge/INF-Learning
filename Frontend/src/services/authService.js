@@ -44,13 +44,9 @@ export async function login({ nim, password }) {
 /* ============================================================
    REGISTER (Aktivasi Akun)
    ============================================================ */
-export async function register({ nim, password }) { 
+export async function register({ nim, password }) {
   if (USE_MOCK) {
-    return mockRegister({
-      nim,
-      password,
-      konfirmasiPassword,
-    });
+    return mockRegister({ nim, password });
   }
 
   return request('/auth/registrasi', {
@@ -58,11 +54,9 @@ export async function register({ nim, password }) {
     body: JSON.stringify({
       nomor_induk: nim,
       kata_sandi: password,
-      konfirmasi_kata_sandi: konfirmasiPassword, 
     }),
   });
 }
-
 
 /* ============================================================
    GET ME

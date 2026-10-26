@@ -1,10 +1,7 @@
 // src/components/dashboard/TabelMahasiswa.jsx
 
 import { Link } from 'react-router-dom';
-const DUMMY_MAHASISWA = [
-  { nim: '12345678', nama: 'Muhammad Sofyan Nurseha', angkatan: '2024' },
-  { nim: '87654321', nama: 'Muhammad Rizky Saputra', angkatan: '2024' },
-];
+
 
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
   return (
