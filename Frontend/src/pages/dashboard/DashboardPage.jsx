@@ -1,3 +1,11 @@
+// Frontend/src/pages/dashboard/DashboardPage.jsx
+//
+// [DIUBAH]
+//  - fetchDashboardData sekarang benar-benar memanggil GET /admin/dashboard
+//    (sebelumnya hanya menunggu 1,5 detik, sehingga semua data selalu kosong).
+//  - Menambah import getDashboard dari adminService.
+//  - kuisList belum diisi karena backend belum mengirim daftar kuis.
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,12 +17,12 @@ import RekapKuis from '../../components/dashboard/RekapKuis.jsx';
 import TabelMahasiswa from '../../components/dashboard/TabelMahasiswa.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton.jsx';
+import { getDashboard } from '../../services/adminService.js'; // [BARU]
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // ✅ 1. Semua State diletakkan di atas
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [stats, setStats] = useState({
@@ -23,31 +31,43 @@ export default function DashboardPage() {
     totalMahasiswa: 0,
   });
   const [materiList, setMateriList] = useState([]);
-  const [kuisList, setKuisList] = useState([]);
+  const [kuisList] = useState([]); // belum ada datanya dari backend
   const [mahasiswaList, setMahasiswaList] = useState([]);
 
-  // ✅ 2. Satu useEffect untuk mengambil semua data
   useEffect(() => {
+    let active = true;
+
     async function fetchDashboardData() {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const data = await getDashboard(); // [DIUBAH] ambil data asli
 
+        if (!active) return;
+
+        setStats({
+          totalMateri: data.total_materi,
+          totalKuis: data.total_kuis,
+          totalMahasiswa: data.total_mahasiswa,
+        });
+        setMateriList(data.materi_terbaru);
+        setMahasiswaList(data.mahasiswa_terbaru);
       } catch (error) {
-        console.error("Gagal mengambil data dashboard:", error);
+        console.error('Gagal mengambil data dashboard:', error);
       } finally {
-        // ✅ Loading diset false setelah data selesai diambil
-        setLoading(false); 
+        if (active) setLoading(false);
       }
     }
 
     fetchDashboardData();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   function handleUpload() {
     navigate('/dashboard/materi');
   }
 
-  // ✅ 3. Jika masih loading, tampilkan Skeleton
   if (loading) {
     return (
       <DashboardLayout>
@@ -56,7 +76,6 @@ export default function DashboardPage() {
     );
   }
 
-  // ✅ 4. Jika sudah selesai, tampilkan halaman asli
   return (
     <DashboardLayout>
       <DashboardHeader
@@ -66,16 +85,12 @@ export default function DashboardPage() {
         onSearchChange={(e) => setSearch(e.target.value)}
       />
 
-      <MainPanel
-        user={user}
-        stats={stats}
-        onUpload={handleUpload}
-      />
+      <MainPanel user={user} stats={stats} onUpload={handleUpload} />
 
-      {/* ✅ Rekap Materi (full width) */}
+      {/* Rekap Materi (full width) */}
       <RekapMateri materiList={materiList} />
 
-      {/* ✅ Rekap Kuis + Mahasiswa (2 kolom) */}
+      {/* Rekap Kuis + Mahasiswa (2 kolom) */}
       <div className="dashboard-bottom-grid">
         <RekapKuis kuisList={kuisList} />
         <TabelMahasiswa mahasiswaList={mahasiswaList} />

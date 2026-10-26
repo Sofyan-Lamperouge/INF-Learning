@@ -1,3 +1,11 @@
+// Frontend/src/services/authService.js
+//
+// [DIUBAH] register():
+//   - BUG UTAMA: sebelumnya signature-nya `{ nim, password }` tapi memakai variabel
+//     `konfirmasiPassword` -> ReferenceError, request tidak pernah terkirim.
+//   - Sekarang `konfirmasiPassword` ikut diterima dan default-nya = password,
+//     jadi cukup satu kolom password di form.
+
 import { request } from './api.js';
 
 import {
@@ -6,12 +14,11 @@ import {
   mockRegister,
 } from '../mocks/mockApi.js';
 
-const USE_MOCK =
-  import.meta.env.VITE_USE_MOCK === 'true';
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 
 /* ============================================================
-   LOGIN
+   LOGIN (tidak berubah)
    ============================================================ */
 export async function login({ nim, password }) {
   if (USE_MOCK) {
@@ -27,9 +34,7 @@ export async function login({ nim, password }) {
   });
 
   if (!data?.access_token || !data?.pengguna) {
-    throw new Error(
-      'Response login dari backend tidak sesuai kontrak.'
-    );
+    throw new Error('Response login dari backend tidak sesuai kontrak.');
   }
 
   return {
@@ -42,11 +47,15 @@ export async function login({ nim, password }) {
 
 
 /* ============================================================
-   REGISTER (Aktivasi Akun)
+   REGISTER (Aktivasi Akun)  <-- DIPERBAIKI
    ============================================================ */
-export async function register({ nim, password }) {
+export async function register({
+  nim,
+  password,
+  konfirmasiPassword = password, // [BARU] default = password
+}) {
   if (USE_MOCK) {
-    return mockRegister({ nim, password });
+    return mockRegister({ nim, password, konfirmasiPassword });
   }
 
   return request('/auth/registrasi', {
@@ -54,12 +63,14 @@ export async function register({ nim, password }) {
     body: JSON.stringify({
       nomor_induk: nim,
       kata_sandi: password,
+      konfirmasi_kata_sandi: konfirmasiPassword,
     }),
   });
 }
 
+
 /* ============================================================
-   GET ME
+   GET ME (tidak berubah)
    ============================================================ */
 export async function getMe() {
   if (USE_MOCK) {

@@ -1,3 +1,10 @@
+// Frontend/src/pages/auth/RegisterPage.jsx
+//
+// [DIUBAH] Hanya merapikan logika (tampilan/markup sama persis):
+//  - Hapus navigate("/login") + setTimeout yang ditulis dua kali.
+//  - Hapus blok cek `hasError` yang duplikat.
+//  - Tambah console.error(err) supaya error non-ApiError tidak hilang diam-diam.
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,32 +17,18 @@ import ErrorMessage from "../../components/common/ErrorMessage.jsx";
 import SuccessMessage from "../../components/common/SuccessMessage.jsx";
 import RegisterSkeleton from "../../components/skeletons/RegisterSkeleton.jsx";
 
-// ✅ Hanya import validasi NIM dan Password
 import { validateNim, validatePassword } from "../../utils/validators.js";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
 
-  // ✅ State hanya menyisakan nim dan password
-  const [form, setForm] = useState({
-    nim: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    nim: "",
-    password: "",
-  });
-
-  const [touched, setTouched] = useState({
-    nim: false,
-    password: false,
-  });
+  const [form, setForm] = useState({ nim: "", password: "" });
+  const [errors, setErrors] = useState({ nim: "", password: "" });
+  const [touched, setTouched] = useState({ nim: false, password: false });
 
   const [serverError, setServerError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [booting, setBooting] = useState(true);
 
   useEffect(() => {
@@ -46,16 +39,8 @@ export default function RegisterPage() {
   function handleChange(event) {
     const { name, value } = event.target;
 
-    setForm((current) => ({
-      ...current,
-      [name]: value,
-    }));
-
-    setTouched((current) => ({
-      ...current,
-      [name]: true,
-    }));
-
+    setForm((current) => ({ ...current, [name]: value }));
+    setTouched((current) => ({ ...current, [name]: true }));
     validateField(name, value);
 
     if (serverError) setServerError("");
@@ -76,10 +61,7 @@ export default function RegisterPage() {
         break;
     }
 
-    setErrors((current) => ({
-      ...current,
-      [name]: errorMsg,
-    }));
+    setErrors((current) => ({ ...current, [name]: errorMsg }));
   }
 
   async function handleSubmit(event) {
@@ -89,7 +71,6 @@ export default function RegisterPage() {
 
     const nim = form.nim.trim();
 
-    // ✅ Validasi hanya untuk nim dan password
     const newErrors = {
       nim: validateNim(nim),
       password: validatePassword(form.password),
@@ -99,31 +80,20 @@ export default function RegisterPage() {
 
     if (Object.values(newErrors).some(Boolean)) return;
 
-    setTouched({
-      nim: true,
-      password: true,
-    });
-
-    const hasError = Object.values(newErrors).some(Boolean);
-    if (hasError) return;
-
     try {
       setLoading(true);
 
-      // Kirim data 
       await register({
         nim,
         password: form.password,
-        konfirmasiPassword: form.password, 
+        konfirmasiPassword: form.password, // 1 kolom password -> dipakai untuk 2 field
       });
 
       setSuccess("Aktivasi berhasil. Mengarahkan ke halaman login...");
-      setTimeout(() => navigate("/login", { replace: true }), 800);
-
-      setTimeout(() => {
-        navigate("/login", { replace: true });
-      }, 800);
+      setTimeout(() => navigate("/login", { replace: true }), 800); // [DIUBAH] cukup sekali
     } catch (err) {
+      console.error("Registrasi gagal:", err); // [BARU]
+
       if (err instanceof ApiError) {
         setServerError(err.message);
       } else {
@@ -146,7 +116,6 @@ export default function RegisterPage() {
         </div>
 
         <div className="auth-form-col">
-          {/* PEMBUNGKUS BARU UNTUK BAGIAN ATAS (Judul, Input, Tombol) */}
           <div className="auth-form-top">
             <h1 className="auth-title">Get Started!</h1>
 
@@ -154,7 +123,6 @@ export default function RegisterPage() {
             {serverError && <ErrorMessage message={serverError} />}
 
             <form onSubmit={handleSubmit} noValidate>
-              {/* Field NIM */}
               <InputField
                 label="NIM"
                 name="nim"
@@ -168,7 +136,6 @@ export default function RegisterPage() {
                 <ErrorMessage message={errors.nim} variant="field" />
               )}
 
-              {/* Field Password */}
               <PasswordField
                 label="Password"
                 name="password"
@@ -187,9 +154,7 @@ export default function RegisterPage() {
               </button>
             </form>
           </div>
-          {/* BATAS AKHIR PEMBUNGKUS BARU */}
 
-          {/* Teks ini sekarang berada di luar bungkusan, jadi akan terdorong ke bawah */}
           <p className="auth-footer">
             Sudah punya akun? <strong>Masuk</strong>{" "}
             <Link to="/login">disini</Link>

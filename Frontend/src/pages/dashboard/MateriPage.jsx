@@ -1,20 +1,83 @@
-// src/pages/dashboard/MateriPage.jsx
+// Frontend/src/pages/dashboard/MateriPage.jsx
+//
+// [DIUBAH]
+//  - DUMMY_MATERI dihapus; data diambil dari GET /materi (materiService.getMateriList).
+//  - Timer palsu 1500ms dihapus. Skeleton hanya tampil saat load pertama.
+//  - Filter Semester / Mata Kuliah / pencarian kini berfungsi (dikirim ke backend, search di-debounce).
+//  - Nama field mengikuti backend: matkul -> mata_kuliah, nama -> judul, file -> url + jenis,
+//    semester berupa angka (bukan teks "Semester 1").
+//  - Tombol hapus berfungsi (DELETE /materi/{id}).
+//  - Paginasi memakai total dan total_pages dari backend.
+//  - Bagian SVG/ikon tidak diubah.
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
+import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import { getMateriList, deleteMateri } from "../../services/materiService.js";
+
+const PAGE_SIZE = 20;
 
 export default function MateriPage() {
+  const [loading, setLoading] = useState(true); // skeleton hanya untuk load pertama
+  const [error, setError] = useState("");
+  const [materiList, setMateriList] = useState([]);
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
+  const [matkulOptions, setMatkulOptions] = useState([]);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const [loading, setLoading] = useState(true);
-  const [materiList] = useState(DUMMY_MATERI);
   const [search, setSearch] = useState("");
+  const [semester, setSemester] = useState("");
+  const [mataKuliah, setMataKuliah] = useState("");
+  const [page, setPage] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    let active = true;
+
+    const timer = setTimeout(async () => {
+      try {
+        setError("");
+        const data = await getMateriList({
+          semester,
+          mataKuliah,
+          q: search,
+          page,
+          limit: PAGE_SIZE,
+        });
+
+        if (!active) return;
+
+        setMateriList(data.items);
+        setMeta({ total: data.total, totalPages: data.total_pages || 1 });
+        // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
+        setMatkulOptions((prev) => [
+          ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
+        ]);
+      } catch (err) {
+        if (active) setError(err.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }, search ? 400 : 0); // debounce hanya saat mengetik
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [semester, mataKuliah, search, page, reloadKey]);
+
+  async function handleDelete(id) {
+    if (!window.confirm("Hapus materi ini?")) return;
+
+    try {
+      await deleteMateri(id);
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   if (loading) {
     return (
@@ -24,23 +87,8 @@ export default function MateriPage() {
     );
   }
 
-  // Fungsi getSemesterBadge (jangan lupa dideklarasikan)
-  const getSemesterBadge = (semester) => {
-    switch (semester) {
-      case "Semester 1":
-        return "badge-s1";
-      case "Semester 2":
-        return "badge-s2";
-      case "Semester 3":
-        return "badge-s3";
-      case "Semester 4":
-        return "badge-s4";
-      case "Semester 5":
-        return "badge-s5";
-      default:
-        return "badge-s1";
-    }
-  };
+  // Semester kini berupa angka dari backend
+  const getSemesterBadge = (s) => `badge-s${s >= 1 && s <= 5 ? s : 1}`;
 
   return (
     <DashboardLayout>
@@ -113,13 +161,19 @@ export default function MateriPage() {
         {/* === 2. FILTER & PENCARIAN === */}
         <div className="materi-filter-bar">
           <div className="filter-item">
-            <select>
+            <select
+              value={semester}
+              onChange={(e) => {
+                setSemester(e.target.value);
+                setPage(1);
+              }}
+            >
               <option value="">Semester</option>
-              <option value="1">Semester 1</option>
-              <option value="2">Semester 2</option>
-              <option value="3">Semester 3</option>
-              <option value="4">Semester 4</option>
-              <option value="5">Semester 5</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <option key={n} value={n}>
+                  Semester {n}
+                </option>
+              ))}
             </select>
             <svg
               className="icon-dropdown"
@@ -137,10 +191,19 @@ export default function MateriPage() {
           </div>
 
           <div className="filter-item">
-            <select>
+            <select
+              value={mataKuliah}
+              onChange={(e) => {
+                setMataKuliah(e.target.value);
+                setPage(1);
+              }}
+            >
               <option value="">Mata Kuliah</option>
-              <option value="struktur">Struktur Data</option>
-              <option value="algo">Algoritma dan Pemrograman</option>
+              {matkulOptions.map((mk) => (
+                <option key={mk} value={mk}>
+                  {mk}
+                </option>
+              ))}
             </select>
             <svg
               className="icon-dropdown"
@@ -178,10 +241,15 @@ export default function MateriPage() {
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
         </div>
+
+        {error && <ErrorMessage message={error} />}
 
         {/* === 3. TABEL DATA MATERI === */}
         <div className="materi-table-card">
@@ -206,18 +274,21 @@ export default function MateriPage() {
               ) : (
                 materiList.map((materi, index) => (
                   <tr key={materi.id}>
-                    <td>{index + 1}</td>
+                    <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
                     <td>
-                      {/*  2. Panggil fungsi getSemesterBadge */}
                       <span
                         className={`badge-semester ${getSemesterBadge(materi.semester)}`}
                       >
-                        {materi.semester}
+                        Semester {materi.semester}
                       </span>
                     </td>
-                    <td style={{ color: "#6b7280" }}>{materi.matkul}</td>
-                    <td style={{ color: "#4b5563" }}>{materi.nama}</td>
-                    <td style={{ color: "#6b7280" }}>{materi.file}</td>
+                    <td style={{ color: "#6b7280" }}>{materi.mata_kuliah}</td>
+                    <td style={{ color: "#4b5563" }}>{materi.judul}</td>
+                    <td style={{ color: "#6b7280" }}>
+                      <a href={materi.url} target="_blank" rel="noreferrer">
+                        {materi.jenis.toUpperCase()}
+                      </a>
+                    </td>
                     <td>
                       {/*  3. Tombol Edit & Hapus dengan SVG */}
                       <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -247,6 +318,7 @@ export default function MateriPage() {
                         </button>
 
                         <button
+                          onClick={() => handleDelete(materi.id)}
                           style={{
                             background: "transparent",
                             border: "none",
@@ -306,10 +378,14 @@ export default function MateriPage() {
           {/* === 4. FOOTER PAGINASI === */}
           <div className="materi-pagination">
             <span className="pagination-text">
-              Menampilkan {materiList.length} dari {materiList.length} materi
+              Menampilkan {materiList.length} dari {meta.total} materi
             </span>
             <div className="pagination-buttons">
-              <button className="btn-page" disabled>
+              <button
+                className="btn-page"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
                 <svg
                   width="16"
                   height="16"
@@ -321,8 +397,12 @@ export default function MateriPage() {
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
               </button>
-              <button className="btn-page active">1</button>
-              <button className="btn-page" disabled>
+              <button className="btn-page active">{page}</button>
+              <button
+                className="btn-page"
+                disabled={page >= meta.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
                 <svg
                   width="16"
                   height="16"
