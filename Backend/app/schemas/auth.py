@@ -8,7 +8,7 @@ POLA_NIM = re.compile(r"^2\d88\d{6}$")
 class RegistrasiRequest(BaseModel):
     nomor_induk: str = Field(..., min_length=10, max_length=10)
     kata_sandi: str = Field(..., min_length=8, max_length=72)
-    konfirmasi_kata_sandi: str = Field(..., min_length=8, max_length=72)
+    konfirmasi_kata_sandi: str | None = Field(None, min_length=8, max_length=72)
 
     @field_validator("nomor_induk")
     @classmethod
@@ -20,7 +20,10 @@ class RegistrasiRequest(BaseModel):
 
     @model_validator(mode="after")
     def cek_konfirmasi_kata_sandi(self):
-        if self.kata_sandi != self.konfirmasi_kata_sandi:
+        if (
+            self.konfirmasi_kata_sandi is not None
+            and self.kata_sandi != self.konfirmasi_kata_sandi
+        ):
             raise ValueError("Konfirmasi kata sandi tidak cocok")
         return self
 
