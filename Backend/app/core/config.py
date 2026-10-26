@@ -1,3 +1,5 @@
+# Backend/app/core/config.py
+
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -6,6 +8,9 @@ class Settings(BaseSettings):
     APP_NAME: str = "INF-Learning"
     APP_ENV: str = "development"
     APP_PORT: int = 8000
+
+    # [BARU] harus diawali http:// atau https://
+    PUBLIC_BASE_URL: str = "https://inf-learning-production.up.railway.app"
 
     # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
     DATABASE_URL: str = Field(

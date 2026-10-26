@@ -1,27 +1,33 @@
+# Backend/app/core/security.py
+
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # ============================================================
 # Password
 # ============================================================
 def hash_kata_sandi(kata_sandi: str) -> str:
-    return pwd_context.hash(kata_sandi)
+    return bcrypt.hashpw(kata_sandi.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verifikasi_kata_sandi(kata_sandi: str, hash_tersimpan: str) -> bool:
-    return pwd_context.verify(kata_sandi, hash_tersimpan)
+    try:
+        return bcrypt.checkpw(
+            kata_sandi.encode("utf-8"),
+            hash_tersimpan.encode("utf-8"),
+        )
+    except ValueError:
+        # mis. password > 72 byte atau hash tersimpan tidak valid -> anggap tidak cocok
+        return False
 
 
 # ============================================================
-# JWT
+# JWT (tidak berubah)
 # ============================================================
 def buat_access_token(data: dict) -> str:
     """Bikin JWT access token. `data` minimal berisi `sub` (user id)."""

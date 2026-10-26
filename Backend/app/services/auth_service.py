@@ -1,3 +1,10 @@
+# Backend/app/services/auth_service.py
+#
+# [DIUBAH] registrasi(): cek "akun sudah aktif" sekarang juga memeriksa kata_sandi.
+# Sebelumnya, kalau admin mengubah status jadi "aktif" padahal password belum pernah dibuat,
+# registrasi ditolak (409) dan login juga gagal -> akun terkunci selamanya.
+# Fungsi login dan get_pengguna_by_id tidak berubah.
+
 import re
 
 from fastapi import HTTPException, status
@@ -33,25 +40,25 @@ def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
     # 1. Cari pengguna by NIM
     pengguna = crud_pengguna.get_by_nomor_induk(db, data.nomor_induk)
 
-    # 2. Tidak ada → 404
+    # 2. Tidak ada -> 404
     if not pengguna:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="NIM tidak terdaftar. Hubungi admin.",
         )
 
-    # 3. Sudah aktif → 409
-    if pengguna.status == "aktif":
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Akun sudah aktif. Silakan login.",
-        )
-
-    # 4. Nonaktif (di-block admin) → 403
+    # 3. Nonaktif (di-block admin) -> 403
     if pengguna.status == "nonaktif":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Akun Anda dinonaktifkan. Hubungi admin.",
+        )
+
+    # 4. Sudah aktif DAN sudah punya password -> 409   [DIUBAH]
+    if pengguna.status == "aktif" and pengguna.kata_sandi:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Akun sudah aktif. Silakan login.",
         )
 
     # 5. Set password + aktifkan
@@ -64,7 +71,7 @@ def registrasi(db: Session, data: RegistrasiRequest) -> Pengguna:
 
 
 # ============================================================
-# Login
+# Login (tidak berubah)
 # ============================================================
 def login(db: Session, data: LoginRequest) -> LoginResponse:
     pengguna = crud_pengguna.get_by_nomor_induk(db, data.nomor_induk)

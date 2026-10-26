@@ -1,3 +1,8 @@
+# Backend/app/schemas/materi.py
+#
+# [DIUBAH] Menambah MateriListResponse (di bagian paling bawah) untuk GET /materi.
+# Selebihnya tidak berubah.
+
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
@@ -89,6 +94,8 @@ class MateriResponse(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
+# [BARU] Bentuk respons GET /materi (dengan paginasi)
 class MateriListResponse(BaseModel):
     items: list[MateriResponse]
     total: int

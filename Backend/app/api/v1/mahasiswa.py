@@ -1,3 +1,9 @@
+# Backend/app/api/v1/mahasiswa.py
+#
+# [DIUBAH] GET "" sekarang memakai response_model=MahasiswaListResponse.
+# Sebelumnya mengembalikan objek ORM mentah sehingga kolom `kata_sandi` (hash) ikut terkirim.
+# Endpoint lain tidak berubah.
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
@@ -7,6 +13,7 @@ from app.db.session import get_db
 from app.models.pengguna import Pengguna
 from app.schemas.mahasiswa import (
     MahasiswaCreateRequest,
+    MahasiswaListResponse,
     MahasiswaResponse,
     MahasiswaUpdateRequest,
 )
@@ -16,6 +23,7 @@ router = APIRouter(prefix="/mahasiswa", tags=["Mahasiswa"])
 
 @router.get(
     "",
+    response_model=MahasiswaListResponse,  # [DIUBAH]
     summary="List semua mahasiswa (admin only)",
 )
 def list_mahasiswa(
