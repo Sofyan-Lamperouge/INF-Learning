@@ -9,6 +9,7 @@ class MateriRingkas(BaseModel):
     mata_kuliah: str
     semester: int
     jenis: str
+    url: str
     dibuat_pada: datetime
 
     model_config = {"from_attributes": True}
