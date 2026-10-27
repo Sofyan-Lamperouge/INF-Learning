@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.db.session import engine
 
 # Import semua router di satu tempat
-from app.api.v1 import auth, materi, admin, mahasiswa, kuis
+from app.api.v1 import auth, materi, admin, mahasiswa, dashboard_mahasiswa
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -29,12 +29,10 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(materi.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(dashboard_mahasiswa.router, prefix="/api/v1")
 app.include_router(mahasiswa.router, prefix="/api/v1")
-app.include_router(kuis.router, prefix="/api/v1")
 
-# ====================================================
-# TAMBAHKAN 2 BARIS INI UNTUK MENGAKSES FILE UPLOAD
-# ====================================================
+# File upload dilayani statis dari folder uploads/
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # ====================================================
