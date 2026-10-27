@@ -27,3 +27,8 @@ export function getMateriList({
 export function deleteMateri(id) {
   return api.delete(`/materi/${id}`);
 }
+
+export function uploadMateri(formData) {
+  return api.postFormData('/materi', formData);
+}
+

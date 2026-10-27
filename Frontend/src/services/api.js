@@ -96,6 +96,10 @@ export const api = {
     return request(path, { method: 'POST', body: JSON.stringify(body) });
   },
 
+  postFormData(path, body) {
+    return request(path, { method: 'POST', body });
+  },
+
   put(path, body) {
     return request(path, { method: 'PUT', body: JSON.stringify(body) });
   },
@@ -104,3 +108,5 @@ export const api = {
     return request(path, { method: 'DELETE' });
   },
 };
+
+  
