@@ -30,6 +30,5 @@ class MahasiswaRingkas(BaseModel):
 class DashboardStatsResponse(BaseModel):
     total_mahasiswa: int
     total_materi: int
-    total_kuis: int
     materi_terbaru: list[MateriRingkas]
     mahasiswa_terbaru: list[MahasiswaRingkas]

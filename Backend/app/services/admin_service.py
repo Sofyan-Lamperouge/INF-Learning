@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.pengguna import Pengguna
 from app.models.materi import Materi
-from app.models.kuis import Kuis
 from app.schemas.admin import DashboardStatsResponse
 
 
@@ -15,7 +14,6 @@ def get_dashboard_stats(db: Session) -> DashboardStatsResponse:
         .count()
     )
     total_materi = db.query(Materi).count()
-    total_kuis = db.query(Kuis).count()
 
     # ==========================================
     # 2. AMBIL 5 DATA TERBARU (List Tabel)
@@ -43,7 +41,6 @@ def get_dashboard_stats(db: Session) -> DashboardStatsResponse:
     return DashboardStatsResponse(
         total_mahasiswa=total_mahasiswa,
         total_materi=total_materi,
-        total_kuis=total_kuis,
         materi_terbaru=materi_terbaru,
         mahasiswa_terbaru=mahasiswa_terbaru,
     )
