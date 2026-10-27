@@ -19,7 +19,7 @@ function getFileName(fileUrl, fallbackType) {
     const encodedName = pathname.split('/').filter(Boolean).pop() || '';
     const storedName = decodeURIComponent(encodedName);
 
-    // Upload baru memakai awalan UUID agar nama file unik di server.
+    // Hapus awalan UUID yang ditambahkan backend agar nama file tetap unik.
     return storedName.replace(/^[a-f0-9]{32}_/i, '') || storedName;
   } catch {
     return fallbackType
@@ -41,6 +41,7 @@ export default function RekapMateri({ materiList = [] }) {
     <section className="rekap-card rekap-materi-card">
       <header className="rekap-header">
         <h3 className="rekap-title">Rekap Materi</h3>
+
         <Link to="/dashboard/materi" className="rekap-link">
           Lihat semua
         </Link>
@@ -53,6 +54,7 @@ export default function RekapMateri({ materiList = [] }) {
           <p className="rekap-empty-text">
             Belum ada materi yang ditambahkan
           </p>
+
           <Link to="/dashboard/materi" className="btn-tambah">
             + Tambahkan materi
           </Link>
