@@ -38,45 +38,39 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-page {
   width: 100%;
-  min-height: 100vh;
-  height: auto;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(28px, 5vh, 64px) clamp(24px, 8.3vw, 120px);
+  padding: 40px;
   overflow-x: hidden;
   overflow-y: auto;
   background: #eef8fd;
 }
 
 .auth-layout {
-  width: min(1200px, 100%);
+  width: min(1200px, calc(100vw - 80px), calc((100svh - 80px) * 1.5));
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
 }
 
-.auth-page .auth-card {
+.auth-page .auth-card,
+.auth-page .auth-card.auth-card--register {
   display: grid;
   grid-template-columns: minmax(0, 1.43fr) minmax(0, 1fr);
   align-items: stretch;
-  gap: clamp(32px, 5vw, 72px);
+  gap: 68px;
   width: 100%;
+  height: min(800px, calc(100svh - 80px));
+  min-height: 640px;
   max-width: none;
-  height: auto;
-  min-height: 0;
   max-height: none;
-  padding: clamp(30px, 3.5vw, 52px);
+  padding: 38px;
+  border: 0;
   border-radius: 40px;
   background: #fff;
   box-shadow: none;
-}
-
-.auth-page .auth-card.auth-card--register {
-  height: auto;
-  max-height: none;
-  padding: clamp(30px, 3.5vw, 52px);
-  gap: clamp(32px, 5vw, 72px);
 }
 
 .auth-page .auth-illustration {
@@ -104,9 +98,9 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   height: auto;
   flex-direction: column;
   justify-content: space-between !important;
-  gap: 28px;
+  gap: 24px;
   overflow: visible;
-  padding: 16px 0 0;
+  padding: 14px 0 0;
 }
 
 .auth-page .auth-form-top {
@@ -123,24 +117,24 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-page .auth-title,
 .auth-page .auth-card--register .auth-title {
-  margin: 0 0 42px;
+  margin: 0 0 38px;
   color: #050505;
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-size: clamp(36px, 3.2vw, 48px);
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
 }
 
 .auth-page .auth-subtitle {
-  margin: -24px 0 42px;
+  margin: -20px 0 34px;
   color: #5c5c5c;
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  font-size: 20px;
   text-align: center;
 }
 
 .auth-page .input-field,
 .auth-page .auth-card--register .input-field {
-  margin-bottom: 18px !important;
+  margin-bottom: 16px !important;
 }
 
 .auth-page .input-field label,
@@ -148,7 +142,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   display: block;
   margin-bottom: 5px;
   color: #454545;
-  font-size: 1.05rem !important;
+  font-size: 17px !important;
   font-weight: 600;
 }
 
@@ -160,7 +154,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   border: 2px solid #9aaac0;
   border-radius: 18px;
   color: #414141;
-  font-size: 1rem !important;
+  font-size: 16px !important;
   font-weight: 500;
 }
 
@@ -182,7 +176,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-page .input-with-icon .icon-btn {
   right: 16px;
   color: #91a4bb;
-  font-size: 1.3rem;
+  font-size: 21px;
 }
 
 .auth-page .input-with-icon .icon-btn:hover {
@@ -192,13 +186,13 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-page .btn-primary {
   width: 100%;
   min-height: 58px;
-  margin-top: 22px !important;
+  margin-top: 20px !important;
   padding: 12px 24px !important;
   border: 0;
   border-radius: 18px;
   background: #88d1fa;
   color: #fff;
-  font-size: 1.1rem !important;
+  font-size: 18px !important;
   font-weight: 700;
   transition: background 0.2s ease, transform 0.2s ease;
 }
@@ -215,9 +209,9 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-page .auth-footer,
 .auth-page .auth-card--register .auth-footer {
   width: 100%;
-  margin: 34px 0 0 !important;
+  margin: 28px 0 0 !important;
   color: #454545;
-  font-size: clamp(0.9rem, 1.35vw, 1.15rem);
+  font-size: 17px;
   font-weight: 600;
   text-align: center;
 }
@@ -244,7 +238,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   border-radius: 20px;
   background: #dcfce7;
   color: #168542;
-  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.45;
 }
@@ -258,7 +252,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   justify-content: center;
   border: 2px solid currentColor;
   border-radius: 50%;
-  font-size: 1.05rem;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -270,7 +264,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   display: block;
   margin-bottom: 10px;
   color: #454545;
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -297,7 +291,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   margin: 0;
   padding: 0;
   color: #555;
-  font-size: 0.88rem;
+  font-size: 14px;
   font-weight: 500;
   list-style: none;
 }
@@ -318,7 +312,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   border: 2px solid #aab7bd;
   border-radius: 50%;
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 13px;
 }
 
 .auth-page .password-strength-checklist li.checked .password-strength-check {
@@ -326,9 +320,10 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   background: #168542;
 }
 
+/* Tablet dan layar yang lebih kecil */
 @media (max-width: 900px) {
   .auth-page {
-    padding: 28px 22px;
+    padding: 24px 20px;
   }
 
   .auth-layout {
@@ -337,14 +332,16 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
   .auth-page .auth-card,
   .auth-page .auth-card.auth-card--register {
+    height: auto;
+    min-height: 0;
     grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
+    gap: 24px;
     padding: 28px;
     border-radius: 30px;
   }
 
   .auth-page .auth-illustration {
-    width: min(100%, 340px);
+    width: min(100%, 300px);
     justify-self: center;
     border-radius: 22px;
   }
@@ -356,7 +353,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   .auth-page .auth-title,
   .auth-page .auth-card--register .auth-title {
     margin-bottom: 28px;
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(32px, 6vw, 44px);
   }
 
   .auth-page .auth-subtitle {
@@ -365,6 +362,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   }
 }
 
+/* Ponsel */
 @media (max-width: 520px) {
   .auth-page {
     align-items: flex-start;
@@ -383,14 +381,14 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   }
 
   .auth-page .auth-illustration {
-    width: min(100%, 270px);
+    width: min(100%, 250px);
     border-radius: 18px;
   }
 
   .auth-page .auth-title,
   .auth-page .auth-card--register .auth-title {
     margin-bottom: 24px;
-    font-size: 2rem;
+    font-size: 32px;
   }
 
   .auth-page .auth-subtitle {
