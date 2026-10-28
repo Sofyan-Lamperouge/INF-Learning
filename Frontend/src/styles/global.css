@@ -38,46 +38,48 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-page {
   width: 100%;
-  min-height: 100svh;
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  padding: 32px;
+  overflow: hidden;
   background: #eef8fd;
 }
 
 .auth-layout {
-  width: min(1200px, calc(100vw - 80px), calc((100svh - 80px) * 1.5));
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  width: min(1200px, calc(100vw - 64px));
+  height: min(800px, calc(100svh - 64px));
+  min-height: 0;
 }
 
+/* Card putih utama */
 .auth-page .auth-card,
 .auth-page .auth-card.auth-card--register {
   display: grid;
   grid-template-columns: minmax(0, 1.43fr) minmax(0, 1fr);
   align-items: stretch;
-  gap: 68px;
+  gap: clamp(32px, 4vw, 68px);
   width: 100%;
-  height: min(800px, calc(100svh - 80px));
-  min-height: 640px;
+  height: 100%;
+  min-height: 0;
   max-width: none;
   max-height: none;
-  padding: 38px;
+  padding: clamp(24px, 3vw, 38px);
+  overflow: hidden;
   border: 0;
   border-radius: 40px;
   background: #fff;
   box-shadow: none;
 }
 
+/* Ilustrasi */
 .auth-page .auth-illustration {
   position: relative;
   align-self: center;
   width: 100%;
-  height: auto;
   aspect-ratio: 1210 / 1400;
   overflow: hidden;
   border-radius: 30px;
@@ -92,14 +94,14 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   object-position: center;
 }
 
+/* Kolom form */
 .auth-page .auth-form-col {
   display: flex;
   min-width: 0;
-  height: auto;
+  min-height: 0;
   flex-direction: column;
-  justify-content: space-between !important;
-  gap: 24px;
-  overflow: visible;
+  justify-content: space-between;
+  gap: 20px;
   padding: 14px 0 0;
 }
 
@@ -107,33 +109,30 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 0;
 }
 
-.auth-page .auth-card--register .auth-form-top {
-  gap: 0 !important;
-}
-
+/* Judul dan subjudul */
 .auth-page .auth-title,
 .auth-page .auth-card--register .auth-title {
-  margin: 0 0 38px;
+  margin: 0 0 clamp(24px, 4vh, 38px);
   color: #050505;
-  font-size: clamp(36px, 3.2vw, 48px);
+  font-size: clamp(34px, 3.2vw, 48px);
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
 }
 
 .auth-page .auth-subtitle {
-  margin: -20px 0 34px;
+  margin: -20px 0 clamp(24px, 4vh, 38px);
   color: #5c5c5c;
-  font-size: 20px;
+  font-size: clamp(17px, 1.5vw, 20px);
   text-align: center;
 }
 
+/* Label dan input */
 .auth-page .input-field,
 .auth-page .auth-card--register .input-field {
+  width: 100%;
   margin-bottom: 16px !important;
 }
 
@@ -156,6 +155,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   color: #414141;
   font-size: 16px !important;
   font-weight: 500;
+  outline: none;
 }
 
 .auth-page .input-field input::placeholder {
@@ -169,20 +169,49 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   box-shadow: 0 0 0 2px rgba(136, 209, 250, 0.15);
 }
 
+/* Tombol SVG untuk tampil/sembunyikan password */
+.auth-page .input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .auth-page .input-with-icon input {
+  width: 100%;
   padding-right: 48px !important;
 }
 
 .auth-page .input-with-icon .icon-btn {
+  position: absolute;
+  top: 50%;
   right: 16px;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
   color: #91a4bb;
   font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-page .input-with-icon .icon-btn svg {
+  display: block;
+  width: 1em;
+  height: 1em;
 }
 
 .auth-page .input-with-icon .icon-btn:hover {
   color: #2388bd;
 }
 
+/* Tombol masuk/daftar */
 .auth-page .btn-primary {
   width: 100%;
   min-height: 58px;
@@ -194,6 +223,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   color: #fff;
   font-size: 18px !important;
   font-weight: 700;
+  cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
@@ -204,8 +234,10 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-page .btn-primary:disabled {
   background: #b8e5fb;
+  cursor: not-allowed;
 }
 
+/* Tautan di bagian bawah card */
 .auth-page .auth-footer,
 .auth-page .auth-card--register .auth-footer {
   width: 100%;
@@ -225,8 +257,14 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   font-weight: 700;
 }
 
+/* Notifikasi berada di luar card */
 .auth-page .auth-notification {
-  width: 100%;
+  position: fixed;
+  z-index: 1000;
+  top: 20px;
+  left: 50%;
+  width: min(1200px, calc(100vw - 48px));
+  transform: translateX(-50%);
 }
 
 .auth-page .auth-notification .alert.alert-success {
@@ -256,6 +294,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   font-weight: 700;
 }
 
+/* Indikator kekuatan password pada registrasi */
 .auth-page .password-strength {
   margin: 2px 0 8px;
 }
@@ -315,19 +354,25 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   font-size: 13px;
 }
 
-.auth-page .password-strength-checklist li.checked .password-strength-check {
+.auth-page .password-strength-checklist li.checked
+  .password-strength-check {
   border-color: #168542;
   background: #168542;
 }
 
-/* Tablet dan layar yang lebih kecil */
+/* Tablet dan ponsel: card memanjang mengikuti isi */
 @media (max-width: 900px) {
   .auth-page {
+    height: auto;
+    min-height: 100svh;
     padding: 24px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .auth-layout {
     width: min(680px, 100%);
+    height: auto;
   }
 
   .auth-page .auth-card,
@@ -337,6 +382,7 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding: 28px;
+    overflow: visible;
     border-radius: 30px;
   }
 
@@ -360,17 +406,19 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
     margin-top: -16px;
     margin-bottom: 28px;
   }
+
+  .auth-page .auth-notification {
+    position: static;
+    width: 100%;
+    margin-bottom: 14px;
+    transform: none;
+  }
 }
 
-/* Ponsel */
 @media (max-width: 520px) {
   .auth-page {
     align-items: flex-start;
     padding: 18px 14px;
-  }
-
-  .auth-layout {
-    gap: 14px;
   }
 
   .auth-page .auth-card,
