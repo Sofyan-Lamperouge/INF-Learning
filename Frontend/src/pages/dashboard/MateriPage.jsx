@@ -16,6 +16,7 @@ import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
 import { getMateriList, deleteMateri } from "../../services/materiService.js";
+import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
 
 const PAGE_SIZE = 20;
 
@@ -32,35 +33,39 @@ export default function MateriPage() {
   const [mataKuliah, setMataKuliah] = useState("");
   const [page, setPage] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [editingMateri, setEditingMateri] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    const timer = setTimeout(async () => {
-      try {
-        setError("");
-        const data = await getMateriList({
-          semester,
-          mataKuliah,
-          q: search,
-          page,
-          limit: PAGE_SIZE,
-        });
+    const timer = setTimeout(
+      async () => {
+        try {
+          setError("");
+          const data = await getMateriList({
+            semester,
+            mataKuliah,
+            q: search,
+            page,
+            limit: PAGE_SIZE,
+          });
 
-        if (!active) return;
+          if (!active) return;
 
-        setMateriList(data.items);
-        setMeta({ total: data.total, totalPages: data.total_pages || 1 });
-        // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
-        setMatkulOptions((prev) => [
-          ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
-        ]);
-      } catch (err) {
-        if (active) setError(err.message);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }, search ? 400 : 0); // debounce hanya saat mengetik
+          setMateriList(data.items);
+          setMeta({ total: data.total, totalPages: data.total_pages || 1 });
+          // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
+          setMatkulOptions((prev) => [
+            ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
+          ]);
+        } catch (err) {
+          if (active) setError(err.message);
+        } finally {
+          if (active) setLoading(false);
+        }
+      },
+      search ? 400 : 0,
+    ); // debounce hanya saat mengetik
 
     return () => {
       active = false;
@@ -318,15 +323,20 @@ export default function MateriPage() {
                         </button>
 
                         <button
-                          onClick={() => handleDelete(materi.id)}
+                          type="button"
+                          onClick={() => setEditingMateri(materi)}
+                          aria-label={`Edit materi ${materi.judul}`}
+                          title="Edit materi"
                           style={{
                             background: "transparent",
                             border: "none",
                             padding: 0,
                             cursor: "pointer",
                             display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}
-                        >
+                          >
                           <svg
                             width="24"
                             height="24"

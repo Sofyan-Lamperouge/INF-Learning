@@ -1,10 +1,3 @@
-// Frontend/src/services/materiService.js
-//
-// [DIUBAH TOTAL]
-//  - getMateriList: sekarang mendukung filter semester, mata kuliah, pencarian (q) dan paginasi,
-//    sesuai query param backend: semester, mata_kuliah, q, page, limit.
-//  - getCategories DIHAPUS (endpoint /materi/categories tidak ada di backend).
-//  - deleteMateri BARU.
 
 import { api } from './api.js';
 
@@ -30,5 +23,9 @@ export function deleteMateri(id) {
 
 export function uploadMateri(formData) {
   return api.postFormData('/materi', formData);
+}
+
+export function updateMateri(id, formData) {
+  return api.putFormData(`/materi/${id}/edit`, formData);
 }
 
