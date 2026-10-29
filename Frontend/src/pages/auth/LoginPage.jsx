@@ -106,7 +106,7 @@ export default function LoginPage() {
 
           <div className="auth-form-col">
             <div className="auth-form-top">
-              <h1 className="auth-title">Welcome Back!</h1>
+              <p className="auth-title">Welcome Back!</p>
               <p className="auth-subtitle">Masuk untuk mulai belajar.</p>
 
               {serverError && <ErrorMessage message={serverError} />}
