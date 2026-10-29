@@ -1,0 +1,23 @@
+$kind: http-request
+name: "Request 1: Login Admin"
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "nomor_induk": "{{admin_nim}}",
+      "kata_sandi": "{{admin_password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r
+
+      const j = pm.response.json();\r
+
+      pm.test(\"peran = admin\", () =>
+      pm.expect(j.pengguna.peran).to.eql(\"admin\"));\r
+
+      pm.environment.set(\"admin_token\", j.access_token);"
+    language: text/javascript
+order: 1000

@@ -4,6 +4,8 @@
 # Selebihnya tidak berubah.
 
 from datetime import datetime
+from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -91,6 +93,8 @@ class MateriResponse(BaseModel):
     status: str
     dibuat_pada: datetime
     diubah_pada: datetime
+    # Hanya terisi untuk mahasiswa (belum/dilihat/selesai). Untuk admin selalu null.
+    status_belajar: Literal["belum", "dilihat", "selesai"] | None = None
 
     model_config = {"from_attributes": True}
 
@@ -102,3 +106,24 @@ class MateriListResponse(BaseModel):
     page: int
     limit: int
     total_pages: int
+
+
+# ---------- Kategori (menu Materi Kuliah mahasiswa) ----------
+class KategoriSemester(BaseModel):
+    semester: int
+    total_materi: int
+    total_mata_kuliah: int
+
+
+class KategoriSemesterResponse(BaseModel):
+    items: list[KategoriSemester]
+
+
+class KategoriMataKuliah(BaseModel):
+    mata_kuliah: str
+    total_materi: int
+
+
+class KategoriMataKuliahResponse(BaseModel):
+    semester: int
+    items: list[KategoriMataKuliah]

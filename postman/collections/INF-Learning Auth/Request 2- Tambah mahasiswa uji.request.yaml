@@ -1,0 +1,31 @@
+$kind: http-request
+name: "Request 2: Tambah mahasiswa uji"
+url: "{{base_url}}/mahasiswa"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"{{nim_test}}\",\r
+
+    \  \"nama\": \"Mahasiswa Uji Postman\",\r
+
+    \  \"angkatan\": 2024\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\r
+
+      const j = pm.response.json();\r
+
+      pm.test(\"status awal belum_aktif\", () =>
+      pm.expect(j.status).to.eql(\"belum_aktif\"));\r
+
+      pm.environment.set(\"id_test\", j.id);"
+    language: text/javascript
+order: 2000

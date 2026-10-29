@@ -1,26 +1,26 @@
 # Backend/app/api/v1/materi.py
 #
-# [DIUBAH]
-#  - [BARU] GET "" (list + filter + paginasi), GET "/{id}", PUT "/{id}", DELETE "/{id}".
-#    Sebelumnya hanya berisi komentar "# ... (biarkan endpoint ... tetap sama) ..." sehingga
-#    endpoint tersebut tidak ada sama sekali (frontend tidak bisa mengambil daftar materi).
-#  - [DIPERBAIKI] URL file upload sekarang diawali https:// (lewat settings.PUBLIC_BASE_URL).
-#    Sebelumnya tanpa skema sehingga validasi MateriCreateRequest gagal -> error 500 saat upload.
-#  - Endpoint POST (upload) logikanya tetap sama.
-
-import os
-import shutil
-import uuid
+# Endpoint materi:
+#   GET    /materi                       daftar + filter + paginasi (semua pengguna login)
+#   GET    /materi/kategori/semester     kategori semester 1-8 + jumlah materi
+#   GET    /materi/kategori/mata-kuliah  kategori mata kuliah pada satu semester
+#   GET    /materi/{id}                  detail
+#   POST   /materi                       upload materi (admin)
+#   PUT    /materi/{id}/edit             edit via form + ganti file opsional (admin) <- dipakai frontend
+#   PUT    /materi/{id}                  edit via JSON tanpa ganti file (admin)
+#   DELETE /materi/{id}                  hapus materi + file fisiknya (admin)
+#
+# Mahasiswa hanya melihat materi berstatus "terbit".
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
 from app.core.dependencies import get_current_user, require_role
 from app.db.session import get_db
 from app.models.pengguna import Pengguna
 from app.schemas.materi import (
-    MateriCreateRequest,
+    KategoriMataKuliahResponse,
+    KategoriSemesterResponse,
     MateriListResponse,
     MateriResponse,
     MateriUpdateRequest,
@@ -31,7 +31,7 @@ router = APIRouter(prefix="/materi", tags=["Materi"])
 
 
 # ------------------------------------------------------------
-# [BARU] GET /materi  -> daftar materi (semua pengguna yang login)
+# GET /materi
 # ------------------------------------------------------------
 @router.get(
     "",
@@ -54,13 +54,45 @@ def list_materi(
         semester=semester,
         jenis=jenis,
         q=q,
+        hanya_terbit=user.peran != "admin",
+        pengguna_id=user.id if user.peran == "mahasiswa" else None,
         page=page,
         limit=limit,
     )
 
 
 # ------------------------------------------------------------
-# [BARU] GET /materi/{id}
+# GET /materi/kategori/...  (didefinisikan sebelum "/{materi_id}")
+# ------------------------------------------------------------
+@router.get(
+    "/kategori/semester",
+    response_model=KategoriSemesterResponse,
+    summary="Kategori semester beserta jumlah materi",
+)
+def kategori_semester(
+    db: Session = Depends(get_db),
+    user: Pengguna = Depends(get_current_user),
+):
+    return materi_service.get_kategori_semester(db, hanya_terbit=user.peran != "admin")
+
+
+@router.get(
+    "/kategori/mata-kuliah",
+    response_model=KategoriMataKuliahResponse,
+    summary="Kategori mata kuliah pada sebuah semester",
+)
+def kategori_mata_kuliah(
+    semester: int = Query(..., ge=1, le=8),
+    db: Session = Depends(get_db),
+    user: Pengguna = Depends(get_current_user),
+):
+    return materi_service.get_kategori_mata_kuliah(
+        db, semester=semester, hanya_terbit=user.peran != "admin"
+    )
+
+
+# ------------------------------------------------------------
+# GET /materi/{id}
 # ------------------------------------------------------------
 @router.get(
     "/{materi_id}",
@@ -72,7 +104,13 @@ def detail_materi(
     db: Session = Depends(get_db),
     user: Pengguna = Depends(get_current_user),
 ):
-    return materi_service.get_materi(db, materi_id)
+    materi = materi_service.get_materi(db, materi_id)
+    # Mahasiswa hanya boleh melihat materi yang sudah terbit
+    if user.peran != "admin" and materi.status != "terbit":
+        raise HTTPException(status_code=404, detail="Materi tidak ditemukan")
+    if user.peran == "mahasiswa":
+        materi_service.tandai_status_belajar(db, [materi], user.id)
+    return materi
 
 
 # ------------------------------------------------------------
@@ -82,7 +120,7 @@ def detail_materi(
     "",
     response_model=MateriResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Tambah materi via Upload File (admin only)",
+    summary="Tambah materi via upload file (admin only)",
 )
 def create_materi(
     judul: str = Form(...),
@@ -93,42 +131,59 @@ def create_materi(
     db: Session = Depends(get_db),
     admin: Pengguna = Depends(require_role("admin")),
 ):
-    allowed_extensions = [".pdf", ".docx", ".pptx", ".xlsx"]
-    ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in allowed_extensions:
-        raise HTTPException(status_code=400, detail="Format file tidak diizinkan")
-
-    # Nama file unik agar tidak bentrok
-    nama_file_baru = f"{uuid.uuid4().hex}{ext}"
-    file_location = f"uploads/{nama_file_baru}"
-
-    os.makedirs("uploads", exist_ok=True)
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    # [DIPERBAIKI] URL lengkap dengan https://
-    base_url = settings.PUBLIC_BASE_URL.rstrip("/")
-    file_url = f"{base_url}/uploads/{nama_file_baru}"
-
-    data = MateriCreateRequest(
+    return materi_service.upload_materi(
+        db,
         judul=judul,
-        deskripsi=deskripsi,
         mata_kuliah=mata_kuliah,
         semester=semester,
-        jenis=ext.replace(".", ""),  # pdf, docx, dll
-        url=file_url,
+        deskripsi=deskripsi,
+        file=file,
+        admin_id=admin.id,
     )
-
-    return materi_service.create_materi(db, data, admin.id)
 
 
 # ------------------------------------------------------------
-# [BARU] PUT /materi/{id}  (admin only)
+# PUT /materi/{id}/edit  -> edit via form (admin only)
+# Dipakai modal "Edit Materi" di frontend: multipart, file opsional.
+# ------------------------------------------------------------
+@router.put(
+    "/{materi_id}/edit",
+    response_model=MateriResponse,
+    summary="Edit materi via form, file opsional (admin only)",
+    description=(
+        "Hanya field yang dikirim yang diubah. `deskripsi` kosong berarti dikosongkan. "
+        "Jika `file` dikirim, file lama diganti dan dihapus dari server."
+    ),
+)
+def edit_materi_form(
+    materi_id: int,
+    judul: str | None = Form(None),
+    mata_kuliah: str | None = Form(None),
+    semester: int | None = Form(None),
+    deskripsi: str | None = Form(None),
+    file: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+    admin: Pengguna = Depends(require_role("admin")),
+):
+    return materi_service.ubah_materi_form(
+        db,
+        materi_id,
+        judul=judul,
+        mata_kuliah=mata_kuliah,
+        semester=semester,
+        deskripsi=deskripsi,
+        file=file,
+    )
+
+
+# ------------------------------------------------------------
+# PUT /materi/{id}  -> edit via JSON (admin only), tanpa ganti file
+# Juga dipakai untuk mengubah status: draft / terbit / arsip.
 # ------------------------------------------------------------
 @router.put(
     "/{materi_id}",
     response_model=MateriResponse,
-    summary="Edit materi (admin only)",
+    summary="Edit materi via JSON (admin only)",
 )
 def edit_materi(
     materi_id: int,
@@ -140,12 +195,12 @@ def edit_materi(
 
 
 # ------------------------------------------------------------
-# [BARU] DELETE /materi/{id}  (admin only)
+# DELETE /materi/{id}  (admin only)
 # ------------------------------------------------------------
 @router.delete(
     "/{materi_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Hapus materi (admin only)",
+    summary="Hapus materi beserta file fisiknya (admin only)",
 )
 def hapus_materi(
     materi_id: int,

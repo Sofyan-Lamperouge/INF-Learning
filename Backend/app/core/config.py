@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     # [BARU] harus diawali http:// atau https://
     PUBLIC_BASE_URL: str = "https://inf-learning-production.up.railway.app"
 
+    # Folder file upload materi. Di Railway arahkan ke folder di dalam Volume (mis. /data/uploads)
+    # agar file tidak hilang saat redeploy. Di lokal cukup biarkan default.
+    UPLOAD_DIR: str = "uploads"
+    # Batas ukuran file upload (MB). Disamakan dengan batas di frontend (10 MB).
+    MAX_UPLOAD_MB: int = 10
+
     # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
     DATABASE_URL: str = Field(
         validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL")

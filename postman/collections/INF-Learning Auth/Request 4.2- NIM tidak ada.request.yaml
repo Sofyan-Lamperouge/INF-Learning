@@ -1,0 +1,37 @@
+$kind: http-request
+name: "Request 4.2: NIM tidak ada"
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"2488019999\",\r
+
+    \  \"kata_sandi\": \"{{password_test}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r
+
+      const j = pm.response.json();\r
+
+      pm.test(\"token_type bearer\", () => pm.expect(j.token_type).to.eql(\"bearer\"));\r
+
+      pm.test(\"access_token berformat JWT\", () => pm.expect(j.access_token.split(\".\")).to.have.lengthOf(3));\r
+
+      pm.test(\"data pengguna benar\", () => {\r
+
+      \  pm.expect(j.pengguna.nomor_induk).to.eql(pm.environment.get(\"nim_test\"));\r
+
+      \  pm.expect(j.pengguna.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      pm.environment.set(\"token\", j.access_token);"
+    language: text/javascript
+  - type: beforeRequest
+    code: ""
+    language: text/javascript
+order: 11000
