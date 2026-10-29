@@ -1,61 +1,47 @@
 import { Link } from 'react-router-dom';
 
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
-  const mahasiswaTerbaru = mahasiswaList.slice(0, 5);
-
   return (
-    <section className="rekap-card rekap-table-card">
-      <header className="rekap-header">
+    <div className="rekap-card">
+      <div className="rekap-header">
         <h3 className="rekap-title">Mahasiswa</h3>
 
         <Link to="/dashboard/mahasiswa" className="rekap-link">
           Lihat semua
         </Link>
-      </header>
+      </div>
 
-      <div className="rekap-divider" />
+      <div className="rekap-divider"></div>
 
       <div className="rekap-body">
-        <div className="rekap-dashboard-table-wrap">
-          <table className="rekap-dashboard-table">
-            <thead>
-              <tr>
-                <th scope="col">NIM</th>
-                <th scope="col">Nama</th>
-                <th scope="col">Angkatan</th>
-              </tr>
-            </thead>
+        <table className="tabel-mahasiswa">
+          <thead>
+            <tr>
+              <th>NIM</th>
+              <th>Nama</th>
+              <th>Angkatan</th>
+            </tr>
+          </thead>
 
-            <tbody>
-              {mahasiswaTerbaru.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="rekap-table-empty">
-                    Belum ada data mahasiswa.
-                  </td>
+          <tbody>
+            {mahasiswaList.length === 0 ? (
+              <tr>
+                <td colSpan="3" className="tabel-kosong">
+                  Belum ada data mahasiswa.
+                </td>
+              </tr>
+            ) : (
+              mahasiswaList.map((mhs) => (
+                <tr key={mhs.id}>
+                  <td>{mhs.nomor_induk}</td>
+                  <td>{mhs.nama}</td>
+                  <td>{mhs.angkatan ?? '-'}</td>
                 </tr>
-              ) : (
-                mahasiswaTerbaru.map((mahasiswa, index) => (
-                  <tr key={mahasiswa.id ?? mahasiswa.nomor_induk ?? index}>
-                    <td>{mahasiswa.nomor_induk || '—'}</td>
-                    <td className="rekap-table-name">
-                      {mahasiswa.nama || '—'}
-                    </td>
-                    <td>
-                      {mahasiswa.angkatan ? (
-                        <span className="rekap-angkatan-badge">
-                          {mahasiswa.angkatan}
-                        </span>
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-    </section>
+    </div>
   );
 }
