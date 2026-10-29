@@ -37,33 +37,42 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
    ============================================================ */
 
 .auth-page {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;           
+  width: 100%;
   display: flex;
-  flex-direction: column; 
-  align-items: center;    
+  align-items: center;
   justify-content: center;
-  padding: 112px 120px;
+  padding: clamp(24px, 6vw, 112px) clamp(16px, 8vw, 120px);
   background-color: #eaf5fc;
-  box-sizing: border-box;
-  overflow: hidden; 
 }
+
+.auth-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-notification {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(760px, calc(100% - 2rem));
+}
+
 
 /* Card utama */
 .auth-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
+  gap: 60px;
   width: 100%;
-  max-width: 1000px;
-  
-  height: 100%;           
-  max-height: 820px;      
-  min-height: 500px;      
-  
+  max-width: 1200px;
+  min-height: 800px;
+  padding: 50px;
   background: #ffffff;
-  border-radius: 28px;
-  padding: 2rem;
+  border-radius: 40px;
   box-shadow: 0 20px 50px rgba(30, 90, 140, 0.08);
 }
 
@@ -75,13 +84,9 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-illustration {
   position: relative;
-  border-radius: 20px;
+  border-radius: 30px;
   overflow: hidden;
   background: linear-gradient(135deg, #e8f4fb 0%, #d6ecfa 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
 }
 
 .auth-illustration img {
@@ -95,16 +100,17 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 .auth-form-col {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start !important; 
-  gap: 0.5rem;
-  height: 100%;
-  overflow-y: auto;        
-  padding-right: 0.5rem;   
+  justify-content: space-between;
+  padding: 1.75rem 0 0.5rem;
 }
 
 .auth-form-col::-webkit-scrollbar {
   width: 6px;
   display: none;
+}
+.auth-form-top {
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-form-col::-webkit-scrollbar-thumb {
@@ -114,11 +120,11 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 /* === JUDUL & SUBTITLE === */
 .auth-title {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 0.25rem;
   color: #1a1a1a;
+  margin: 0 0 0.5rem;
 }
 
 .auth-card--register .auth-title {
@@ -127,10 +133,9 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .auth-subtitle {
   color: #6b7280;
-  margin: 0 0 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 400;
+  font-size: 1.05rem;
   text-align: center;
+  margin: 0 0 2.5rem;
 }
 
 /* ============================================================
@@ -143,23 +148,21 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 .input-field label {
   display: block;
-  font-size: 0.75rem !important;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .input-field input {
   width: 100%;
-  padding: 0.45rem 0.75rem !important;
-  border: 2px solid #7ec8f5;
-  border-radius: 10px;
-  font-size: 0.85rem !important;
+  padding: 0.5rem 1rem;
+  border: 2px solid #94a3b8;       /* cek warna persisnya di Figma */
+  border-radius: 16px;
+  font-size: 1.1rem;
   background: #ffffff;
   color: #1a1a1a;
   outline: none;
-  border-width: 2px;
-  border-radius: 10px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -268,10 +271,11 @@ body > .alert-success {
 
 /* Footer auth */
 .auth-footer {
-  margin-top: auto;
+  margin-top: 2rem;
   text-align: center;
-  font-size: 0.9rem;
-  color: #4b5563;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #404040;
 }
 
 /* ============================================================
