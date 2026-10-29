@@ -1,0 +1,38 @@
+$kind: http-request
+url: "{{base_url}}/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r
+
+      \r
+
+      const j = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Identitas sesuai token\", () => {\r
+
+      \  pm.expect(j.nomor_induk).to.eql(pm.environment.get(\"nim_test\"));\r
+
+      \  pm.expect(j.peran).to.eql(\"mahasiswa\");\r
+
+      \  pm.expect(j.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Field lengkap & tanpa password\", () => {\r
+
+      \  [\"id\", \"peran\", \"nomor_induk\", \"nama\", \"status\"].forEach(k => pm.expect(j).to.have.property(k));\r
+
+      \  pm.expect(j).to.not.have.property(\"kata_sandi\");\r
+
+      });"
+    language: text/javascript
+order: 14000

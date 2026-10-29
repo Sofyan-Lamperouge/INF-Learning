@@ -1,0 +1,33 @@
+$kind: http-request
+name: "Request 3.3: Format NIM salah"
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"12345ABCDE\",\r
+
+    \  \"kata_sandi\": \"{{password_test}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_test}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r
+
+      const j = pm.response.json();\r
+
+      pm.test(\"status aktif & peran mahasiswa\", () => {\r
+
+      \  pm.expect(j.status).to.eql(\"aktif\");\r
+
+      \  pm.expect(j.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      pm.test(\"password tidak bocor\", () =>
+      pm.expect(j).to.not.have.property(\"kata_sandi\"));"
+    language: text/javascript
+order: 3000

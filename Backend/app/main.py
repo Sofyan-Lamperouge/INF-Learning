@@ -32,9 +32,9 @@ app.include_router(admin.router, prefix="/api/v1")
 app.include_router(dashboard_mahasiswa.router, prefix="/api/v1")
 app.include_router(mahasiswa.router, prefix="/api/v1")
 
-# File upload dilayani statis dari folder uploads/
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# File upload dilayani statis dari settings.UPLOAD_DIR (production: folder di Railway Volume)
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 # ====================================================
 
 @app.get("/", tags=["root"])
