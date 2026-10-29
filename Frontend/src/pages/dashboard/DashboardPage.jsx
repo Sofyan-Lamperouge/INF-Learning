@@ -39,7 +39,7 @@ export default function DashboardPage() {
 
     async function fetchDashboardData() {
       try {
-        const data = await getDashboard(); // [DIUBAH] ambil data asli
+        const data = await getDashboard(); 
 
         if (!active) return;
 

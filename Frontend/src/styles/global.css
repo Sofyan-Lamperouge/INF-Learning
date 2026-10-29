@@ -274,7 +274,7 @@ body > .alert-success {
   margin-top: 2rem;
   text-align: center;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #404040;
 }
 
@@ -3103,10 +3103,6 @@ body > .alert-success {
   border-radius: 14px;
   padding: 1rem 1.15rem;
   color: #1a1a1a;
-  
-  /* ✅ EFEK CAHAYA PUTIH (GLOW) */
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
-              0 4px 10px rgba(0, 0, 0, 0.05); 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 

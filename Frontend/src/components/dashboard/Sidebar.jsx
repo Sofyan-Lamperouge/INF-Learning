@@ -1,7 +1,7 @@
 // src/components/dashboard/Sidebar.jsx
 // Sidebar dashboard admin
 
-import { useState, useEffect } from "react"; // ✅ 1. Tambahkan import useState & useEffect
+import { useState, useEffect } from "react"; 
 import { Link, useNavigate } from "react-router-dom";
 import SidebarMenu from "./SidebarMenu.jsx";
 import SidebarUser from "./SidebarUser.jsx";
@@ -26,7 +26,7 @@ export default function Sidebar() {
     navigate("./pages/LandingPage", { replace: true });
   }
 
-  // ✅ 3. Pengecekan loading diletakkan setelah semua fungsi dideklarasikan
+  // 3. Pengecekan loading diletakkan setelah semua fungsi dideklarasikan
   if (loading) {
     return <SidebarSkeleton />;
   }
@@ -73,8 +73,6 @@ export default function Sidebar() {
         </span>
         <span className="sidebar-logout-label">Keluar</span>
       </button>
-
-      <div className="sidebar-divider"></div>
 
       {/* === USER CARD === */}
       <SidebarUser />
