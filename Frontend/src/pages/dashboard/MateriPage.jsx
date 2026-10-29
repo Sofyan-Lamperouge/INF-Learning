@@ -9,6 +9,14 @@
 //  - Tombol hapus berfungsi (DELETE /materi/{id}).
 //  - Paginasi memakai total dan total_pages dari backend.
 //  - Bagian SVG/ikon tidak diubah.
+//
+// [DIPERBAIKI] Tombol Edit dan Hapus sebelumnya tidak tersambung:
+//  - Ikon pensil (biru) tidak punya onClick -> sekarang membuka EditMateriModal.
+//  - Ikon tempat sampah (merah) sebelumnya memanggil setEditingMateri (salah) dan
+//    handleDelete tidak pernah dipanggil -> sekarang memanggil handleDelete.
+//  - <EditMateriModal /> sebelumnya hanya di-import dan tidak dirender -> sekarang dirender.
+//  - Setelah menghapus item terakhir di halaman terakhir, halaman mundur satu langkah
+//    agar tidak menampilkan daftar kosong.
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -73,12 +81,19 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
-  async function handleDelete(id) {
-    if (!window.confirm("Hapus materi ini?")) return;
+  async function handleDelete(materi) {
+    if (!window.confirm(`Hapus materi "${materi.judul}"?`)) return;
 
     try {
-      await deleteMateri(id);
-      setReloadKey((k) => k + 1);
+      await deleteMateri(materi.id);
+
+      // Jika yang dihapus satu-satunya item di halaman terakhir, mundur satu halaman
+      // (perubahan page sudah memicu pemuatan ulang). Selain itu muat ulang halaman ini.
+      if (materiList.length === 1 && page > 1) {
+        setPage((p) => p - 1);
+      } else {
+        setReloadKey((k) => k + 1);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -298,6 +313,10 @@ export default function MateriPage() {
                       {/*  3. Tombol Edit & Hapus dengan SVG */}
                       <div style={{ display: "flex", gap: "0.5rem" }}>
                         <button
+                          type="button"
+                          onClick={() => setEditingMateri(materi)}
+                          aria-label={`Edit materi ${materi.judul}`}
+                          title="Edit materi"
                           style={{
                             background: "transparent",
                             border: "none",
@@ -324,9 +343,9 @@ export default function MateriPage() {
 
                         <button
                           type="button"
-                          onClick={() => setEditingMateri(materi)}
-                          aria-label={`Edit materi ${materi.judul}`}
-                          title="Edit materi"
+                          onClick={() => handleDelete(materi)}
+                          aria-label={`Hapus materi ${materi.judul}`}
+                          title="Hapus materi"
                           style={{
                             background: "transparent",
                             border: "none",
@@ -336,7 +355,7 @@ export default function MateriPage() {
                             alignItems: "center",
                             justifyContent: "center",
                           }}
-                          >
+                        >
                           <svg
                             width="24"
                             height="24"
@@ -428,6 +447,18 @@ export default function MateriPage() {
           </div>
         </div>
       </div>
+
+      {editingMateri && (
+        <EditMateriModal
+          materi={editingMateri}
+          mataKuliahOptions={matkulOptions}
+          onClose={() => setEditingMateri(null)}
+          onSaved={() => {
+            setEditingMateri(null);
+            setReloadKey((k) => k + 1); // muat ulang daftar dengan data terbaru
+          }}
+        />
+      )}
     </DashboardLayout>
   );
 }
