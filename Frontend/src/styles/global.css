@@ -3296,124 +3296,140 @@ body > .alert-success {
 
 
 /* ============================================================
-   REKAP CARD — Materi, Kuis, Mahasiswa
+   TABEL REKAP KUIS DAN MAHASISWA
+   Mengikuti tampilan tabel Rekap Materi
    ============================================================ */
 
-.rekap-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.5rem 1.75rem;
-  margin-top: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.rekap-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
-
-.rekap-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.rekap-link {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #2f9fe0;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.rekap-link:hover {
-  color: #1e7ab8;
-  text-decoration: underline;
-}
-
-.rekap-divider {
-  height: 1px;
-  background: #e5e7eb;
-  margin-bottom: 1.25rem;
-}
-
-.rekap-body {
-  min-height: 200px; /* Menyamakan tinggi dengan Rekap Kuis */
+.rekap-table-card {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding-top: 0.5rem;
-}
-
-.tabel-kosong {
-  text-align: center;
-  padding: 5rem 1rem !important;
-  color: #6b7280;
-  font-style: italic;
-  font-size: 0.95rem;
-}
-
-.rekap-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem 0;
-}
-
-.rekap-empty-icon {
-  color: #4b5563;
-  opacity: 0.6;
-}
-
-.rekap-empty-text {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0;
-  text-align: center;
-}
-
-/* === Tombol Tambah === */
-.btn-tambah {
-  background: #7ec8f5;
-  color: #ffffff;
-  padding: 0.55rem 1.25rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.15s ease;
-  display: inline-block;
-}
-
-.btn-tambah:hover {
-  background: #62b6e8;
-  text-decoration: none;
-}
-
-/* === List (kalau ada data) === */
-.rekap-list {
-  list-style: none;
+  height: 100%;
   padding: 0;
+  overflow: hidden;
+  border: 1px solid #e5edf3;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(20, 55, 80, 0.04);
+}
+
+.rekap-table-card .rekap-header {
+  min-height: 76px;
   margin: 0;
+  padding: 1.25rem 1.75rem;
+}
+
+.rekap-table-card .rekap-title {
+  font-size: 1.35rem;
+}
+
+.rekap-table-card .rekap-link {
+  font-size: 1rem;
+}
+
+.rekap-table-card .rekap-divider {
+  flex: 0 0 1px;
+  margin: 0;
+  background: #e5edf3;
+}
+
+.rekap-table-card .rekap-body {
+  display: block;
+  flex: 1;
+  min-height: 240px;
+  padding: 1rem 1.75rem 1.5rem;
+  background: #f8fbfd;
+}
+
+.rekap-dashboard-table-wrap {
   width: 100%;
+  overflow-x: auto;
 }
 
-.rekap-list-item {
-  padding: 0.65rem 0;
-  border-bottom: 1px solid #f3f4f6;
+.rekap-dashboard-table {
+  width: 100%;
+  min-width: 480px;
+  border: 1px solid #e2ebf1;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  color: #777f86;
   font-size: 0.9rem;
-  color: #1f2937;
 }
 
-.rekap-list-item:last-child {
-  border-bottom: none;
+.rekap-dashboard-table th,
+.rekap-dashboard-table td {
+  padding: 0.72rem 0.85rem;
+  border-bottom: 1px solid #e9eef2;
+  text-align: left;
+  vertical-align: middle;
 }
 
+.rekap-dashboard-table th {
+  background: #edf7fc;
+  color: #42484d;
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rekap-dashboard-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.rekap-dashboard-table tbody tr:hover {
+  background: #f8fbfd;
+}
+
+.rekap-dashboard-table .rekap-number-cell {
+  width: 54px;
+  text-align: center;
+}
+
+.rekap-table-name {
+  color: #666d73;
+  font-weight: 600;
+}
+
+.rekap-table-empty {
+  height: 170px;
+  color: #929ba2 !important;
+  font-style: italic;
+  text-align: center !important;
+}
+
+.rekap-angkatan-badge {
+  display: inline-block;
+  min-width: 58px;
+  padding: 0.13rem 0.6rem;
+  border-radius: 999px;
+  background: #ffc400;
+  color: #fff;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .rekap-table-card .rekap-header {
+    min-height: 64px;
+    padding: 1rem;
+  }
+
+  .rekap-table-card .rekap-body {
+    min-height: 200px;
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .rekap-dashboard-table {
+    font-size: 0.8rem;
+  }
+
+  .rekap-dashboard-table th,
+  .rekap-dashboard-table td {
+    padding: 0.6rem;
+  }
+}
 
 /* ============================================================
    TABEL MAHASISWA

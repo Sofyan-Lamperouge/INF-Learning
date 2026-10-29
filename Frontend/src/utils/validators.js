@@ -37,7 +37,7 @@ export function validateNimLogin(value) {
   const nim = String(value ?? '').trim();
 
   if (!nim) {
-    return 'Format Username Salah!';
+    return 'NIM wajib diisi!';
   }
 
   if (!NIM_ANY_REGEX.test(nim)) {

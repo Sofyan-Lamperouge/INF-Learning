@@ -1,57 +1,61 @@
-// Frontend/src/components/dashboard/TabelMahasiswa.jsx
-//
-// [DIUBAH]
-//  - DUMMY_MAHASISWA dihapus (sebelumnya sudah tidak terpakai).
-//  - Field disesuaikan dengan backend: `nim` -> `nomor_induk`, key memakai `id`.
-//  - <a href> diganti <Link> supaya navigasi tidak reload halaman penuh.
-//  - Teks kosong dirapikan.
-
 import { Link } from 'react-router-dom';
 
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
-  return (
-    <div className="rekap-card">
+  const mahasiswaTerbaru = mahasiswaList.slice(0, 5);
 
-      {/* Header Judul & Link */}
-      <div className="rekap-header">
+  return (
+    <section className="rekap-card rekap-table-card">
+      <header className="rekap-header">
         <h3 className="rekap-title">Mahasiswa</h3>
+
         <Link to="/dashboard/mahasiswa" className="rekap-link">
           Lihat semua
         </Link>
-      </div>
+      </header>
 
-      {/* Garis pemisah */}
-      <div className="rekap-divider"></div>
+      <div className="rekap-divider" />
 
-      {/* Area isi tabel */}
       <div className="rekap-body">
-        <table className="tabel-mahasiswa">
-          <thead>
-            <tr>
-              <th>NIM</th>
-              <th>Nama</th>
-              <th>Angkatan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mahasiswaList.length === 0 ? (
+        <div className="rekap-dashboard-table-wrap">
+          <table className="rekap-dashboard-table">
+            <thead>
               <tr>
-                <td colSpan="3" className="tabel-kosong">
-                  Belum ada data mahasiswa.
-                </td>
+                <th scope="col">NIM</th>
+                <th scope="col">Nama</th>
+                <th scope="col">Angkatan</th>
               </tr>
-            ) : (
-              mahasiswaList.map((mhs) => (
-                <tr key={mhs.id}>
-                  <td>{mhs.nomor_induk}</td>
-                  <td>{mhs.nama}</td>
-                  <td>{mhs.angkatan ?? '-'}</td>
+            </thead>
+
+            <tbody>
+              {mahasiswaTerbaru.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="rekap-table-empty">
+                    Belum ada data mahasiswa.
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                mahasiswaTerbaru.map((mahasiswa, index) => (
+                  <tr key={mahasiswa.id ?? mahasiswa.nomor_induk ?? index}>
+                    <td>{mahasiswa.nomor_induk || '—'}</td>
+                    <td className="rekap-table-name">
+                      {mahasiswa.nama || '—'}
+                    </td>
+                    <td>
+                      {mahasiswa.angkatan ? (
+                        <span className="rekap-angkatan-badge">
+                          {mahasiswa.angkatan}
+                        </span>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
