@@ -4656,7 +4656,7 @@ body > .alert-success {
 }
 
 /* ============================================================
-   MATERI PAGE (Dashboard Admin)
+   MATERI PAGE (Dashboard Admin) — REVISI FINAL
    ============================================================ */
 
 /* Container Utama */
@@ -4749,7 +4749,7 @@ body > .alert-success {
   color: #404040;
   background: #ffffff;
   outline: none;
-  appearance: none; /* Hilangkan panah default select */
+  appearance: none;
 }
 
 .filter-item select {
@@ -4780,12 +4780,14 @@ body > .alert-success {
   box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.2);
 }
 
-/* --- Tabel Card --- */
+/* --- Tabel Card (Pembungkus Putih Utama) --- */
 .materi-table-card {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow: hidden; /* Agar border-radius bekerja di tabel */
+  overflow: hidden; /* Penting agar sudut tabel terpotong rapi */
+  display: flex;
+  flex-direction: column;
 }
 
 .materi-table {
@@ -4793,8 +4795,9 @@ body > .alert-success {
   border-collapse: collapse;
 }
 
+/* Styling Header Tabel */
 .materi-table th {
-  background: #f8fafc;
+  background: #f8fafc; /* Warna abu-abu sangat muda di header */
   color: #1a1a1a;
   font-weight: 700;
   font-size: 0.85rem;
@@ -4803,6 +4806,7 @@ body > .alert-success {
   border-bottom: 1px solid #e5e7eb;
 }
 
+/* Styling Baris Tabel */
 .materi-table td {
   padding: 1rem 1.5rem;
   font-size: 0.85rem;
@@ -4810,18 +4814,19 @@ body > .alert-success {
   border-bottom: 1px solid #f3f4f6;
 }
 
-/* Empty State (Saat Data Kosong) */
+/* ✅ Empty State (Tampilan jika tabel kosong) */
 .materi-empty-state {
   text-align: center;
-  padding: 4rem 2rem !important;
+  padding: 5rem 2rem !important;
   color: #6b7280;
   font-style: italic;
+  font-size: 0.95rem;
 }
 
 /* Badge Semester */
 .badge-semester {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -4839,8 +4844,10 @@ body > .alert-success {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #e5e7eb; /* Garis pemisah atas paginasi */
+  background: #ffffff;
+  margin-top: auto; /* Memastikan paginasi selalu menempel di dasar kotak */
 }
 
 .pagination-text {
