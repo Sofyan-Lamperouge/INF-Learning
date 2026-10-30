@@ -16,6 +16,7 @@ import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
 import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
+import DeleteMateriModal from "../../components/dashboard/DeleteMateriModal.jsx";
 import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
 const PAGE_SIZE = 20;
@@ -28,6 +29,9 @@ export default function MateriPage() {
   const [matkulOptions, setMatkulOptions] = useState([]);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingMateri, setEditingMateri] = useState(null);
+  const [deletingMateri, setDeletingMateri] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const [search, setSearch] = useState("");
   const [semester, setSemester] = useState("");
@@ -70,14 +74,18 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
-  async function handleDelete(id) {
-    if (!window.confirm("Hapus materi ini?")) return;
-
+  async function handleDelete() {
+    if (!deletingMateri || deleting) return;
+    setDeleting(true);
+    setDeleteError("");
     try {
-      await deleteMateri(id);
+      await deleteMateri(deletingMateri.id);
+      setDeletingMateri(null);
       setReloadKey((k) => k + 1);
     } catch (err) {
-      setError(err.message);
+      setDeleteError(err.message || "Materi gagal dihapus. Silakan coba lagi.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -323,7 +331,12 @@ export default function MateriPage() {
                         </button>
 
                         <button
-                          onClick={() => handleDelete(materi.id)}
+                          type="button"
+                          onClick={() => {
+                            setDeleteError("");
+                            setDeletingMateri(materi);
+                          }}
+                          aria-label={`Hapus materi ${materi.judul}`}
                           style={{
                             background: "transparent",
                             border: "none",
@@ -432,6 +445,17 @@ export default function MateriPage() {
             setEditingMateri(null);
             setReloadKey((current) => current + 1);
           }}
+        />
+      )}
+      {deletingMateri && (
+        <DeleteMateriModal
+          materi={deletingMateri}
+          deleting={deleting}
+          error={deleteError}
+          onCancel={() => {
+            if (!deleting) setDeletingMateri(null);
+          }}
+          onConfirm={handleDelete}
         />
       )}
     </DashboardLayout>
