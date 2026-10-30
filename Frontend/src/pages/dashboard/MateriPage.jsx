@@ -278,7 +278,9 @@ export default function MateriPage() {
               {materiList.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="materi-empty-state">
-                    Belum ada materi yang diunggah.
+                    {error
+                      ? "Data materi gagal dimuat. Periksa koneksi ke backend."
+                      : "Belum ada materi yang diunggah."}
                   </td>
                 </tr>
               ) : (

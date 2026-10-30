@@ -76,7 +76,7 @@ export async function request(path, options = {}) {
     throw new ApiError(message, response.status, data);
   }
 
-  // [BARU] 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
+  // 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
   if (response.status !== 204 && data === null) {
     throw new ApiError(
       'Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.',
@@ -112,4 +112,3 @@ export const api = {
     return request(path, { method: 'DELETE' });
   },
 };
-
