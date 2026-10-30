@@ -7,15 +7,7 @@
 //  3. Jika server menjawab 200 tapi bukan JSON (mis. HTML dari `serve` karena
 //     VITE_API_BASE_URL salah), sekarang dilempar ApiError, bukan diam-diam sukses.
 
-// Di development, Vite meneruskan /api ke backend localhost.
-// Di production (Vercel), gunakan URL backend Railway, kecuali env Vercel
-// VITE_API_BASE_URL sudah diisi dengan URL backend yang aktif.
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? '/api/v1'
-  : 'https://inf-learning-production.up.railway.app/api/v1';
-const BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL
-).replace(/\/$/, '');
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 const PUBLIC_PATHS = ['/auth/login', '/auth/registrasi'];
 
@@ -49,7 +41,7 @@ export async function request(path, options = {}) {
     });
   } catch (error) {
     throw new ApiError(
-      `Gagal terhubung ke API (${BASE_URL}). Periksa apakah backend aktif, URL API benar, dan CORS mengizinkan frontend.`,
+      'Gagal terhubung ke server. Pastikan Backend sedang berjalan.',
       0,
       error
     );
@@ -84,7 +76,7 @@ export async function request(path, options = {}) {
     throw new ApiError(message, response.status, data);
   }
 
-  // [BARU] 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
+  // 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
   if (response.status !== 204 && data === null) {
     throw new ApiError(
       'Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.',
@@ -120,4 +112,3 @@ export const api = {
     return request(path, { method: 'DELETE' });
   },
 };
-
