@@ -4656,7 +4656,7 @@ body > .alert-success {
 }
 
 /* ============================================================
-   MATERI PAGE (Dashboard Admin) — REVISI FINAL
+   MATERI PAGE (Dashboard Admin) — REVISI FINAL KOTAK PUTIH
    ============================================================ */
 
 /* Container Utama */
@@ -4666,7 +4666,7 @@ body > .alert-success {
   gap: 1.5rem;
 }
 
-/* --- Header Card --- */
+/* --- 1. Header Card --- */
 .materi-header-card {
   display: flex;
   justify-content: space-between;
@@ -4726,7 +4726,7 @@ body > .alert-success {
   background: #3aa8e0;
 }
 
-/* --- Filter Bar --- */
+/* --- 2. Filter Bar --- */
 .materi-filter-bar {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
@@ -4780,12 +4780,12 @@ body > .alert-success {
   box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.2);
 }
 
-/* --- Tabel Card (Pembungkus Putih Utama) --- */
+/* --- 3. Tabel Card (Pembungkus Putih Utama) --- */
 .materi-table-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow: hidden; /* Penting agar sudut tabel terpotong rapi */
+  background: #ffffff; /* ✅ Latar belakang putih */
+  border-radius: 16px; /* ✅ Sudut membulat */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* ✅ Bayangan halus */
+  overflow: hidden; /* ✅ Penting agar tabel tidak menembus sudut */
   display: flex;
   flex-direction: column;
 }
@@ -4795,9 +4795,9 @@ body > .alert-success {
   border-collapse: collapse;
 }
 
-/* Styling Header Tabel */
+/* ✅ Header Tabel (Warna EEF8FD) */
 .materi-table th {
-  background: #f8fafc; /* Warna abu-abu sangat muda di header */
+  background: #EEF8FD; 
   color: #1a1a1a;
   font-weight: 700;
   font-size: 0.85rem;
@@ -4806,12 +4806,13 @@ body > .alert-success {
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Styling Baris Tabel */
+/* ✅ Isi Tabel (Warna Putih) */
 .materi-table td {
   padding: 1rem 1.5rem;
   font-size: 0.85rem;
   color: #4b5563;
   border-bottom: 1px solid #f3f4f6;
+  background: #ffffff; 
 }
 
 /* ✅ Empty State (Tampilan jika tabel kosong) */
@@ -4839,15 +4840,15 @@ body > .alert-success {
 .badge-s4 { background: #10b981; } /* Hijau */
 .badge-s5 { background: #14b8a6; } /* Teal */
 
-/* --- Footer Paginasi --- */
+/* --- 4. Footer Paginasi --- */
 .materi-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid #e5e7eb; /* Garis pemisah atas paginasi */
+  border-top: 1px solid #e5e7eb; 
   background: #ffffff;
-  margin-top: auto; /* Memastikan paginasi selalu menempel di dasar kotak */
+  margin-top: auto; 
 }
 
 .pagination-text {
