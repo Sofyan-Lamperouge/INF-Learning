@@ -1,11 +1,4 @@
-// Frontend/src/services/api.js
-//
-// [DIUBAH]
-//  1. Endpoint publik (/auth/login, /auth/registrasi) TIDAK mengirim header Authorization,
-//     supaya token lama di localStorage tidak ikut terkirim.
-//  2. Content-Type JSON hanya dipasang kalau body berupa string (aman untuk FormData/upload).
-//  3. Jika server menjawab 200 tapi bukan JSON (mis. HTML dari `serve` karena
-//     VITE_API_BASE_URL salah), sekarang dilempar ApiError, bukan diam-diam sukses.
+
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
