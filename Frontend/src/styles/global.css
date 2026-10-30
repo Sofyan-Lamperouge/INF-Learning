@@ -5568,9 +5568,9 @@ body > .alert-success {
 }
 .ms-action { width: 28px; height: 28px; border-radius: 8px; }
 
-/* ===========================================================
+/*  ===========================================================
       REKAP MATERI dashboard 
-============================================================== */
+    ===========================================================  */
 .rekap-materi-card {
   padding: 0;
   overflow: hidden;
@@ -5720,318 +5720,11 @@ body > .alert-success {
 }
 
 /* ============================================================
-      Popup edit materi 
+   POPUP EDIT MATERI — FORM, SUKSES, DAN GAGAL
+   Cocok dengan JSX yang memakai edit-materi-dialog
    ============================================================ */
 
-.edit-materi-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  overflow-y: auto;
-  background: rgba(20, 36, 48, 0.48);
-}
-
-.edit-materi-modal {
-  position: relative;
-  width: min(100%, 980px);
-  max-height: min(92vh, 1000px);
-  overflow-y: auto;
-  border: 1px solid #e7eef3;
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(15, 40, 60, 0.22);
-}
-
-.edit-materi-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28px 34px;
-  border-bottom: 1px solid #dce5eb;
-}
-
-.edit-materi-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.edit-materi-title-wrap h2 {
-  margin: 0;
-  color: #444;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-}
-
-.edit-materi-title-icon {
-  display: grid;
-  width: 76px;
-  height: 76px;
-  place-items: center;
-  border-radius: 18px;
-  background: #eef8fd;
-  color: #55b5ef;
-}
-
-.edit-materi-title-icon svg {
-  width: 38px;
-  height: 38px;
-}
-
-.edit-materi-close {
-  border: 0;
-  background: transparent;
-  color: #454545;
-  font-size: 2.5rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.edit-materi-form {
-  padding: 28px 34px 32px;
-}
-
-.edit-materi-section {
-  padding-bottom: 28px;
-  border-bottom: 1px solid #e1eaf0;
-}
-
-.edit-materi-section h3 {
-  margin: 0 0 24px;
-  color: #444;
-  font-size: 1.5rem;
-}
-
-.edit-materi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.edit-materi-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-.edit-materi-field label {
-  color: #777;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.edit-materi-field label span {
-  color: #e32929;
-}
-
-.edit-materi-field input,
-.edit-materi-field select,
-.edit-materi-field textarea {
-  width: 100%;
-  min-height: 52px;
-  padding: 12px 16px;
-  border: 1.5px solid #dfebf2;
-  border-radius: 16px;
-  background: #fff;
-  color: #555;
-  font: inherit;
-}
-
-.edit-materi-field textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.edit-materi-field input:focus,
-.edit-materi-field select:focus,
-.edit-materi-field textarea:focus {
-  outline: none;
-  border-color: #55b5ef;
-  box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.14);
-}
-
-.edit-materi-file-section {
-  padding-top: 28px;
-}
-
-.edit-materi-file-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #f8fbfd;
-}
-
-.edit-materi-file-info {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 16px;
-}
-
-.edit-materi-file-icon {
-  display: grid;
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
-  place-items: center;
-  border-radius: 14px;
-  background: #fee2e2;
-  color: #e32929;
-}
-
-.edit-materi-file-icon svg {
-  width: 34px;
-  height: 34px;
-}
-
-.edit-materi-file-name {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 4px;
-  color: #555;
-}
-
-.edit-materi-file-name strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.edit-materi-file-name span,
-.edit-materi-file-hint {
-  color: #858d93;
-  font-size: 0.9rem;
-}
-
-.edit-materi-change-file {
-  display: inline-flex;
-  min-height: 48px;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  border: 1.5px solid #dfebf2;
-  border-radius: 14px;
-  color: #666;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.edit-materi-change-file input {
-  display: none;
-}
-
-.edit-materi-file-hint {
-  margin: 10px 0 0;
-}
-
-.edit-materi-error {
-  margin: 18px 0 0;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #b42323;
-}
-
-.edit-materi-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  padding-top: 28px;
-}
-
-.edit-materi-actions button {
-  min-width: 170px;
-  min-height: 52px;
-  padding: 12px 20px;
-  border-radius: 16px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.edit-materi-actions button:disabled,
-.edit-materi-close:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.edit-materi-cancel {
-  border: 1.5px solid #dfebf2;
-  background: #fff;
-  color: #666;
-}
-
-.edit-materi-save {
-  border: 0;
-  background: #55b5ef;
-  color: #fff;
-}
-
-@media (max-width: 640px) {
-  .edit-materi-overlay {
-    align-items: flex-start;
-    padding: 12px;
-  }
-
-  .edit-materi-modal {
-    max-height: 96vh;
-    border-radius: 20px;
-  }
-
-  .edit-materi-header {
-    padding: 18px;
-  }
-
-  .edit-materi-title-icon {
-    width: 54px;
-    height: 54px;
-  }
-
-  .edit-materi-title-icon svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  .edit-materi-title-wrap {
-    gap: 12px;
-  }
-
-  .edit-materi-form {
-    padding: 20px 18px;
-  }
-
-  .edit-materi-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .edit-materi-file-box {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .edit-materi-actions {
-    flex-direction: column-reverse;
-  }
-
-  .edit-materi-actions button {
-    width: 100%;
-  }
-}
-
-/* ============================================================
-   POPUP EDIT MATERI
-   ============================================================ */
-
+html.edit-materi-modal-open,
 body.edit-materi-modal-open {
   overflow: hidden;
 }
@@ -6043,65 +5736,66 @@ body.edit-materi-modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  background: rgba(27, 49, 61, 0.28);
-  backdrop-filter: blur(2px);
+  padding: 16px;
+  background: rgba(27, 49, 61, 0.38);
+  backdrop-filter: blur(3px);
 }
 
 .edit-materi-dialog,
-.edit-materi-success {
+.edit-materi-result {
   box-sizing: border-box;
-  width: min(1120px, 96vw);
-  max-height: 94vh;
+  width: min(1000px, 94vw);
+  max-height: calc(100dvh - 32px);
   overflow: hidden;
   border: 2px solid #d7dfe4;
-  border-radius: 28px;
+  border-radius: 24px;
   background: #fff;
   box-shadow: 0 16px 60px rgba(22, 54, 73, 0.18);
   animation: editMateriPopIn 180ms ease-out;
 }
 
+/* Form edit */
 .edit-materi-dialog {
   display: flex;
   flex-direction: column;
-  padding: clamp(24px, 3.2vw, 48px);
+  padding: 22px 30px;
 }
 
 .edit-materi-header {
   display: flex;
   align-items: center;
-  gap: 22px;
-  min-height: 90px;
-  padding-bottom: 24px;
-  border-bottom: 3px solid #d7dfe4;
+  gap: 14px;
+  min-height: 62px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #d7dfe4;
 }
 
 .edit-materi-heading-icon {
-  flex: 0 0 84px;
-  width: 84px;
-  height: 84px;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
   display: grid;
   place-items: center;
-  border-radius: 18px;
+  border-radius: 14px;
   background: #edf8fe;
   color: #55b5ef;
 }
 
 .edit-materi-heading-icon svg {
-  width: 52px;
-  height: 52px;
+  width: 38px;
+  height: 38px;
 }
 
 .edit-materi-header h2 {
   margin: 0;
   color: #414141;
-  font-size: clamp(26px, 3vw, 38px);
+  font-size: clamp(24px, 2.2vw, 30px);
   font-weight: 750;
 }
 
 .edit-materi-close {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   margin-left: auto;
   padding: 5px;
   border: 0;
@@ -6122,26 +5816,26 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-section-title {
-  margin: 28px 0 24px;
+  margin: 16px 0 12px;
   color: #424242;
-  font-size: clamp(22px, 2.5vw, 30px);
+  font-size: clamp(19px, 2vw, 23px);
   font-weight: 750;
 }
 
 .edit-materi-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px 24px;
-  padding: 0 8px 28px;
+  gap: 12px 18px;
+  padding: 0 6px 16px;
 }
 
 .edit-materi-field {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   color: #858585;
-  font-size: 19px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -6149,32 +5843,32 @@ body.edit-materi-modal-open {
   grid-column: 1 / -1;
 }
 
-.edit-materi-field .required-mark {
-  color: #e63131;
+.edit-materi-required {
+  color: #e52b2b;
 }
 
 .edit-materi-field input,
 .edit-materi-field select {
   box-sizing: border-box;
   width: 100%;
-  height: 58px;
-  padding: 0 18px;
+  height: 46px;
+  padding: 0 14px;
   border: 1.5px solid #e4edf3;
-  border-radius: 20px;
+  border-radius: 14px;
   outline: none;
   background: #fff;
   color: #555;
   font: inherit;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 400;
 }
 
 .edit-materi-field select {
   appearance: none;
-  padding-right: 46px;
+  padding-right: 40px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23cbd7e2' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 18px center;
+  background-position: right 14px center;
 }
 
 .edit-materi-field input:focus,
@@ -6183,56 +5877,70 @@ body.edit-materi-modal-open {
   box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.12);
 }
 
+/* File materi */
 .edit-materi-file-section {
-  padding: 22px 8px 24px;
+  padding: 14px 6px 15px;
   border-top: 1.5px solid #e1edf3;
   border-bottom: 1.5px solid #e1edf3;
 }
 
 .edit-materi-file-section h3 {
-  margin: 0 0 14px;
+  margin: 0 0 9px;
   color: #454545;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 750;
 }
 
 .edit-materi-file-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  min-height: 104px;
-  padding: 14px 18px;
-  border-radius: 20px;
+  gap: 12px;
+  min-height: 70px;
+  padding: 8px 12px;
+  border-radius: 15px;
   background: #f8fbfd;
 }
 
 .edit-materi-file-icon {
-  flex: 0 0 70px;
-  width: 70px;
-  height: 78px;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 56px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 11px;
+}
+
+.edit-materi-file-icon svg {
+  width: 34px;
+  height: 38px;
+}
+
+.edit-materi-file-icon--pdf {
   background: #fee4e4;
   color: #e52d2d;
 }
 
-.edit-materi-file-icon svg {
-  width: 44px;
-  height: 48px;
+.edit-materi-file-icon--docx {
+  background: #e7f5fd;
+  color: #55b5ef;
+}
+
+.edit-materi-file-icon--pptx {
+  background: #fff2cc;
+  color: #f0a000;
 }
 
 .edit-materi-file-meta {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
 }
 
 .edit-materi-file-name {
   overflow: hidden;
   color: #4b4b4b;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -6240,25 +5948,38 @@ body.edit-materi-modal-open {
 
 .edit-materi-file-type {
   flex: 0 0 auto;
-  padding: 3px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.edit-materi-file-type--pdf {
   background: #fee4e4;
   color: #dc2626;
-  font-size: 15px;
-  font-weight: 700;
+}
+
+.edit-materi-file-type--docx {
+  background: #e7f5fd;
+  color: #329ed6;
+}
+
+.edit-materi-file-type--pptx {
+  background: #fff2cc;
+  color: #df9200;
 }
 
 .edit-materi-change-file {
   flex: 0 0 auto;
-  min-width: 190px;
-  height: 62px;
+  min-width: 150px;
+  height: 46px;
   margin-left: auto;
   display: grid;
   place-items: center;
   border: 2px solid #e5edf2;
-  border-radius: 18px;
+  border-radius: 14px;
   color: #7b7b7b;
-  font-size: 19px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -6273,31 +5994,25 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-file-hint {
-  margin: 10px 8px 0;
+  margin: 7px 4px 0;
   color: #858585;
-  font-size: 14px;
-}
-
-.edit-materi-error {
-  margin: 12px 8px 0;
-  color: #c62828;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .edit-materi-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 18px;
-  padding-top: 28px;
+  gap: 12px;
+  padding-top: 16px;
 }
 
 .edit-materi-actions button {
-  min-width: 190px;
-  height: 60px;
-  padding: 0 24px;
-  border-radius: 18px;
+  min-width: 150px;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 14px;
   font: inherit;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -6309,11 +6024,11 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-save {
-  min-width: 270px !important;
+  min-width: 220px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   border: 0;
   background: #55b5ef;
   color: #fff;
@@ -6323,21 +6038,22 @@ body.edit-materi-modal-open {
   background: #399fdc;
 }
 
-.edit-materi-actions button:disabled {
+.edit-materi-save svg {
+  width: 22px;
+  height: 22px;
+}
+
+.edit-materi-actions button:disabled,
+.edit-materi-close:disabled {
   cursor: wait;
   opacity: 0.7;
 }
 
-.edit-materi-save svg {
-  width: 25px;
-  height: 25px;
-}
-
-/* Popup sukses setelah backend berhasil menyimpan */
-.edit-materi-success {
-  width: min(900px, 94vw);
-  min-height: min(760px, 88vh);
-  padding: 48px;
+/* Popup hasil: sukses hijau atau gagal merah */
+.edit-materi-result {
+  width: min(900px, 92vw);
+  min-height: min(660px, calc(100dvh - 32px));
+  padding: clamp(28px, 5vw, 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6345,34 +6061,42 @@ body.edit-materi-modal-open {
   text-align: center;
 }
 
-.edit-materi-success-icon {
-  width: clamp(190px, 32vh, 330px);
-  height: clamp(190px, 32vh, 330px);
-  margin-bottom: clamp(36px, 8vh, 90px);
+.edit-materi-result-icon {
+  width: clamp(170px, 30vh, 280px);
+  height: clamp(170px, 30vh, 280px);
+  margin-bottom: clamp(28px, 6vh, 60px);
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #dcfce7;
-  color: #15803d;
 }
 
-.edit-materi-success-icon svg {
+.edit-materi-result-icon svg {
   width: 68%;
   height: 68%;
 }
 
-.edit-materi-success h2 {
-  margin: 0 0 22px;
+.edit-materi-result--success .edit-materi-result-icon {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.edit-materi-result--error .edit-materi-result-icon {
+  background: #fee2e2;
+  color: #e32626;
+}
+
+.edit-materi-result h2 {
+  margin: 0 0 18px;
   color: #414141;
-  font-size: clamp(26px, 3.2vw, 40px);
+  font-size: clamp(25px, 3vw, 38px);
   font-weight: 750;
 }
 
-.edit-materi-success p {
+.edit-materi-result p {
   max-width: 700px;
   margin: 0;
   color: #858585;
-  font-size: clamp(18px, 2vw, 26px);
+  font-size: clamp(17px, 2vw, 25px);
   line-height: 1.45;
 }
 
@@ -6388,95 +6112,65 @@ body.edit-materi-modal-open {
   }
 }
 
-/* Ringkas agar popup tetap muat di layar desktop yang pendek */
-@media (max-height: 820px) and (min-width: 701px) {
+/* Ringkas lagi pada viewport desktop yang pendek */
+@media (max-height: 760px) and (min-width: 701px) {
   .edit-materi-dialog {
-    padding: 22px 34px;
+    padding: 16px 24px;
   }
 
   .edit-materi-header {
-    min-height: 68px;
-    padding-bottom: 14px;
+    min-height: 52px;
+    padding-bottom: 10px;
   }
 
   .edit-materi-heading-icon {
-    flex-basis: 62px;
-    width: 62px;
-    height: 62px;
-  }
-
-  .edit-materi-heading-icon svg {
-    width: 40px;
-    height: 40px;
+    flex-basis: 50px;
+    width: 50px;
+    height: 50px;
   }
 
   .edit-materi-section-title {
-    margin: 18px 0 14px;
+    margin: 10px 0 8px;
   }
 
   .edit-materi-fields {
-    gap: 12px 20px;
-    padding-bottom: 18px;
-  }
-
-  .edit-materi-field {
-    gap: 6px;
-    font-size: 16px;
+    gap: 8px 14px;
+    padding-bottom: 10px;
   }
 
   .edit-materi-field input,
   .edit-materi-field select {
-    height: 48px;
-    border-radius: 15px;
-    font-size: 15px;
+    height: 40px;
   }
 
   .edit-materi-file-section {
-    padding: 14px 8px 16px;
-  }
-
-  .edit-materi-file-section h3 {
-    margin-bottom: 9px;
-    font-size: 19px;
+    padding: 9px 6px;
   }
 
   .edit-materi-file-row {
-    min-height: 72px;
-    padding: 8px 12px;
+    min-height: 58px;
   }
 
   .edit-materi-file-icon {
-    flex-basis: 52px;
-    width: 52px;
-    height: 56px;
-  }
-
-  .edit-materi-file-icon svg {
-    width: 34px;
-    height: 38px;
-  }
-
-  .edit-materi-file-name {
-    font-size: 16px;
+    flex-basis: 44px;
+    width: 44px;
+    height: 46px;
   }
 
   .edit-materi-change-file {
-    min-width: 150px;
-    height: 48px;
-    font-size: 16px;
+    height: 40px;
   }
 
   .edit-materi-actions {
-    padding-top: 18px;
+    padding-top: 10px;
   }
 
   .edit-materi-actions button {
-    height: 50px;
-    font-size: 16px;
+    height: 42px;
   }
 }
 
-/* Di layar kecil, popup boleh digulir supaya seluruh kontrol tetap terjangkau */
+/* Layar kecil: popup boleh digulir agar semua kontrol bisa dijangkau */
 @media (max-width: 700px) {
   .edit-materi-overlay {
     align-items: flex-start;
@@ -6487,322 +6181,39 @@ body.edit-materi-modal-open {
   .edit-materi-dialog {
     width: 100%;
     max-height: none;
-    padding: 20px 16px;
-    border-radius: 20px;
+    padding: 18px 16px;
     overflow: visible;
-  }
-
-  .edit-materi-header {
-    min-height: 58px;
-    gap: 12px;
-    padding-bottom: 14px;
-  }
-
-  .edit-materi-heading-icon {
-    flex-basis: 54px;
-    width: 54px;
-    height: 54px;
-    border-radius: 12px;
-  }
-
-  .edit-materi-heading-icon svg {
-    width: 36px;
-    height: 36px;
-  }
-
-  .edit-materi-header h2 {
-    font-size: 23px;
-  }
-
-  .edit-materi-close {
-    width: 34px;
-    height: 34px;
-  }
-
-  .edit-materi-section-title {
-    margin: 18px 0 14px;
-    font-size: 20px;
   }
 
   .edit-materi-fields {
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 0 0 18px;
-  }
-
-  .edit-materi-field-full {
-    grid-column: auto;
-  }
-
-  .edit-materi-field {
-    gap: 6px;
-    font-size: 15px;
-  }
-
-  .edit-materi-field input,
-  .edit-materi-field select {
-    height: 48px;
-    border-radius: 14px;
-    font-size: 15px;
-  }
-
-  .edit-materi-file-section {
-    padding: 16px 0;
-  }
-
-  .edit-materi-file-section h3 {
-    font-size: 19px;
   }
 
   .edit-materi-file-row {
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px;
-  }
-
-  .edit-materi-file-icon {
-    flex-basis: 48px;
-    width: 48px;
-    height: 54px;
-  }
-
-  .edit-materi-file-icon svg {
-    width: 32px;
-    height: 36px;
   }
 
   .edit-materi-file-meta {
     flex: 1 1 calc(100% - 70px);
   }
 
-  .edit-materi-file-name {
-    font-size: 14px;
-  }
-
-  .edit-materi-file-type {
-    font-size: 12px;
-  }
-
   .edit-materi-change-file {
     flex: 1 1 100%;
-    min-width: 0;
-    height: 44px;
-    margin: 0;
-    font-size: 15px;
-  }
-
-  .edit-materi-file-hint {
-    margin: 8px 0 0;
-    font-size: 12px;
-  }
-
-  .edit-materi-actions {
-    gap: 10px;
-    padding-top: 18px;
+    margin-left: 0;
   }
 
   .edit-materi-actions button {
     min-width: 0;
-    height: 48px;
-    padding: 0 12px;
-    border-radius: 14px;
-    font-size: 14px;
   }
 
   .edit-materi-save {
     flex: 1;
-    min-width: 0 !important;
-    gap: 6px;
+    min-width: 0;
   }
 
-  .edit-materi-save svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .edit-materi-success {
+  .edit-materi-result {
     width: 100%;
     min-height: 70vh;
     padding: 26px 18px;
-    border-radius: 20px;
-  }
-
-  .edit-materi-success-icon {
-    width: min(48vw, 210px);
-    height: min(48vw, 210px);
-    margin-bottom: 32px;
-  }
-
-  .edit-materi-success h2 {
-    margin-bottom: 14px;
-  }
-}
-
-/* 
-    Ukuran popup Edit Materi: ringkas agar muat di desktop 
-*/
-.edit-materi-modal,
-.edit-materi-dialog {
-  box-sizing: border-box;
-  width: min(900px, 92vw) !important;
-  max-height: calc(100dvh - 32px) !important;
-  padding: 24px 32px !important;
-  overflow: hidden !important;
-  border-radius: 24px !important;
-}
-
-/* Header */
-.edit-materi-header {
-  min-height: 60px !important;
-  gap: 14px !important;
-  padding-bottom: 14px !important;
-}
-
-.edit-materi-heading-icon,
-.edit-materi-title-icon {
-  flex: 0 0 60px !important;
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 14px !important;
-}
-
-.edit-materi-heading-icon svg,
-.edit-materi-title-icon svg {
-  width: 38px !important;
-  height: 38px !important;
-}
-
-.edit-materi-header h2 {
-  font-size: 28px !important;
-}
-
-.edit-materi-close {
-  width: 36px !important;
-  height: 36px !important;
-}
-
-/* Judul bagian dan jarak form */
-.edit-materi-section-title,
-.edit-materi-section h3 {
-  margin: 16px 0 !important;
-  font-size: 21px !important;
-}
-
-.edit-materi-fields,
-.edit-materi-grid {
-  gap: 12px 18px !important;
-  padding-bottom: 18px !important;
-}
-
-.edit-materi-field {
-  gap: 6px !important;
-  font-size: 15px !important;
-}
-
-/* Kotak isian */
-.edit-materi-field input,
-.edit-materi-field select,
-.edit-materi-field textarea {
-  box-sizing: border-box;
-  min-height: 46px !important;
-  padding: 8px 14px !important;
-  border-radius: 14px !important;
-  font-size: 15px !important;
-}
-
-.edit-materi-field textarea {
-  min-height: 64px !important;
-}
-
-/* Bagian file */
-.edit-materi-file-section,
-.edit-materi-section.edit-materi-file-section {
-  padding: 14px 8px !important;
-}
-
-.edit-materi-file-section h3 {
-  margin: 0 0 10px !important;
-  font-size: 19px !important;
-}
-
-.edit-materi-file-row,
-.edit-materi-file-box {
-  min-height: 70px !important;
-  padding: 8px 12px !important;
-  gap: 12px !important;
-  border-radius: 15px !important;
-}
-
-.edit-materi-file-icon {
-  flex: 0 0 50px !important;
-  width: 50px !important;
-  height: 54px !important;
-}
-
-.edit-materi-file-icon svg {
-  width: 34px !important;
-  height: 38px !important;
-}
-
-.edit-materi-file-name {
-  font-size: 15px !important;
-}
-
-.edit-materi-change-file {
-  min-width: 140px !important;
-  height: 46px !important;
-  font-size: 15px !important;
-}
-
-.edit-materi-file-hint {
-  margin-top: 7px !important;
-  font-size: 12px !important;
-}
-
-/* Tombol bawah */
-.edit-materi-actions {
-  gap: 12px !important;
-  padding-top: 16px !important;
-}
-
-.edit-materi-actions button {
-  min-width: 150px !important;
-  height: 48px !important;
-  padding: 0 18px !important;
-  border-radius: 14px !important;
-  font-size: 15px !important;
-}
-
-.edit-materi-save {
-  min-width: 220px !important;
-}
-
-/* Pada layar kecil, form boleh digulir agar tombol tetap dapat dijangkau */
-@media (max-width: 700px) {
-  .edit-materi-overlay {
-    align-items: flex-start;
-    overflow-y: auto;
-    padding: 12px;
-  }
-
-  .edit-materi-modal,
-  .edit-materi-dialog {
-    width: 100% !important;
-    max-height: none !important;
-    padding: 18px 16px !important;
-    overflow: visible !important;
-  }
-
-  .edit-materi-fields,
-  .edit-materi-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .edit-materi-actions button {
-    min-width: 0 !important;
-  }
-
-  .edit-materi-save {
-    flex: 1;
   }
 }
