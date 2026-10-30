@@ -9,22 +9,14 @@
 //  - Tombol hapus berfungsi (DELETE /materi/{id}).
 //  - Paginasi memakai total dan total_pages dari backend.
 //  - Bagian SVG/ikon tidak diubah.
-//
-// [DIPERBAIKI] Tombol Edit dan Hapus sebelumnya tidak tersambung:
-//  - Ikon pensil (biru) tidak punya onClick -> sekarang membuka EditMateriModal.
-//  - Ikon tempat sampah (merah) sebelumnya memanggil setEditingMateri (salah) dan
-//    handleDelete tidak pernah dipanggil -> sekarang memanggil handleDelete.
-//  - <EditMateriModal /> sebelumnya hanya di-import dan tidak dirender -> sekarang dirender.
-//  - Setelah menghapus item terakhir di halaman terakhir, halaman mundur satu langkah
-//    agar tidak menampilkan daftar kosong.
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
-import { getMateriList, deleteMateri } from "../../services/materiService.js";
 import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
+import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
 const PAGE_SIZE = 20;
 
@@ -35,45 +27,42 @@ export default function MateriPage() {
   const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
   const [matkulOptions, setMatkulOptions] = useState([]);
   const [reloadKey, setReloadKey] = useState(0);
+  const [editingMateri, setEditingMateri] = useState(null);
 
   const [search, setSearch] = useState("");
   const [semester, setSemester] = useState("");
   const [mataKuliah, setMataKuliah] = useState("");
   const [page, setPage] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [editingMateri, setEditingMateri] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    const timer = setTimeout(
-      async () => {
-        try {
-          setError("");
-          const data = await getMateriList({
-            semester,
-            mataKuliah,
-            q: search,
-            page,
-            limit: PAGE_SIZE,
-          });
+    const timer = setTimeout(async () => {
+      try {
+        setError("");
+        const data = await getMateriList({
+          semester,
+          mataKuliah,
+          q: search,
+          page,
+          limit: PAGE_SIZE,
+        });
 
-          if (!active) return;
+        if (!active) return;
 
-          setMateriList(data.items);
-          setMeta({ total: data.total, totalPages: data.total_pages || 1 });
-          // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
-          setMatkulOptions((prev) => [
-            ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
-          ]);
-        } catch (err) {
-          if (active) setError(err.message);
-        } finally {
-          if (active) setLoading(false);
-        }
-      },
-      search ? 400 : 0,
-    ); // debounce hanya saat mengetik
+        setMateriList(data.items);
+        setMeta({ total: data.total, totalPages: data.total_pages || 1 });
+        // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
+        setMatkulOptions((prev) => [
+          ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
+        ]);
+      } catch (err) {
+        if (active) setError(err.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }, search ? 400 : 0); // debounce hanya saat mengetik
 
     return () => {
       active = false;
@@ -81,19 +70,12 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
-  async function handleDelete(materi) {
-    if (!window.confirm(`Hapus materi "${materi.judul}"?`)) return;
+  async function handleDelete(id) {
+    if (!window.confirm("Hapus materi ini?")) return;
 
     try {
-      await deleteMateri(materi.id);
-
-      // Jika yang dihapus satu-satunya item di halaman terakhir, mundur satu halaman
-      // (perubahan page sudah memicu pemuatan ulang). Selain itu muat ulang halaman ini.
-      if (materiList.length === 1 && page > 1) {
-        setPage((p) => p - 1);
-      } else {
-        setReloadKey((k) => k + 1);
-      }
+      await deleteMateri(id);
+      setReloadKey((k) => k + 1);
     } catch (err) {
       setError(err.message);
     }
@@ -316,7 +298,6 @@ export default function MateriPage() {
                           type="button"
                           onClick={() => setEditingMateri(materi)}
                           aria-label={`Edit materi ${materi.judul}`}
-                          title="Edit materi"
                           style={{
                             background: "transparent",
                             border: "none",
@@ -342,18 +323,13 @@ export default function MateriPage() {
                         </button>
 
                         <button
-                          type="button"
-                          onClick={() => handleDelete(materi)}
-                          aria-label={`Hapus materi ${materi.judul}`}
-                          title="Hapus materi"
+                          onClick={() => handleDelete(materi.id)}
                           style={{
                             background: "transparent",
                             border: "none",
                             padding: 0,
                             cursor: "pointer",
                             display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
                           }}
                         >
                           <svg
@@ -447,7 +423,6 @@ export default function MateriPage() {
           </div>
         </div>
       </div>
-
       {editingMateri && (
         <EditMateriModal
           materi={editingMateri}
@@ -455,7 +430,7 @@ export default function MateriPage() {
           onClose={() => setEditingMateri(null)}
           onSaved={() => {
             setEditingMateri(null);
-            setReloadKey((k) => k + 1); // muat ulang daftar dengan data terbaru
+            setReloadKey((current) => current + 1);
           }}
         />
       )}
