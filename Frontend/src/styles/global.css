@@ -6637,3 +6637,172 @@ body.edit-materi-modal-open {
     margin-bottom: 14px;
   }
 }
+
+/* 
+    Ukuran popup Edit Materi: ringkas agar muat di desktop 
+*/
+.edit-materi-modal,
+.edit-materi-dialog {
+  box-sizing: border-box;
+  width: min(900px, 92vw) !important;
+  max-height: calc(100dvh - 32px) !important;
+  padding: 24px 32px !important;
+  overflow: hidden !important;
+  border-radius: 24px !important;
+}
+
+/* Header */
+.edit-materi-header {
+  min-height: 60px !important;
+  gap: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+.edit-materi-heading-icon,
+.edit-materi-title-icon {
+  flex: 0 0 60px !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 14px !important;
+}
+
+.edit-materi-heading-icon svg,
+.edit-materi-title-icon svg {
+  width: 38px !important;
+  height: 38px !important;
+}
+
+.edit-materi-header h2 {
+  font-size: 28px !important;
+}
+
+.edit-materi-close {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+/* Judul bagian dan jarak form */
+.edit-materi-section-title,
+.edit-materi-section h3 {
+  margin: 16px 0 !important;
+  font-size: 21px !important;
+}
+
+.edit-materi-fields,
+.edit-materi-grid {
+  gap: 12px 18px !important;
+  padding-bottom: 18px !important;
+}
+
+.edit-materi-field {
+  gap: 6px !important;
+  font-size: 15px !important;
+}
+
+/* Kotak isian */
+.edit-materi-field input,
+.edit-materi-field select,
+.edit-materi-field textarea {
+  box-sizing: border-box;
+  min-height: 46px !important;
+  padding: 8px 14px !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+}
+
+.edit-materi-field textarea {
+  min-height: 64px !important;
+}
+
+/* Bagian file */
+.edit-materi-file-section,
+.edit-materi-section.edit-materi-file-section {
+  padding: 14px 8px !important;
+}
+
+.edit-materi-file-section h3 {
+  margin: 0 0 10px !important;
+  font-size: 19px !important;
+}
+
+.edit-materi-file-row,
+.edit-materi-file-box {
+  min-height: 70px !important;
+  padding: 8px 12px !important;
+  gap: 12px !important;
+  border-radius: 15px !important;
+}
+
+.edit-materi-file-icon {
+  flex: 0 0 50px !important;
+  width: 50px !important;
+  height: 54px !important;
+}
+
+.edit-materi-file-icon svg {
+  width: 34px !important;
+  height: 38px !important;
+}
+
+.edit-materi-file-name {
+  font-size: 15px !important;
+}
+
+.edit-materi-change-file {
+  min-width: 140px !important;
+  height: 46px !important;
+  font-size: 15px !important;
+}
+
+.edit-materi-file-hint {
+  margin-top: 7px !important;
+  font-size: 12px !important;
+}
+
+/* Tombol bawah */
+.edit-materi-actions {
+  gap: 12px !important;
+  padding-top: 16px !important;
+}
+
+.edit-materi-actions button {
+  min-width: 150px !important;
+  height: 48px !important;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+}
+
+.edit-materi-save {
+  min-width: 220px !important;
+}
+
+/* Pada layar kecil, form boleh digulir agar tombol tetap dapat dijangkau */
+@media (max-width: 700px) {
+  .edit-materi-overlay {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .edit-materi-modal,
+  .edit-materi-dialog {
+    width: 100% !important;
+    max-height: none !important;
+    padding: 18px 16px !important;
+    overflow: visible !important;
+  }
+
+  .edit-materi-fields,
+  .edit-materi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .edit-materi-actions button {
+    min-width: 0 !important;
+  }
+
+  .edit-materi-save {
+    flex: 1;
+  }
+}
