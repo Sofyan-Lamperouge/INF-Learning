@@ -7,14 +7,14 @@
 //  3. Jika server menjawab 200 tapi bukan JSON (mis. HTML dari `serve` karena
 //     VITE_API_BASE_URL salah), sekarang dilempar ApiError, bukan diam-diam sukses.
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
-const PUBLIC_PATHS = ["/auth/login", "/auth/registrasi"];
+const PUBLIC_PATHS = ['/auth/login', '/auth/registrasi'];
 
 export class ApiError extends Error {
   constructor(message, status = 0, details = null) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
     this.details = details;
   }
@@ -22,11 +22,11 @@ export class ApiError extends Error {
 
 export async function request(path, options = {}) {
   const isPublic = PUBLIC_PATHS.includes(path);
-  const token = isPublic ? null : localStorage.getItem("token");
+  const token = isPublic ? null : localStorage.getItem('token');
 
   const headers = {
-    ...(typeof options.body === "string"
-      ? { "Content-Type": "application/json" }
+    ...(typeof options.body === 'string'
+      ? { 'Content-Type': 'application/json' }
       : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
@@ -41,9 +41,9 @@ export async function request(path, options = {}) {
     });
   } catch (error) {
     throw new ApiError(
-      "Gagal terhubung ke server. Pastikan Backend sedang berjalan.",
+      'Gagal terhubung ke server. Pastikan Backend sedang berjalan.',
       0,
-      error,
+      error
     );
   }
 
@@ -56,8 +56,8 @@ export async function request(path, options = {}) {
   }
 
   if (response.status === 401 && !isPublic) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
   }
 
   if (!response.ok) {
@@ -65,8 +65,8 @@ export async function request(path, options = {}) {
 
     if (Array.isArray(data?.detail)) {
       message = data.detail
-        .map((item) => (item.msg || "").replace(/^Value error,\s*/, ""))
-        .join(", ");
+        .map((item) => (item.msg || '').replace(/^Value error,\s*/, ''))
+        .join(', ');
     } else if (data?.detail) {
       message = data.detail;
     } else if (data?.message) {
@@ -79,8 +79,8 @@ export async function request(path, options = {}) {
   // [BARU] 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
   if (response.status !== 204 && data === null) {
     throw new ApiError(
-      "Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.",
-      response.status,
+      'Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.',
+      response.status
     );
   }
 
@@ -93,22 +93,23 @@ export const api = {
   },
 
   post(path, body) {
-    return request(path, { method: "POST", body: JSON.stringify(body) });
+    return request(path, { method: 'POST', body: JSON.stringify(body) });
   },
 
   postFormData(path, body) {
-    return request(path, { method: "POST", body });
+    return request(path, { method: 'POST', body });
   },
 
   put(path, body) {
-    return request(path, { method: "PUT", body: JSON.stringify(body) });
-  },
-
-  delete(path) {
-    return request(path, { method: "DELETE" });
+    return request(path, { method: 'PUT', body: JSON.stringify(body) });
   },
 
   putFormData(path, body) {
-    return request(path, { method: "PUT", body });
+    return request(path, { method: 'PUT', body });
+  },
+
+  delete(path) {
+    return request(path, { method: 'DELETE' });
   },
 };
+

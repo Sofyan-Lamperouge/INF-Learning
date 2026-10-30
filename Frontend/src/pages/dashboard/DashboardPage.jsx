@@ -5,6 +5,8 @@
 //    (sebelumnya hanya menunggu 1,5 detik, sehingga semua data selalu kosong).
 //  - Menambah import getDashboard dari adminService.
 //  - kuisList belum diisi karena backend belum mengirim daftar kuis.
+//  - [DIPERBAIKI] total_kuis sudah tidak dikirim backend (fitur kuis ditunda) -> pakai ?? 0
+//    agar kartu statistik tidak menampilkan undefined.
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -45,7 +47,7 @@ export default function DashboardPage() {
 
         setStats({
           totalMateri: data.total_materi,
-          totalKuis: data.total_kuis,
+          totalKuis: data.total_kuis ?? 0, // kuis ditunda: backend tidak mengirim total_kuis
           totalMahasiswa: data.total_mahasiswa,
         });
         setMateriList(data.materi_terbaru);

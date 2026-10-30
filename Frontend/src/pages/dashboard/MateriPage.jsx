@@ -15,8 +15,9 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
 import ErrorMessage from "../../components/common/ErrorMessage.jsx";
-import { getMateriList, deleteMateri } from "../../services/materiService.js";
 import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
+import DeleteMateriModal from "../../components/dashboard/DeleteMateriModal.jsx";
+import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
 const PAGE_SIZE = 20;
 
@@ -27,45 +28,45 @@ export default function MateriPage() {
   const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
   const [matkulOptions, setMatkulOptions] = useState([]);
   const [reloadKey, setReloadKey] = useState(0);
+  const [editingMateri, setEditingMateri] = useState(null);
+  const [deletingMateri, setDeletingMateri] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const [search, setSearch] = useState("");
   const [semester, setSemester] = useState("");
   const [mataKuliah, setMataKuliah] = useState("");
   const [page, setPage] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [editingMateri, setEditingMateri] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    const timer = setTimeout(
-      async () => {
-        try {
-          setError("");
-          const data = await getMateriList({
-            semester,
-            mataKuliah,
-            q: search,
-            page,
-            limit: PAGE_SIZE,
-          });
+    const timer = setTimeout(async () => {
+      try {
+        setError("");
+        const data = await getMateriList({
+          semester,
+          mataKuliah,
+          q: search,
+          page,
+          limit: PAGE_SIZE,
+        });
 
-          if (!active) return;
+        if (!active) return;
 
-          setMateriList(data.items);
-          setMeta({ total: data.total, totalPages: data.total_pages || 1 });
-          // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
-          setMatkulOptions((prev) => [
-            ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
-          ]);
-        } catch (err) {
-          if (active) setError(err.message);
-        } finally {
-          if (active) setLoading(false);
-        }
-      },
-      search ? 400 : 0,
-    ); // debounce hanya saat mengetik
+        setMateriList(data.items);
+        setMeta({ total: data.total, totalPages: data.total_pages || 1 });
+        // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
+        setMatkulOptions((prev) => [
+          ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
+        ]);
+      } catch (err) {
+        if (active) setError(err.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }, search ? 400 : 0); // debounce hanya saat mengetik
 
     return () => {
       active = false;
@@ -73,14 +74,18 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
-  async function handleDelete(id) {
-    if (!window.confirm("Hapus materi ini?")) return;
-
+  async function handleDelete() {
+    if (!deletingMateri || deleting) return;
+    setDeleting(true);
+    setDeleteError("");
     try {
-      await deleteMateri(id);
+      await deleteMateri(deletingMateri.id);
+      setDeletingMateri(null);
       setReloadKey((k) => k + 1);
     } catch (err) {
-      setError(err.message);
+      setDeleteError(err.message || "Materi gagal dihapus. Silakan coba lagi.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -298,6 +303,9 @@ export default function MateriPage() {
                       {/*  3. Tombol Edit & Hapus dengan SVG */}
                       <div style={{ display: "flex", gap: "0.5rem" }}>
                         <button
+                          type="button"
+                          onClick={() => setEditingMateri(materi)}
+                          aria-label={`Edit materi ${materi.judul}`}
                           style={{
                             background: "transparent",
                             border: "none",
@@ -324,19 +332,19 @@ export default function MateriPage() {
 
                         <button
                           type="button"
-                          onClick={() => setEditingMateri(materi)}
-                          aria-label={`Edit materi ${materi.judul}`}
-                          title="Edit materi"
+                          onClick={() => {
+                            setDeleteError("");
+                            setDeletingMateri(materi);
+                          }}
+                          aria-label={`Hapus materi ${materi.judul}`}
                           style={{
                             background: "transparent",
                             border: "none",
                             padding: 0,
                             cursor: "pointer",
                             display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
                           }}
-                          >
+                        >
                           <svg
                             width="24"
                             height="24"
@@ -428,6 +436,28 @@ export default function MateriPage() {
           </div>
         </div>
       </div>
+      {editingMateri && (
+        <EditMateriModal
+          materi={editingMateri}
+          mataKuliahOptions={matkulOptions}
+          onClose={() => setEditingMateri(null)}
+          onSaved={() => {
+            setEditingMateri(null);
+            setReloadKey((current) => current + 1);
+          }}
+        />
+      )}
+      {deletingMateri && (
+        <DeleteMateriModal
+          materi={deletingMateri}
+          deleting={deleting}
+          error={deleteError}
+          onCancel={() => {
+            if (!deleting) setDeletingMateri(null);
+          }}
+          onConfirm={handleDelete}
+        />
+      )}
     </DashboardLayout>
   );
 }
