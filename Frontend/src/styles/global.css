@@ -6347,8 +6347,8 @@ body.edit-materi-modal-open {
 }
 
 /* ==============================================================
-   POPUP KONFIRMASI HAPUS MATERI
-   ============================================================ */
+   POPUP KONFIRMASI HAPUS MATERI — UKURAN LEBIH KECIL
+   ============================================================== */
 
 .hapus-materi-overlay {
   position: fixed;
@@ -6356,7 +6356,7 @@ body.edit-materi-modal-open {
   z-index: 11000;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 16px;
   background: rgba(24, 36, 44, 0.28);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -6365,22 +6365,22 @@ body.edit-materi-modal-open {
 .hapus-materi-dialog {
   position: relative;
   box-sizing: border-box;
-  width: min(680px, 100%);
-  padding: 42px 48px 36px;
+  width: min(560px, 100%);
+  padding: 30px 32px 26px;
   border: 2px solid #d5dce0;
-  border-radius: 24px;
+  border-radius: 22px;
   background: #fff;
-  box-shadow: 0 20px 60px rgba(20, 48, 64, 0.18);
+  box-shadow: 0 16px 44px rgba(20, 48, 64, 0.18);
   text-align: center;
 }
 
 .hapus-materi-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 12px;
+  right: 12px;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   place-items: center;
   padding: 0;
   border: 0;
@@ -6390,8 +6390,8 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-close svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   stroke: currentColor;
   stroke-width: 2.5;
   stroke-linecap: round;
@@ -6399,9 +6399,9 @@ body.edit-materi-modal-open {
 
 .hapus-materi-icon {
   display: grid;
-  width: 112px;
-  height: 112px;
-  margin: 0 auto 24px;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
   place-items: center;
   border-radius: 50%;
   background: #fee2e2;
@@ -6409,8 +6409,8 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-icon svg {
-  width: 58px;
-  height: 58px;
+  width: 46px;
+  height: 46px;
   stroke: currentColor;
   stroke-width: 2.4;
   stroke-linecap: round;
@@ -6418,9 +6418,9 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-dialog h2 {
-  margin: 0 0 22px;
+  margin: 0 0 16px;
   color: #414141;
-  font-size: clamp(25px, 3vw, 34px);
+  font-size: clamp(23px, 3vw, 29px);
   line-height: 1.2;
   font-weight: 700;
 }
@@ -6429,7 +6429,7 @@ body.edit-materi-modal-open {
 .hapus-materi-name,
 .hapus-materi-warning {
   margin: 0;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: clamp(15px, 1.8vw, 17px);
   line-height: 1.45;
 }
 
@@ -6446,7 +6446,7 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-warning {
-  margin-top: 10px;
+  margin-top: 8px;
   font-style: italic;
 }
 
@@ -6456,31 +6456,31 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-error {
-  margin: 16px 0 0;
-  padding: 10px 12px;
-  border-radius: 10px;
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border-radius: 9px;
   background: #fee2e2;
   color: #b91c1c;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .hapus-materi-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-top: 34px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .hapus-materi-actions button {
   display: inline-flex;
-  min-height: 58px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 15px;
   font: inherit;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.15s ease;
@@ -6496,7 +6496,7 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-cancel {
-  border: 3px solid #e6eef2;
+  border: 2px solid #e6eef2;
   background: #fff;
   color: #858585;
 }
@@ -6506,7 +6506,7 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-confirm {
-  border: 3px solid #e52222;
+  border: 2px solid #e52222;
   background: #e52222;
   color: #fff;
 }
@@ -6517,8 +6517,8 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-confirm svg {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
@@ -6527,41 +6527,42 @@ body.edit-materi-modal-open {
 
 @media (max-width: 600px) {
   .hapus-materi-overlay {
-    padding: 14px;
+    padding: 12px;
   }
 
   .hapus-materi-dialog {
-    padding: 38px 20px 22px;
-    border-radius: 20px;
+    width: 100%;
+    padding: 30px 18px 20px;
+    border-radius: 18px;
   }
 
   .hapus-materi-close {
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
   }
 
   .hapus-materi-icon {
-    width: 88px;
-    height: 88px;
-    margin-bottom: 18px;
+    width: 76px;
+    height: 76px;
+    margin-bottom: 16px;
   }
 
   .hapus-materi-icon svg {
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
   }
 
   .hapus-materi-actions {
-    gap: 10px;
-    margin-top: 24px;
+    gap: 8px;
+    margin-top: 20px;
   }
 
   .hapus-materi-actions button {
-    min-height: 50px;
-    padding: 8px;
-    border-radius: 14px;
-    font-size: 16px;
+    min-height: 44px;
+    padding: 7px;
+    border-radius: 12px;
+    font-size: 15px;
   }
 }
