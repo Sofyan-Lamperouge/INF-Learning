@@ -79,13 +79,23 @@ export default function RegisterPage() {
         </>,
       );
 
-      setTimeout(() => navigate('/login', { replace: true }), 2500);
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 2500);
     } catch (error) {
       console.error('Registrasi gagal:', error);
 
-      setServerError(
-        error instanceof ApiError ? error.message : 'Aktivasi gagal.',
-      );
+      if (error instanceof ApiError) {
+        setServerError(error.message);
+      } else if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        setServerError(
+          'Periksa koneksi jaringan Anda, lalu coba registrasi kembali.',
+        );
+      } else {
+        setServerError(
+          error?.message || 'Registrasi gagal. Silakan coba lagi.',
+        );
+      }
     } finally {
       setLoading(false);
     }
