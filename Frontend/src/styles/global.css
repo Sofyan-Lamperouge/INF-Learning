@@ -33,154 +33,219 @@ a:hover { text-decoration: underline; }
 h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 
 /* ============================================================
-   HALAMAN AUTH (Login & Registrasi) 
+   HALAMAN AUTH (Login & Registrasi)
+   Sumber ukuran: Figma Hi-Login | 1 (frame 1440x1024, card 1200x800)
+
+   CARA KERJA:
+   --u = "1px Figma". Di layar besar nilainya 1px (ukuran asli),
+   di layar kecil otomatis mengecil sehingga SELURUH card
+   (teks, input, tombol, gambar) mengecil proporsional dan
+   selalu muat di layar tanpa scroll.
    ============================================================ */
 
+html,
+body,
+#root {
+  margin: 0;
+}
+
 .auth-page {
-  min-height: 100vh;           
-  width: 100%;
+  /* Jarak card ke tepi layar. Makin besar = card makin kecil. */
+  --pad: 40px;
+  --u: min(
+    1px,
+    calc((100vw - 2 * var(--pad)) / 1200),
+    calc((100dvh - 2 * var(--pad)) / 800)
+  );
+
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(24px, 6vw, 112px) clamp(16px, 8vw, 120px);
-  background-color: #eaf5fc;
+  width: 100%;
+  height: 100dvh;
+  padding: var(--pad);
+  overflow: auto; /* hanya muncul scroll kalau benar-benar tidak muat */
+  background-color: #eef8fd;
+  font-family: 'Poppins', sans-serif;
+}
+
+.auth-page *,
+.auth-page *::before,
+.auth-page *::after {
+  box-sizing: border-box;
 }
 
 .auth-layout {
-  width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: auto;
 }
 
+/* Alert sukses (Figma "Success-alert"): berada DI ATAS card, selebar card.
+   1200x60, radius 18, bg #DCFCE7, teks #15803D 20/30, ikon 40x40,
+   jarak ke card 27 (alert top 26 -> bottom 86, card top 113) */
 .auth-notification {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  width: min(760px, calc(100% - 2rem));
+  width: calc(var(--u) * 1200);
+  margin-bottom: calc(var(--u) * 27);
 }
 
+.auth-notification .alert {
+  gap: calc(var(--u) * 10);
+  height: calc(var(--u) * 60);
+  margin: 0;
+  padding: 0 calc(var(--u) * 10);
+  border: none;
+  border-radius: calc(var(--u) * 18);
+  background: #dcfce7;
+  color: #15803d;
+  font-size: calc(var(--u) * 20);
+  font-weight: 400;
+  line-height: 1.5;
+}
 
-/* Card utama */
+.auth-notification .alert strong {
+  font-weight: 600;
+}
+
+.auth-notification .alert svg {
+  flex: none;
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 40);
+}
+
+/* Saat alert tampil, sisakan tinggi untuk alert (800 + 27 + 60 = 887)
+   supaya tetap pas satu layar tanpa scroll */
+.auth-page:has(.auth-notification) {
+  --u: min(
+    1px,
+    calc((100vw - 2 * var(--pad)) / 1200),
+    calc((100dvh - 2 * var(--pad)) / 887)
+  );
+}
+
+/* ---------- Card: 1200x800, radius 48, padding 50 ---------- */
 .auth-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  width: 100%;
-  max-width: 820px;
-  min-height: 540px;
-  padding: 32px;
+  grid-template-columns: calc(var(--u) * 605) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  column-gap: calc(var(--u) * 61);
+
+  width: calc(var(--u) * 1200);
+  height: calc(var(--u) * 800);
+  padding: calc(var(--u) * 50) calc(var(--u) * 61) calc(var(--u) * 50)
+    calc(var(--u) * 50);
+
   background: #ffffff;
-  border-radius: 28px;
-  box-shadow: 0 20px 50px rgba(30, 90, 140, 0.08);
+  border-radius: calc(var(--u) * 48);
 }
 
-/* Modifier register */
-.auth-card--register {
-  height: 100%;
-  max-height: 860px;      
-}
-
+/* ---------- Ilustrasi: 605x700, radius 32 ---------- */
 .auth-illustration {
-  position: relative;
-  border-radius: 30px;
+  height: 100%;
   overflow: hidden;
-  background: linear-gradient(135deg, #e8f4fb 0%, #d6ecfa 100%);
+  border-radius: calc(var(--u) * 32);
 }
 
 .auth-illustration img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  display: block;
 }
 
+/* ---------- Kolom form: lebar 423 ---------- */
 .auth-form-col {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.75rem 0 0.5rem;
+  min-width: 0;
+  padding-top: calc(var(--u) * 25);
 }
 
-.auth-form-col::-webkit-scrollbar {
-  width: 6px;
-  display: none;
-}
 .auth-form-top {
   display: flex;
   flex-direction: column;
 }
 
-.auth-form-col::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-/* === JUDUL & SUBTITLE === */
+/* Judul: Poppins 600, 48/72, #000 */
 .auth-title {
-  font-size: 3rem;
-  font-weight: 700;
+  margin: 0;
+  font-size: calc(var(--u) * 48);
+  font-weight: 600;
+  line-height: 1.5;
   text-align: center;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem;
+  color: #000000;
 }
 
-.auth-card--register .auth-title {
-  margin-bottom: 1.5rem;
-}
-
+/* Subjudul: Poppins 400, 20/30, #404040, jarak ke form 40 */
 .auth-subtitle {
-  color: #6b7280;
-  font-size: 1.25rem;
+  margin: 0 0 calc(var(--u) * 40);
+  font-size: calc(var(--u) * 20);
+  font-weight: 400;
+  line-height: 1.5;
   text-align: center;
-  margin: 0 0 2.5rem;
+  color: #404040;
+}
+
+/* Halaman register tidak punya subjudul */
+.auth-card--register .auth-title {
+  margin-bottom: calc(var(--u) * 40);
 }
 
 /* ============================================================
    FORM
    ============================================================ */
 
+/* Jarak antar grup field: 12 */
 .input-field {
-  margin-bottom: 0.85rem;
+  margin-bottom: calc(var(--u) * 12);
 }
 
+/* Label: Poppins 600, 20/30, #404040 */
 .input-field label {
   display: block;
-  font-size: 0.85rem;
+  margin: 0;
+  font-size: calc(var(--u) * 20);
   font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.35rem;
+  line-height: 1.5;
+  color: #404040;
 }
 
+/* Input: tinggi 48, border 3px #94A3B8, radius 18, padding 10 */
 .input-field input {
   width: 100%;
-  padding: 0.65rem 0.85rem;
-  border: 2px solid #94a3b8;       /* cek warna persisnya di Figma */
-  border-radius: 16px;
-  font-size: 0.85rem;
+  height: calc(var(--u) * 48);
+  padding: 0 calc(var(--u) * 10);
+  border: calc(var(--u) * 3) solid #94a3b8;
+  border-radius: calc(var(--u) * 18);
   background: #ffffff;
-  color: #1a1a1a;
+  color: #404040;
+  font-family: inherit;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input-field input::placeholder {
-  color: #9ca3af;
+  color: #94a3b8;
+  opacity: 1;
 }
 
 .input-field input:focus {
-  border-color: #2f9fe0;
-  box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.25);
+  border-color: #4fb6f0;
+  box-shadow: 0 0 0 3px rgba(139, 212, 255, 0.35);
 }
 
 .input-field input.input-error,
 .input-with-icon.input-error input {
   border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+  box-shadow: none;
 }
 
+/* Ikon mata: 32x32, jarak kanan 20, warna #94A3B8 */
 .input-with-icon {
   position: relative;
   display: flex;
@@ -188,46 +253,56 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
 }
 
 .input-with-icon input {
-  padding-right: 2.75rem;
+  padding-right: calc(var(--u) * 64);
 }
 
 .input-with-icon .icon-btn {
   position: absolute;
-  right: 0.85rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  right: calc(var(--u) * 20);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
-  color: #6b7280;
+  width: calc(var(--u) * 32);
+  height: calc(var(--u) * 32);
   padding: 0;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: calc(var(--u) * 28);
   line-height: 1;
+  cursor: pointer;
   transition: color 0.15s ease;
 }
 
-.input-with-icon .icon-btn:hover {
-  color: #2f9fe0;
+.input-with-icon .icon-btn svg {
+  width: 100%;
+  height: 100%;
 }
 
-/* Tombol utama */
+.input-with-icon .icon-btn:hover {
+  color: #4fb6f0;
+}
+
+/* Tombol: tinggi 58, radius 18, #8BD4FF, Poppins 600 20px putih.
+   margin-top 28 + margin-bottom field terakhir 12 = jarak 40 sesuai Figma */
 .btn-primary {
   width: 100%;
-  padding: 0.55rem 1rem !important;
+  height: calc(var(--u) * 58);
+  margin-top: calc(var(--u) * 28);
+  padding: 0 calc(var(--u) * 10);
   border: none;
-  border-radius: 10px;
-  background: #7ec8f5;
+  border-radius: calc(var(--u) * 18);
+  background: #8bd4ff;
   color: #ffffff;
-  font-size: 0.9rem !important;
-  font-weight: 700;
+  font-family: inherit;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 0.5rem !important;
   transition: background 0.15s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #62b6e8;
+  background: #6fc6f7;
 }
 
 .btn-primary:disabled {
@@ -235,7 +310,181 @@ h1, h2, h3 { margin: 0 0 1rem; line-height: 1.25; }
   cursor: not-allowed;
 }
 
-/* Pesan */
+/* Footer: Poppins 600, 20/30, #404040; link #8BD4FF */
+.auth-footer {
+  margin: 0;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: #404040;
+}
+
+.auth-footer a {
+  color: #8bd4ff;
+  text-decoration: none;
+}
+
+/* ---------- Pesan error di bawah input (Figma Register/Error) ----------
+   input -> 6 -> pesan error (tinggi 40, radius 18, bg #FEE2E2,
+   teks #DC2626 16/24, ikon 24) -> 12 -> field berikutnya */
+.input-field:has(+ .field-error) {
+  margin-bottom: calc(var(--u) * 6);
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 10);
+  height: calc(var(--u) * 40);
+  margin: 0 0 calc(var(--u) * 12);
+  padding: 0 calc(var(--u) * 14) 0 calc(var(--u) * 11);
+  border-radius: calc(var(--u) * 18);
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: calc(var(--u) * 16);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Ikon "!" dalam lingkaran (komponen memakai <span>!</span>) */
+.field-error-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--u) * 24);
+  height: calc(var(--u) * 24);
+  border: calc(var(--u) * 2) solid #dc2626;
+  border-radius: 50%;
+  background: transparent;
+  color: #dc2626;
+  font-size: calc(var(--u) * 14);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Di desain Error, jarak ke tombol Daftar 20 (bukan 40 seperti state normal) */
+form:has(.field-error) .btn-primary {
+  margin-top: calc(var(--u) * 8);
+}
+
+/* Di desain Error, field password hanya menampilkan meter kekuatan,
+   tanpa pesan error merah di bawahnya */
+.input-field:has(.password-strength) + .field-error {
+  display: none;
+}
+
+/* ============================================================
+   INDIKATOR KEKUATAN PASSWORD (Figma Register/Error & Success)
+   jarak dari input 20; label 14/21; bar 6px; syarat 24px
+   ============================================================ */
+
+.password-strength {
+  margin-top: calc(var(--u) * 20);
+}
+
+.password-strength-label {
+  display: block;
+  margin-bottom: calc(var(--u) * 6);
+  font-size: calc(var(--u) * 14);
+  font-weight: 600;
+  line-height: 1.5;
+  color: #404040;
+}
+
+/* 4 bar, tinggi baris 20, tebal bar 6, jarak 10 */
+.password-strength-bars {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 10);
+  height: calc(var(--u) * 20);
+  margin-bottom: calc(var(--u) * 4);
+}
+
+.password-strength-bar {
+  flex: 1;
+  height: calc(var(--u) * 6);
+  border-radius: calc(var(--u) * 3);
+  background: #cbd5e1;
+  transition: background 0.3s ease;
+}
+
+/* Belum ada syarat terpenuhi: bar pertama merah (sesuai Figma) */
+.password-strength--empty .password-strength-bar:first-child {
+  background: #dc2626;
+}
+
+/* Sebagian terpenuhi: kuning (warna ini tidak ada di Figma, bisa diganti) */
+.password-strength--weak .password-strength-bar.active {
+  background: #fbbf24;
+}
+
+/* Baru 1 syarat terpenuhi: hanya bar pertama aktif -> merah */
+.password-strength--weak
+  .password-strength-bar.active:first-child:has(+ .password-strength-bar:not(.active)) {
+  background: #dc2626;
+}
+
+/* Semua terpenuhi: hijau */
+.password-strength--strong .password-strength-bar.active {
+  background: #15803d;
+}
+
+/* Daftar syarat: tiap baris tinggi 26, jarak antar baris 10 */
+.password-strength-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 10);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.password-strength-checklist li {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 15);
+  height: calc(var(--u) * 26);
+  margin: 0;
+  font-size: calc(var(--u) * 14);
+  font-weight: 600;
+  line-height: 1.5;
+  color: #404040;
+}
+
+/* Lingkaran 24px: belum terpenuhi abu-abu, terpenuhi hijau + centang putih */
+.password-strength-check {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--u) * 24);
+  height: calc(var(--u) * 24);
+  border: calc(var(--u) * 2) solid #cbd5e1;
+  border-radius: 50%;
+  background: #f1f5f9;
+  font-size: calc(var(--u) * 14);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.password-strength-checklist li.checked {
+  color: #404040;
+  font-weight: 600;
+}
+
+.password-strength-checklist li.checked .password-strength-check {
+  border-color: #15803d;
+  background: #15803d;
+}
+
+/* ============================================================
+   PESAN (tidak diubah)
+   ============================================================ */
+
 .alert {
   display: flex;
   align-items: center;
@@ -269,41 +518,47 @@ body > .alert-success {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Footer auth */
-.auth-footer {
-  margin-top: 2rem;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #404040;
-}
-
 /* ============================================================
-   RESPONSIVE (Agar di HP / Tablet tidak terkunci mati)
+   HP / TABLET PORTRAIT: susun vertikal, boleh di-scroll
+   (card Figma 1200px terlalu lebar untuk dikecilkan di HP)
    ============================================================ */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .auth-page {
-    padding: 1rem;
-    height: auto;       /* Di HP, izinkan halaman memanjang */
-    overflow-y: auto;   /* Di HP, izinkan halaman di-scroll */
+    --pad: 16px;
+    --u: 0.9px;
+    height: auto;
+    min-height: 100dvh;
   }
 
-  .auth-card, 
-  .auth-card--register {
+  .auth-card {
     grid-template-columns: 1fr;
-    height: auto;         
-    min-height: auto;
-    padding: 1.5rem;
-    gap: 1.5rem;
+    grid-template-rows: auto;
+    row-gap: 24px;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    padding: 24px;
+    border-radius: 28px;
   }
-  
+
+  .auth-page:has(.auth-notification) {
+    --u: 0.9px;
+  }
+
+  .auth-notification {
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 16px;
+  }
+
   .auth-illustration {
-    height: 250px;
+    height: 240px;
   }
-  
+
   .auth-form-col {
-    overflow-y: visible !important; 
+    gap: 32px;
+    padding-top: 0;
   }
 }
 
@@ -2326,120 +2581,6 @@ body > .alert-success {
   }
 }
 
-/* ============================================================
-   REGISTER PAGE — Compact Layout
-   Rapatkan spacing agar semua error muat di card
-   ============================================================ */
-
-/* === Card register: lebih longgar tinggi === */
-.auth-card--register {
-  padding: 1.25rem 1.5rem;
-  max-height: 620px;
-  gap: 1.25rem;
-}
-
-/* === Judul register: ukuran + margin bawah lebih lega === */
-.auth-card--register .auth-title {
-  font-size: 1.6rem;              /* ← dari 1.4rem → 1.6rem */
-  font-weight: 700;
-  text-align: center;
-  margin-top: 0;                  /* ← tambahan */
-  margin-bottom: 1.5rem;          /* ← dari 0.75rem → 1.5rem */
-}
-
-/* === Form column register: judul naik ke atas + gap rapat === */
-/* === Form column register === */
-.auth-card--register .auth-form-col {
-  justify-content: space-between !important; /* ✅ Tetap space-between agar footer di bawah */
-  padding-top: 0.5rem;
-  gap: 0.25rem;
-  height: 100%; /* Pastikan memenuhi tinggi card */
-}
-
-/* ✅ CLASS BARU UNTUK BUNGKUSAN ATAS */
-.auth-card--register .auth-form-top {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* ✅ Memastikan isi form mulai dari atas */
-  gap: 0.15rem !important;
-}
-
-/* === Footer register === */
-.auth-card--register .auth-footer {
-  margin-top: auto; /* ✅ Memastikan footer selalu di paling bawah */
-  margin-bottom: 1rem;
-  font-size: 0.85rem;
-  width: 100%;
-  text-align: center;
-}
-
-/* === Field group register: lebih rapat === */
-.auth-card--register .input-field {
-  margin-bottom: 0.25rem !important;
-}
-
-/* === Label register: lebih kecil === */
-.auth-card--register .input-field label {
-  font-size: 0.75rem;
-  margin-bottom: 0.25rem;
-}
-
-/* === Input register: padding lebih kecil === */
-.auth-card--register .input-field input {
-  padding: 0.45rem 0.75rem;
-  font-size: 0.85rem;
-}
-
-/* === Field error register: lebih ringkas === */
-.auth-card--register .field-error {
-  margin-top: 0.2rem;
-  margin-bottom: 0.4rem;
-  padding: 0.3rem 0.65rem;
-  font-size: 0.7rem;
-}
-
-.auth-card--register .field-error-icon {
-  width: 12px;
-  height: 12px;
-  font-size: 0.55rem;
-}
-
-/* === Tombol register: lebih kecil === */
-.auth-card--register .btn-primary {
-  padding: 0.55rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-/* === Footer register === */
-.auth-card--register .auth-footer {
-  margin-top: 0.65rem;
-  margin-bottom: 1rem; 
-  font-size: 0.85rem;  
-  width: 100%;         
-  text-align: center;
-}
-
-/* === Responsive register === */
-@media (max-width: 900px) {
-  .auth-card--register {
-    padding: 1rem 1.25rem;
-    max-height: none;
-  }
-}
-
-@media (max-width: 700px) {
-  .auth-card--register {
-    padding: 1rem;
-  }
-  .auth-card--register .auth-title {
-    font-size: 1.4rem;             /* ← dari 1.25rem → 1.4rem */
-    margin-bottom: 1.25rem;        /* ← tambahan */
-  }
-  .auth-card--register .auth-form-col {
-    padding-top: 0.25rem;          /* ← tambahan */
-  }
-}
 
 /* ============================================================
    DASHBOARD LAYOUT — Sidebar + Content
@@ -2698,103 +2839,6 @@ body > .alert-success {
 
   .dashboard-content {
     padding: 1.5rem 1rem;
-  }
-}
-
-/* ============================================================
-   PASSWORD STRENGTH METER
-   Bar indikator + checklist persyaratan password
-   ============================================================ */
-
-.password-strength {
-  margin-top: 0.25rem !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.password-strength-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 0.4rem;
-}
-
-.password-strength-bars {
-  display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.75rem;
-}
-
-.password-strength-bar {
-  flex: 1;
-  height: 6px;
-  border-radius: 3px;
-  background: #e5e7eb;
-  transition: background 0.3s ease;
-}
-
-/* Warna bar sesuai kekuatan */
-.password-strength--weak .password-strength-bar.active {
-  background: #fbbf24;           /* kuning */
-}
-
-.password-strength--strong .password-strength-bar.active {
-  background: #16a34a;           /* hijau */
-}
-
-.password-strength--empty .password-strength-bar.active {
-  background: #e5e7eb;           /* abu */
-}
-
-/* Checklist */
-.password-strength-checklist {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.password-strength-checklist li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem !important;
-  margin-bottom: 0.15rem !important;
-  color: #6b7280;
-  transition: color 0.2s ease;
-}
-
-.password-strength-checklist li.checked {
-  color: #16a34a;
-  font-weight: 500;
-}
-
-.password-strength-check {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid #d1d5db;
-  background: #ffffff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #ffffff;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.password-strength-checklist li.checked .password-strength-check {
-  background: #16a34a;
-  border-color: #16a34a;
-}
-
-@media (max-width: 700px) {
-  .password-strength-checklist li {
-    font-size: 0.75rem;
   }
 }
 
@@ -3489,986 +3533,976 @@ body > .alert-success {
 }
 
 /* ============================================================
-   LANDING PAGE
+   LANDING PAGE — dasar, navbar, hero, keunggulan
+   Sumber ukuran: Figma "Hi-Landing Page | 1" (frame 1440 x 3300)
+
+   Semua angka di bawah ini = angka asli Figma, dikali --u.
+   --lp-scale = pengatur ukuran seluruh halaman:
+     1    -> ukuran asli Figma (di layar 1440px)
+     0.85 -> sedikit lebih kecil (default)
+     0.75 -> lebih kecil lagi
+   Halaman juga mengecil otomatis di layar yang lebih sempit.
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ---------- Dasar ---------- */
 .landing-wrapper {
-  font-family: 'Poppins', sans-serif;
-  background-color: #eef8fd; /* Warna latar biru sangat muda */
-  min-height: 100vh;
-}
+  /* Margin samping section: 102px di Figma, rata tengah di layar lebar */
+  --lp-scale: 0.85;
+  --u: calc(var(--lp-scale) * clamp(0.7px, calc(100vw / 1440), 1px));
+  --lp-x: max(calc(var(--u) * 102), calc((100% - (var(--u) * 1236)) / 2));
 
-.landing-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* === NAVBAR === */
-.landing-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.landing-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 80px;
-}
-
-.landing-logo {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1a4d7a;            /* Warna biru gelap untuk "INF" */
-  text-decoration: none !important; /* ✅ Paksa hilangkan garis bawah */
-  transition: color 0.3s ease; /* ✅ Transisi halus saat berubah warna */
-}
-
-.landing-logo span {
-  color: #7ec8f5;            /* Warna biru muda untuk "orm" */
-  transition: color 0.3s ease; /* ✅ Transisi halus */
-}
-
-/* ✅ EFEK SAAT DI-HOVER (Gambar 3) */
-.landing-logo:hover {
-  color: #7ec8f5;            /* "INF" berubah jadi biru muda */
-}
-
-.landing-logo:hover span {
-  color: #1a4d7a;            /* "orm" berubah jadi biru gelap */
-}
-
-.landing-nav-links {
-  display: flex;
-  gap: 2rem;
-}
-
-/* === Menu Navigasi (Beranda, Fitur, Tentang, FAQ) === */
-.landing-nav-links a {
-  position: relative;        /* ✅ Wajib agar garis bawah bisa diposisikan */
-  text-decoration: none;     /* Hilangkan garis bawah bawaan link */
-  color: #1a1a1a !important;            /* Warna teks hitam (sesuai permintaan) */
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding-bottom: 4px;       /* Jarak antara teks dan garis bawah */
-  
-  /* ✅ Animasi transisi saat ditekan atau di-hover */
-  transition: transform 0.3s ease;
-}
-
-/* ✅ Membuat Garis Bawah Biru menggunakan pseudo-element */
-.landing-nav-links a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2.5px;             /* Ketebalan garis bawah */
-  background-color: #2f9fe0; /* Warna garis bawah biru */
-  border-radius: 2px;
-  
-  /* Efek garis muncul dari tengah */
-  transform: scaleX(0);      
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-/* ✅ Efek saat di-hover */
-.landing-nav-links a:hover {
-  color: #1a1a1a !important;            /* Teks TETAP hitam */
-  transform: translateY(-3px); /* Efek bubble/terangkat ke atas */
-}
-
-/* ✅ Memunculkan garis bawah saat di-hover */
-.landing-nav-links a:hover::after {
-  transform: scaleX(1);
-}
-
-.landing-nav-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn-login-outline {
-  padding: 0.5rem 1.5rem;
-  border: 2px solid #7ec8f5;
-  border-radius: 8px;
-  color: #2f9fe0;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-.btn-login-outline:hover {
-  background-color: #eaf5fc;
-}
-
-.btn-register-solid {
-  padding: 0.5rem 1.5rem;
-  border: 2px solid #7ec8f5;
-  border-radius: 8px;
-  background-color: #55B5EF;
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-.btn-register-solid:hover {
-  background-color: #3f9cd6;
-  border-color: #62b6e8;
-}
-
-/* === HERO SECTION === */
-.landing-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5rem 2rem;
-  gap: 4rem;
-}
-
-.landing-hero-text {
-  flex: 1;
-  position: relative; 
-  z-index: 1;         
-}
-
-/* ✅ PENGATURAN DASAR BINTANG */
-.hero-star-bg {
-  position: absolute;
-  opacity: 0.6;        
-  z-index: -1;         
-  pointer-events: none;
-}
-
-/* ✅ BINTANG KIRI (Besar, di belakang tulisan "Belajar") */
-.hero-star-bg--left {
-  top: 0px;          
-  left: -80px;         
-  width: 300px;        
-}
-
-/* ✅ BINTANG KANAN (Kecil, di dekat "INForm") */
-.hero-star-bg--right {
-  bottom: -30px;       /* Menempel di bawah teks "INForm" */
-  right: -40px;        /* Digeser ke kanan melewati teks */
-  width: 150px;        /* Ukurannya lebih kecil dari yang kiri */
-  opacity: 0.8;
-  transform: rotate(15deg); /* Sedikit diputar agar dinamis */
-}
-
-.landing-badge {
-  display: inline-block;
-  background-color: #ffffff; /* Latar putih */
-  color: #3aa8e0;            /* Teks biru */
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  border: 1px solid #eaf5fc;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.landing-title {
-  font-size: 3rem;
-  font-weight: 800;
-  color: #1a1a1a;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-}
-
-.landing-title .text-accent {
-  color: #7ec8f5;
-}
-
-.landing-desc {
-  font-size: 1.1rem;
-  color: #4b5563;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  max-width: 500px;
-}
-
-.btn-hero {
-  display: inline-flex;
-  align-items: center;
-  background-color: #55b5ef;
-  color: #ffffff;
-  padding: 0.75rem 1.75rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none; 
-  
-  /* Efek bubble */
-  box-shadow: 0 4px 10px rgba(85, 181, 239, 0.3);
-  transition: all 0.3s ease;
-  border-bottom: 3px solid transparent;
-  position: relative;
-  z-index: 2;
-}
-
-.btn-hero:hover {
-  background-color: #3aa8e0;
-  color: #ffffff;
-  
-  /* ✅ TAMBAHKAN INI JUGA: Memastikan saat di-hover tidak ada garis bawah */
-  text-decoration: none; 
-  
-  /* Efek terangkat */
-  transform: translateY(-4px); 
-  box-shadow: 0 8px 20px rgba(85, 181, 239, 0.5);
-}
-
-.landing-hero-image {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-.landing-hero-image img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* === KEUNGGULAN === */
-.landing-features {
-  padding: 4rem 2rem;
-}
-
-.landing-section-header {
-  margin-bottom: 3rem;
-}
-
-.landing-subtitle {
-  display: block;
-  color: #2f9fe0;           /* Warna biru cerah */
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.landing-section-title {
-  font-size: 2.5rem;        /* Sedikit diperkecil agar proporsional */
-  font-weight: 800;
-  color: #334155;           
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-/* ✅ Warna Teks Deskripsi (Paragraf) */
-.landing-section-desc {
-  color: #84748b;           /* Warna ungu keabuan (sesuai Hero) */
-  font-size: 1rem;
-  line-height: 1.6;
-  max-width: 600px;
-}
-
-.landing-features-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-.feature-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.feature-icon {
-  width: 56px;
-  height: 56px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-  transition: transform 0.2s ease;
-  color: #1E6F9E; 
-}
-
-.feature-item h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.feature-item p {
-  font-size: 0.9rem;
-  color: #6b7280;
-  line-height: 1.5;
-}
-
-/* === TENTANG === */
-.landing-about {
-  background-color: #eaf5fc;
-  padding: 5rem 2rem;
-  margin-top: 2rem;
-}
-
-.landing-about-inner {
-  display: flex;
-  align-items: center;
-  gap: 4rem;
-}
-
-.landing-about-text {
-  flex: 1;
-}
-
-.landing-about-icon {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  opacity: 0.6;
-}
-.landing-about-icon svg {
-  width: 300px;
-  height: 300px;
-}
-
-/* === RESPONSIVE LANDING === */
-@media (max-width: 900px) {
-  .landing-hero {
-    flex-direction: column;
-    text-align: center;
-    padding: 3rem 1rem;
-    gap: 2rem;
-  }
-  .landing-desc {
-    margin: 0 auto 2rem;
-  }
-  .landing-hero-image {
-    justify-content: center;
-  }
-  .landing-features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .landing-about-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-  .landing-nav-links {
-    display: none; /* Sembunyikan menu di mobile */
-  }
-}
-
-@media (max-width: 600px) {
-  .landing-title {
-    font-size: 2.2rem;
-  }
-  .landing-features-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================================================
-   LANDING PAGE
-   ============================================================ */
-
-/* 1. BACKGROUND BIRU MUDA */
-.landing-wrapper {
   font-family: 'Poppins', sans-serif;
   background-color: #eef8fd;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-.landing-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+.landing-wrapper *,
+.landing-wrapper *::before,
+.landing-wrapper *::after {
+  box-sizing: border-box;
 }
 
-/* 2. NAVBAR FLOATING (BUBBLE) */
+/* ---------- Tipografi bersama (Keunggulan, Tentang, FAQ) ---------- */
+.landing-subtitle {
+  display: block;
+  margin: 0;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
+  line-height: calc(var(--u) * 30);
+  color: #3aa8e0;
+}
+
+.landing-section-title {
+  margin: 0;
+  font-size: calc(var(--u) * 40);
+  font-weight: 700;
+  line-height: calc(var(--u) * 60);
+  color: #334155;
+}
+
+.landing-section-desc {
+  max-width: calc(var(--u) * 635);
+  margin: 0;
+  padding: calc(var(--u) * 10) 0;
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
+  line-height: calc(var(--u) * 30);
+  color: #64748b;
+}
+
+/* ============================================================
+   NAVBAR — 1380x112, radius 26, padding 20/40, bayangan #CDEEFF
+   ============================================================ */
 .landing-header-wrapper {
-  width: 100%;
-  padding: 1.5rem 2rem 0; /* Jarak atas, kiri, kanan */
   position: sticky;
   top: 0;
   z-index: 50;
+  width: 100%;
+  padding: calc(var(--u) * 25) calc(var(--u) * 30) 0;
 }
 
 .landing-header {
-  max-width: 1200px;
+  max-width: calc(var(--u) * 1380);
   margin: 0 auto;
-  background-color: #ffffff; /* Putih */
-  border-bottom: 3px solid transparent;
-  border-radius: 16px;       /* Sudut membulat */
-  border-bottom: 3px solid #55B5EF; 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border: none;
+  border-radius: calc(var(--u) * 26);
+  box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 4) #cdeeff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .landing-header:hover {
-  transform: translateY(-3px); /* Navbar sedikit terangkat ke atas */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Bayangan makin tebal/lebar */
+  transform: translateY(calc(var(--u) * -3));
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 12) #cdeeff;
 }
 
 .landing-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
-  padding: 0 2rem;
+  height: calc(var(--u) * 112);
+  padding: calc(var(--u) * 20) calc(var(--u) * 40);
 }
 
+/* Logo: Poppins 700 48/72 */
 .landing-logo {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1a4d7a;
+  display: flex;
+  align-items: flex-end;
+  font-size: calc(var(--u) * 48);
+  font-weight: 700;
+  line-height: calc(var(--u) * 72);
+  color: #1e6f9e;
   text-decoration: none;
-}
-.landing-logo span {
-  color: #7ec8f5;
+  transition: color 0.3s ease;
 }
 
+.landing-logo span {
+  color: #8bd4ff;
+  transition: color 0.3s ease;
+}
+
+.landing-logo:hover {
+  color: #8bd4ff;
+}
+
+.landing-logo:hover span {
+  color: #1e6f9e;
+}
+
+/* Menu: Inter 600 20/24 #404040, tiap item padding 10, jarak 50 */
 .landing-nav-links {
   display: flex;
-  gap: 2.5rem;
+  align-items: center;
+  gap: calc(var(--u) * 50);
 }
 
 .landing-nav-links a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--u) * 44);
+  padding: calc(var(--u) * 10);
+  font-family: 'Inter', 'Poppins', sans-serif;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
+  line-height: calc(var(--u) * 24);
+  color: #404040;
   text-decoration: none;
-  color: #4b5563;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.landing-nav-links a:hover {
-  color: #2f9fe0;
+  transition: transform 0.3s ease;
 }
 
+.landing-nav-links a::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--u) * 10);
+  right: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 4);
+  height: calc(var(--u) * 2.5);
+  border-radius: calc(var(--u) * 2);
+  background: #55b5ef;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.landing-nav-links a:hover {
+  transform: translateY(calc(var(--u) * -3));
+}
+
+.landing-nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Tombol Login & Register: 160 x 55, border 3, radius 18, Inter 600 24/29 */
 .landing-nav-actions {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: calc(var(--u) * 20);
+}
+
+.btn-login-outline,
+.btn-register-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--u) * 160);
+  height: calc(var(--u) * 55);
+  padding: 0;
+  border: calc(var(--u) * 3) solid #55b5ef;
+  border-radius: calc(var(--u) * 18);
+  font-family: 'Inter', 'Poppins', sans-serif;
+  font-size: calc(var(--u) * 24);
+  font-weight: 600;
+  line-height: calc(var(--u) * 29);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .btn-login-outline {
-  padding: 0.5rem 1.5rem;
-  border: 2px solid #7ec8f5;
-  border-radius: 8px;
-  color: #2f9fe0;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s;
+  background: transparent;
+  color: #55b5ef;
 }
+
 .btn-login-outline:hover {
-  background-color: #55B5EF;  /* ✅ Warna biru lebih gelap dari putih */
-  border-color: #55B5EF;
+  background: #55b5ef;
   color: #ffffff;
-  text-decoration: none; 
+  text-decoration: none;
 }
 
 .btn-register-solid {
-  padding: 0.5rem 1.5rem;
-  border: 2px solid #7ec8f5;
-  border-radius: 8px;
-  background-color: #7ec8f5;
+  background: #55b5ef;
   color: #ffffff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-.btn-register-solid:hover {
-  background-color: #3f9cd6;  /* Warna lebih gelap saat di-hover */
-  border-color: #3f9cd6;
-  text-decoration: none;  
 }
 
-/* 3. HERO SECTION */
-.landing-hero {
+.btn-register-solid:hover {
+  background: #3f9cd6;
+  border-color: #3f9cd6;
+  text-decoration: none;
+}
+
+/* ============================================================
+   HERO (Beranda)
+   Teks 584 + jarak 80 + gambar 531. Tinggi hero = 649
+   (jarak atas 102, bawah 129 dari tepi gambar 418)
+   ============================================================ */
+.landing-hero.landing-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 6rem 2rem;
-  gap: 4rem;
+  justify-content: flex-start;
+  gap: calc(var(--u) * 80);
+  max-width: none;
+  margin: 0;
+  padding: calc(var(--u) * 102) var(--lp-x) calc(var(--u) * 129);
 }
 
 .landing-hero-text {
-  flex: 1;
-  position: relative; 
-  z-index: 1;         
+  position: relative;
+  z-index: 1;
+  flex: 0 1 calc(var(--u) * 584);
+  min-width: 0;
 }
 
-/* ✅ PENGATURAN UMUM GAMBAR BINTANG */
-.hero-star-bg {
-  position: absolute;
-  opacity: 0.8;        /* Transparansi bintang */
-  z-index: -1;         /* Di belakang teks */
-  pointer-events: none;
-}
-
-/* ✅ BINTANG 1 (Kiri - di belakang Badge & "Belajar") */
-.hero-star-bg--left {
-  top: -40px;          
-  left: -60px;         
-  width: 280px;        
-}
-
+/* Badge: 271x34, bg #CDEEFF, radius 18, Poppins 600 16/24 */
 .landing-badge {
-  display: inline-block;
-  background-color: #dceeff; /* ✅ Warna latar belakang baru */
-  color: #3aa8e0;            /* ✅ Warna teks baru */
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: calc(var(--u) * 34);
+  margin: 0;
+  padding: calc(var(--u) * 5) calc(var(--u) * 10);
+  background: #cdeeff;
+  border: none;
+  border-radius: calc(var(--u) * 18);
+  box-shadow: calc(var(--u) * 2) calc(var(--u) * 4) calc(var(--u) * 3.3) #b3e7ff;
+  font-size: calc(var(--u) * 16);
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  border-bottom: 3px solid #55B5EF; /* Garis bawah tegas */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Bayangan melayang */
-  
-  /* Opsional: Transisi jika kamu ingin menambahkan efek hover nanti */
+  line-height: calc(var(--u) * 24);
+  color: #3aa8e0;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .landing-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(calc(var(--u) * -2));
+  box-shadow: calc(var(--u) * 2) calc(var(--u) * 6) calc(var(--u) * 6) #b3e7ff;
 }
 
+/* Judul: Poppins 700 48/72 #334155 (2 baris) */
 .landing-title {
-  font-size: 2.5rem;         /* Diperkecil dari 3.5rem agar proporsional */
-  font-weight: 800;
-  color: #334155;            /* Warna teks utama (Belajar Lebih Mudah dengan) */
-  line-height: 1.2;
-  margin-bottom: 1.25rem;
-  position: relative;        /* Agar bisa ditambahkan efek bintang di belakang */
+  position: relative;
+  margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 48);
+  font-weight: 700;
+  line-height: calc(var(--u) * 72);
+  color: #334155;
 }
 
-.landing-title::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -20px;
-  width: 150px;
-  height: 150px;
-  background-image: radial-gradient(circle, #bae6fd 2px, transparent 2px);
-  background-size: 10px 10px; /* Pola titik-titik */
-  opacity: 0.6;
-  z-index: -1;
-  border-radius: 50%;
-}
-
-
-.landing-title .text-accent {
-  color: #7ec8f5;
-}
-
+/* Deskripsi: Poppins 500 20/30 #64748B, lebar teks 504 (3 baris) */
 .landing-desc {
-  font-size: 1rem;           /* Sedikit lebih kecil */
-  color: #84748b;            /* Warna ungu keabuan sesuai permintaan */
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  max-width: 480px;
+  max-width: calc(var(--u) * 524);
+  margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
+  line-height: calc(var(--u) * 30);
+  color: #64748b;
 }
 
-/* ✅ 3. Warna Tombol Mulai Sekarang */
+/* Tombol Mulai Sekarang: persegi panjang sudut lengkung (radius 18), 251x50 */
 .btn-hero {
-  display: inline-flex;      /* Agar teks dan panah sejajar */
+  display: flex;
   align-items: center;
-  background-color: #55b5ef; /* Warna biru tombol */
-  color: #ffffff;            /* Teks putih */
-  padding: 0.75rem 1.75rem;
-  border-radius: 999px;      /* Dibuat membulat panjang seperti gambar 2 */
+  width: fit-content;
+  height: calc(var(--u) * 50);
+  margin-top: calc(var(--u) * 33);
+  padding: calc(var(--u) * 10) calc(var(--u) * 20) calc(var(--u) * 10) calc(var(--u) * 30);
+  gap: calc(var(--u) * 20);
+  background: #55b5ef;
+  border-radius: calc(var(--u) * 18);
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
+  line-height: calc(var(--u) * 30);
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Jarak teks-panah diatur oleh gap (20px), bukan margin inline di JSX */
+.btn-hero svg {
+  flex: none;
+  margin-left: 0 !important;
 }
 
 .btn-hero:hover {
-  background-color: #3aa8e0; /* Sedikit lebih gelap saat di-hover */
+  background: #3aa8e0;
   color: #ffffff;
+  text-decoration: none;
+  transform: translateY(calc(var(--u) * -4));
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 20) rgba(85, 181, 239, 0.5);
 }
 
-.landing-hero-image {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-.landing-hero-image img {
-  max-width: 100%;
+/* Bintang: Star 2 (besar) 226px rotate -23, Star 1 (kecil) 150px rotate -30,
+   blur 1.1px. Posisi dihitung relatif terhadap blok teks hero. */
+.hero-star-bg {
+  position: absolute;
+  z-index: -1;
   height: auto;
-  max-height: 500px;
+  opacity: 0.8;
+  filter: blur(calc(var(--u) * 1.1));
+  pointer-events: none;
 }
 
-/* 4. KEUNGGULAN */
-.landing-features {
-  padding: 4rem 2rem;
+.hero-star-bg--left {
+  top: calc(var(--u) * -84);
+  left: calc(var(--u) * -132);
+  width: calc(var(--u) * 226.48);
+  transform: rotate(-23deg);
+}
+
+.hero-star-bg--right {
+  top: calc(var(--u) * 19);
+  left: calc(var(--u) * 277);
+  width: calc(var(--u) * 150);
+  transform: rotate(-30deg);
+}
+
+/* Gambar hero: 531 lebar */
+.landing-hero-image {
+  display: block;
+  flex: 0 1 calc(var(--u) * 531);
+  min-width: 0;
+}
+
+.landing-hero-image img {
+  display: block;
+  width: 100%;
+  max-width: calc(var(--u) * 531);
+  height: auto;
+}
+
+/* ============================================================
+   KEUNGGULAN (Fitur)
+   Latar gradasi #EEF8FD -> #F5FCFF (99px pertama), padding 82
+   ============================================================ */
+.landing-features.landing-container {
+  max-width: none;
+  margin: 0;
+  padding: calc(var(--u) * 82) var(--lp-x);
+  background: linear-gradient(180deg, #eef8fd 0, #f5fcff calc(var(--u) * 99));
 }
 
 .landing-section-header {
-  margin-bottom: 3rem;
-}
-
-/* ✅ Ukuran Judul & Warna Teks Utama */
-.landing-section-title {
-  font-size: 2.5rem;        /* Sedikit diperkecil agar proporsional */
-  font-weight: 800;
-  color: #334155;           /* Warna abu-abu kebiruan gelap (sesuai Hero) */
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-/* ✅ Warna Teks Deskripsi (Paragraf) */
-.landing-section-desc {
-  color: #84748b;           /* Warna ungu keabuan (sesuai Hero) */
-  font-size: 1rem;
-  line-height: 1.6;
-  max-width: 600px;
-}
-
-/* Warna untuk Subtitle "Keunggulan" */
-.landing-subtitle {
-  display: block;
-  color: #2f9fe0;           /* Warna biru cerah */
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 3);
+  margin-bottom: calc(var(--u) * 38);
 }
 
 .landing-features-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  gap: 0;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  align-items: flex-start;
+  padding: calc(var(--u) * 20) 0;
+  border-radius: calc(var(--u) * 24);
 }
 
+/* Kotak ikon: 100x100, bg #CDEEFF, radius 18, ikon #1E6F9E */
 .feature-icon {
-  width: 56px;
-  height: 56px;
-  background-color: #ffffff;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* Bayangan halus */
+  width: calc(var(--u) * 100);
+  height: calc(var(--u) * 100);
+  margin-bottom: calc(var(--u) * 30);
+  padding: calc(var(--u) * 10);
+  background: #cdeeff;
+  border-radius: calc(var(--u) * 18);
+  box-shadow: none;
+  color: #1e6f9e;
   transition: transform 0.2s ease;
 }
 
 .feature-icon:hover {
-  transform: translateY(-3px); /* Efek terangkat saat disentuh kursor */
+  transform: translateY(calc(var(--u) * -3));
 }
 
-/* ✅ Judul Fitur (Akses Fleksibel, dll) */
+/* Ikon 50x50 (ikon pertama 60x53), garis 4px */
+.feature-icon svg {
+  flex: none;
+  width: calc(var(--u) * 50);
+  height: calc(var(--u) * 50);
+}
+
+.feature-icon svg path {
+  stroke-width: 4px;
+}
+
+.feature-item:first-child .feature-icon svg {
+  width: calc(var(--u) * 60);
+  height: calc(var(--u) * 53);
+}
+
+/* Judul fitur: Poppins 600 20/30 #334155 */
 .feature-item h3 {
-  font-size: 1.25rem;       /* Sedikit diperbesar agar tegas */
-  font-weight: 700;
-  color: #334155;           /* ✅ Warna abu-abu kebiruan gelap (sama seperti judul utama) */
-  margin-bottom: 0.5rem;
+  margin: 0;
+  padding-right: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
+  line-height: calc(var(--u) * 30);
+  color: #334155;
 }
 
-/* ✅ Deskripsi Fitur */
+/* Deskripsi fitur: Poppins 500 15/22 #334155 */
 .feature-item p {
-  font-size: 0.95rem;
-  color: #84748b;           /* ✅ Warna ungu keabuan (sama seperti deskripsi Hero) */
-  line-height: 1.6;
+  margin: 0;
+  padding: calc(var(--u) * 10) calc(var(--u) * 10) calc(var(--u) * 10) 0;
+  font-size: calc(var(--u) * 15);
+  font-weight: 500;
+  line-height: calc(var(--u) * 22);
+  color: #334155;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1140px) {
+  .landing-nav-links {
+    display: none;
+  }
+}
+
+@media (max-width: 1000px) {
+  /* Tablet & HP: tidak diskala, ukuran px biasa */
+  .landing-wrapper {
+    --u: 1px;
+  }
+
+  .landing-hero.landing-container {
+    flex-direction: column;
+    gap: calc(var(--u) * 40);
+    padding: calc(var(--u) * 48) calc(var(--u) * 24) calc(var(--u) * 64);
+    text-align: center;
+  }
+
+  .landing-hero-text {
+    flex: none;
+    width: 100%;
+  }
+
+  .landing-badge,
+  .landing-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .landing-title {
+    font-size: calc(var(--u) * 36);
+    line-height: calc(var(--u) * 48);
+  }
+
+  .btn-hero {
+    margin: calc(var(--u) * 24) auto 0;
+  }
+
+  .landing-hero-image {
+    flex: none;
+    width: 100%;
+    max-width: calc(var(--u) * 531);
+  }
+
+  .hero-star-bg {
+    display: none;
+  }
+
+  .landing-features.landing-container {
+    padding: calc(var(--u) * 56) calc(var(--u) * 24);
+  }
+
+  .landing-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: calc(var(--u) * 16);
+  }
+
+  .landing-section-title {
+    font-size: calc(var(--u) * 32);
+    line-height: calc(var(--u) * 44);
+  }
+}
+
+@media (max-width: 700px) {
+  .landing-header-wrapper {
+    padding: calc(var(--u) * 16) calc(var(--u) * 16) 0;
+  }
+
+  .landing-nav {
+    height: calc(var(--u) * 80);
+    padding: calc(var(--u) * 12) calc(var(--u) * 16);
+  }
+
+  .landing-logo {
+    font-size: calc(var(--u) * 32);
+    line-height: calc(var(--u) * 48);
+  }
+
+  .landing-nav-actions {
+    gap: calc(var(--u) * 10);
+  }
+
+  .btn-login-outline,
+  .btn-register-solid {
+    width: calc(var(--u) * 96);
+    height: calc(var(--u) * 44);
+    border-width: calc(var(--u) * 2);
+    border-radius: calc(var(--u) * 14);
+    font-size: calc(var(--u) * 16);
+    line-height: calc(var(--u) * 20);
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-title {
+    font-size: calc(var(--u) * 30);
+    line-height: calc(var(--u) * 42);
+  }
+
+  .landing-desc,
+  .landing-section-desc {
+    font-size: calc(var(--u) * 17);
+    line-height: calc(var(--u) * 27);
+  }
+
+  .landing-section-title {
+    font-size: calc(var(--u) * 28);
+    line-height: calc(var(--u) * 40);
+  }
 }
 
 /* ============================================================
    TENTANG SECTION
+   Figma: tinggi 600, bg #EEF8FD, isi mulai dari atas 122
+   Teks kiri 635 + jarak 37 + kartu kanan 564
    ============================================================ */
 
 .landing-about {
-  background-color: #eef8fd;
-  padding: 6rem 2rem; /* Padding sedikit dikurangi agar proporsional */
   position: relative;
   overflow: hidden;
+  padding: calc(var(--u) * 122) var(--lp-x) calc(var(--u) * 138);
+  background-color: #eef8fd;
 }
 
-/* ✅ PENGATURAN DASAR GAMBAR TANDA TANYA */
+.landing-about .landing-container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Gambar tanda tanya (posisi tidak diubah) ---------- */
 .about-bg-question {
   position: absolute;
-  opacity: 0.6;        /* Transparansi gambar */
-  z-index: 0;          /* Di belakang teks */
+  z-index: 0;
+  opacity: 0.6;
   pointer-events: none;
 }
 
-/* ✅ Tanda Tanya 1 (Besar, di Tengah, Menghadap Kanan) */
 .about-bg-question--large {
   top: 10%;
-  left: 45%;           /* ✅ Ditaruh di tengah (45% dari kiri) */
-  transform: translateX(-50%); /* Menariknya tepat ke tengah */
-  width: 300px;        /* Ukuran besar */
+  left: 45%;
+  width: calc(var(--u) * 300);
+  transform: translateX(-50%);
 }
 
-/* ✅ Tanda Tanya 2 (Kecil, di Kiri, Menghadap Kiri) */
 .about-bg-question--small {
   top: 40%;
-  left: -30px;         /* ✅ Ditaruh di sebelah kiri teks */
-  width: 150px;        /* Ukuran lebih kecil */
-  transform: scaleX(-1); /* ✅ Dibalik (mirror) agar menghadap ke kiri */
+  left: calc(var(--u) * -30);
+  width: calc(var(--u) * 150);
+  transform: scaleX(-1);
 }
 
+/* ---------- Isi ---------- */
 .landing-about-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4rem;
   position: relative;
   z-index: 1;
-}
-
-.landing-about-text {
-  flex: 1;
-  max-width: 550px; /* Membatasi lebar teks agar tidak terlalu melebar */
-}
-
-/* ✅ UKURAN JUDUL DIPERKECIL */
-.landing-about-text .landing-section-title {
-  font-size: 2.2rem;        /* Dikecilkan dari 2.75rem */
-  font-weight: 800;
-  color: #334155;
-  margin-bottom: 1.25rem;
-  line-height: 1.2;
-}
-
-.landing-about-text .landing-subtitle {
-  color: #3aa8e0;
-  font-weight: 700;
-  font-size: 0.85rem;       /* Dikecilkan sedikit */
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-/* ✅ UKURAN DESKRIPSI DIPERKECIL */
-.landing-about-text .landing-section-desc {
-  font-size: 0.95rem;       /* Dikecilkan dari 1.1rem */
-  color: #64748b;           /* Warna disamakan dengan gambar Figma */
-  line-height: 1.6;
-}
-
-/* --- Bagian Kotak (Mahasiswa & Admin) --- */
-.landing-about-cards {
-  flex: 1;
-  max-width: 500px;         /* Membatasi lebar kotak kanan */
   display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 37);
+}
+
+/* Judul 2 baris (40/60), deskripsi 3 baris (20/30), lebar 635 */
+.landing-about-text {
+  display: flex;
+  flex: 0 1 calc(var(--u) * 635);
   flex-direction: column;
-  gap: 1.25rem;             /* Jarak antar kotak sedikit dirapatkan */
+  gap: calc(var(--u) * 3);
+  min-width: 0;
+}
+
+/* ---------- Kartu Mahasiswa & Admin: 564x150 ---------- */
+.landing-about-cards {
+  display: flex;
+  flex: 1 1 calc(var(--u) * 564);
+  flex-direction: column;
+  gap: calc(var(--u) * 40);
+  min-width: 0;
+  max-width: calc(var(--u) * 564);
 }
 
 .about-card {
+  padding: calc(var(--u) * 15) calc(var(--u) * 60) calc(var(--u) * 15) calc(var(--u) * 30);
   background: #ffffff;
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
-  border: none;
-
-  /* ✅ TAMBAHKAN INI: Agar pergerakannya halus (smooth) */
+  border: calc(var(--u) * 2) solid #e9f0f5;
+  border-radius: calc(var(--u) * 18);
+  box-shadow: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ✅ TAMBAHKAN INI: Efek saat kursor diarahkan (Hover) */
 .about-card:hover {
-  transform: translateY(-5px); /* Kotak terangkat 5px ke atas */
-  
-  /* Memancarkan cahaya/bayangan biru (warna #3aa8e0 dengan opacity 0.15) */
-  box-shadow: 0 12px 25px rgba(58, 168, 224, 0.15), 
-              0 4px 10px rgba(58, 168, 224, 0.1); 
+  transform: translateY(calc(var(--u) * -5));
+  box-shadow: 0 calc(var(--u) * 12) calc(var(--u) * 25) rgba(58, 168, 224, 0.15),
+    0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(58, 168, 224, 0.1);
 }
 
-/* ✅ UKURAN JUDUL KOTAK DIPERKECIL */
+/* Judul kartu: Poppins 700 24/36 #3AA8E0 */
 .about-card-title {
-  color: #3aa8e0;
-  font-size: 1.1rem;        /* Dikecilkan dari 1.35rem */
+  margin: 0;
+  padding: 0 calc(var(--u) * 10);
+  font-size: calc(var(--u) * 24);
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  line-height: calc(var(--u) * 36);
+  color: #3aa8e0;
 }
 
-/* ✅ UKURAN DESKRIPSI KOTAK DIPERKECIL */
+/* Deskripsi kartu: Poppins 500 20/30 #64748B (2 baris) */
 .about-card-desc {
-  color: #64748b;
-  font-size: 0.9rem;        /* Dikecilkan dari 1rem */
-  line-height: 1.5;
   margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
+  line-height: calc(var(--u) * 30);
+  color: #64748b;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .landing-about {
+    padding: calc(var(--u) * 72) calc(var(--u) * 24);
+  }
+
+  .landing-about-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(var(--u) * 32);
+  }
+
+  .landing-about-text {
+    flex: none;
+  }
+
+  .landing-about-cards {
+    flex: none;
+    max-width: none;
+  }
+
+  .about-bg-question--small {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-card {
+    padding: calc(var(--u) * 12) calc(var(--u) * 20);
+  }
+
+  .about-card-title {
+    font-size: calc(var(--u) * 20);
+    line-height: calc(var(--u) * 30);
+  }
+
+  .about-card-desc {
+    font-size: calc(var(--u) * 16);
+    line-height: calc(var(--u) * 26);
+  }
 }
 
 /* ============================================================
    FAQ SECTION
+   Figma: bg #F5FCFF, padding 82, teks kiri 441 + jarak 83 + daftar 712
    ============================================================ */
 
 .landing-faq {
-  background-color: #f5fcff; /* ✅ Background FAQ */
-  padding: 6rem 2rem;
+  padding: calc(var(--u) * 82) var(--lp-x);
+  background-color: #f5fcff;
+}
+
+.landing-faq .landing-container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .landing-faq-inner {
   display: flex;
-  gap: 4rem;
   align-items: flex-start;
+  gap: calc(var(--u) * 83);
 }
 
+/* Judul 2 baris (40/60), deskripsi lebar 441 -> pecah baris sama dengan Figma */
 .landing-faq-text {
-  flex: 1;
-  position: sticky;
-  top: 120px; /* Agar teks kiri tetap terlihat saat scroll */
-}
-
-.landing-faq-text .landing-section-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #334155;
-  margin-bottom: 1rem;
-  line-height: 1.2;
+  display: flex;
+  flex: 0 1 calc(var(--u) * 441);
+  flex-direction: column;
+  gap: calc(var(--u) * 3);
+  min-width: 0;
 }
 
 .landing-faq-text .landing-section-desc {
-  color: #64748b;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  max-width: calc(var(--u) * 441);
 }
 
-.landing-faq-text .landing-subtitle {
-  color: #3aa8e0;
-  font-weight: 700;
-  font-size: 0.85rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-/* --- List FAQ Kanan --- */
+/* ---------- Daftar pertanyaan: 712 lebar, jarak antar item 20 ---------- */
 .landing-faq-list {
-  flex: 1.2;
   display: flex;
+  flex: 1 1 calc(var(--u) * 712);
   flex-direction: column;
-  gap: 1rem;
+  gap: calc(var(--u) * 20);
+  min-width: 0;
+  max-width: calc(var(--u) * 712);
 }
 
-/* Kotak FAQ Putih */
+/* Item: border 2px #E9F0F5, radius 18, padding 15/60/15/30 */
 .faq-item {
-  background-color: #ffffff; /* ✅ Warna kotak putih */
-  border-radius: 12px;
-  padding: 1.5rem;
+  padding: calc(var(--u) * 15) calc(var(--u) * 60) calc(var(--u) * 15) calc(var(--u) * 30);
+  background: #ffffff;
+  border: calc(var(--u) * 2) solid #e9f0f5;
+  border-radius: calc(var(--u) * 18);
   cursor: pointer;
-  border: 1px solid transparent;
-  
-  /* ✅ EFEK BUBBLE & GLOW (Smooth) */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
-/* ✅ Efek saat di-hover (terangkat & memancarkan cahaya biru) */
 .faq-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(58, 168, 224, 0.15); 
+  transform: translateY(calc(var(--u) * -3));
+  box-shadow: 0 calc(var(--u) * 10) calc(var(--u) * 25) rgba(58, 168, 224, 0.15);
   border-color: rgba(58, 168, 224, 0.3);
 }
 
-/* ✅ Efek saat FAQ sedang dibuka (Active) */
 .faq-item.active {
-  transform: translateY(-3px);
+  transform: translateY(calc(var(--u) * -3));
   border-color: #7ec8f5;
-  box-shadow: 0 12px 30px rgba(58, 168, 224, 0.2); /* Cahaya lebih terang */
+  box-shadow: 0 calc(var(--u) * 12) calc(var(--u) * 30) rgba(58, 168, 224, 0.2);
 }
 
+/* Pertanyaan: Poppins 600 24/36 #334155, jarak ke panah 51 */
 .faq-question {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 1.05rem;
-  font-weight: 700;
+  justify-content: space-between;
+  gap: calc(var(--u) * 51);
+  font-size: calc(var(--u) * 24);
+  font-weight: 600;
+  line-height: calc(var(--u) * 36);
   color: #334155;
 }
 
+.faq-question > span:first-child {
+  flex: 1;
+  padding: 0 calc(var(--u) * 10);
+}
+
+/* Panah: kotak 50x50, panah 30x17, warna #CBD5E1 */
 .faq-icon {
-  color: #94a3b8;
-  transition: color 0.3s;
   display: flex;
+  flex: none;
   align-items: center;
+  justify-content: center;
+  width: calc(var(--u) * 50);
+  height: calc(var(--u) * 50);
+  color: #cbd5e1;
+  transition: color 0.3s ease;
+}
+
+.faq-icon svg {
+  flex: none;
+  width: calc(var(--u) * 60);
+  height: calc(var(--u) * 60);
+}
+
+.faq-icon svg polyline {
+  stroke-width: 1.7;
 }
 
 .faq-item.active .faq-icon {
   color: #3aa8e0;
 }
 
-/* ✅ ANIMASI SMOOTH BUKA-TUTUP */
+/* Jawaban (buka-tutup halus). Ukuran teks jawaban tidak ada di Figma. */
 .faq-answer {
   max-height: 0;
-  opacity: 0;
   overflow: hidden;
-  /* Transisi height, opacity, dan margin agar mulus */
+  opacity: 0;
   transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
 }
 
 .faq-item.active .faq-answer {
-  max-height: 200px;
+  max-height: calc(var(--u) * 240);
+  margin-top: calc(var(--u) * 12);
   opacity: 1;
-  margin-top: 1rem;
 }
 
 .faq-answer p {
-  color: #64748b;
-  font-size: 0.95rem;
-  line-height: 1.6;
   margin: 0;
+  padding: 0 calc(var(--u) * 10);
+  font-size: calc(var(--u) * 18);
+  font-weight: 500;
+  line-height: calc(var(--u) * 28);
+  color: #64748b;
 }
 
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .landing-faq {
+    padding: calc(var(--u) * 56) calc(var(--u) * 24);
+  }
+
+  .landing-faq-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(var(--u) * 32);
+  }
+
+  .landing-faq-text {
+    flex: none;
+  }
+
+  .landing-faq-list {
+    flex: none;
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .faq-item {
+    padding: calc(var(--u) * 12) calc(var(--u) * 20);
+  }
+
+  .faq-question {
+    gap: calc(var(--u) * 16);
+    font-size: calc(var(--u) * 18);
+    line-height: calc(var(--u) * 28);
+  }
+
+  .faq-answer p {
+    font-size: calc(var(--u) * 16);
+    line-height: calc(var(--u) * 26);
+  }
+}
 
 /* ============================================================
    FOOTER SECTION
+   Figma "Footnote": gradasi horizontal #2B8CC7 -> #1E6F9E, padding 19/92,
+   kolom: brand 344 | Jelajahi 169 | Hubungi Kami 332 (jarak 100)
    ============================================================ */
 
 .landing-footer {
-  background: linear-gradient(to bottom, #2a8ac5 0%, #1e709f 100%);
+  /* Tinggi 740 mengikuti Figma. Hapus baris ini kalau footer
+     ingin setinggi isinya saja. */
+  min-height: calc(var(--u) * 740);
+
+  padding: calc(var(--u) * 19)
+    max(calc(var(--u) * 92), calc((100% - (var(--u) * 1259)) / 2));
+  background: linear-gradient(90deg, #2b8cc7 0%, #1e6f9e 100%);
   color: #ffffff;
-  padding: 4rem 2rem 2rem;
+}
+
+.landing-footer .landing-container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .landing-footer-inner {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--u) * 100);
+  margin: 0;
 }
 
+/* ---------- Brand ---------- */
+.footer-brand {
+  flex: 0 0 calc(var(--u) * 344);
+  margin-right: auto;
+}
+
+/* Logo: Poppins 700 64/96 putih, "orm" biru muda */
 .footer-logo {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
+  margin: 0;
+  font-size: calc(var(--u) * 64);
+  font-weight: 700;
+  line-height: calc(var(--u) * 96);
   color: #ffffff;
 }
+
 .footer-logo span {
-  color: #bae6fd; /* Warna "orm" tetap biru muda */
+  color: #8bd4ff;
 }
 
+/* Deskripsi: Poppins 500 16/24 #CDEEFF, lebar teks 316 (3 baris) */
 .footer-desc {
-  color: #dbeafe; /* Teks deskripsi putih kebiruan */
-  font-size: 0.95rem;
-  line-height: 1.6;
-  max-width: 300px;
+  max-width: calc(var(--u) * 316);
+  margin: 0 0 0 calc(var(--u) * 3);
+  font-size: calc(var(--u) * 16);
+  font-weight: 500;
+  line-height: calc(var(--u) * 24);
+  color: #cdeeff;
+}
+
+/* ---------- Jelajahi: 169 lebar, tiap baris 56 tinggi, jarak 5 ---------- */
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 5);
+  width: calc(var(--u) * 169);
 }
 
 .footer-links h4,
 .footer-contact h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
+  height: calc(var(--u) * 56);
+  margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 24);
+  font-weight: 600;
+  line-height: calc(var(--u) * 36);
   color: #ffffff;
 }
 
 .footer-links a {
-  display: block;
-  color: #dbeafe;
+  display: flex;
+  align-items: center;
+  height: calc(var(--u) * 56);
+  margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 24);
+  font-weight: 500;
+  line-height: calc(var(--u) * 36);
+  color: #cdeeff;
   text-decoration: none;
-  margin-bottom: 0.85rem;
-  font-size: 1rem;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .footer-links a:hover {
@@ -4476,62 +4510,131 @@ body > .alert-success {
   text-decoration: none;
 }
 
+/* ---------- Hubungi Kami: 332 lebar ---------- */
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 5);
+  width: calc(var(--u) * 332);
+}
+
 .footer-contact p {
-  color: #dbeafe;
-  font-size: 1rem;
-  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--u) * 10);
+  margin: 0;
+  padding: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
+  line-height: calc(var(--u) * 30);
+  color: #cdeeff;
 }
 
-/* Ikon di footer */
-.footer-contact svg {
-  width: 20px;
-  height: 20px;
-  stroke: #dbeafe;
+.footer-contact p:nth-of-type(2) {
+  padding-left: calc(var(--u) * 12);
 }
 
+/* Ikon email 40x40, ikon jam 35x35 (jarak diatur gap, bukan margin inline) */
+.footer-contact p svg {
+  flex: none;
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 40);
+  margin: 0 !important;
+  stroke: none;
+}
+
+.footer-contact p:nth-of-type(2) svg {
+  width: calc(var(--u) * 35);
+  height: calc(var(--u) * 35);
+}
+
+.footer-contact p:nth-of-type(2) svg path {
+  stroke-width: 4.3;
+}
+
+/* ---------- Garis + hak cipta ---------- */
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Garis pemisah transparan */
-  padding-top: 2rem;
-  text-align: center;
+  margin-top: calc(var(--u) * 29);
+}
+
+.footer-bottom::before {
+  content: '';
+  display: block;
+  height: calc(var(--u) * 3);
+  margin: calc(var(--u) * 10);
+  border-radius: calc(var(--u) * 4);
+  background: #cdeeff;
 }
 
 .footer-bottom p {
-  color: #bfdbfe;
-  font-size: 0.9rem;
   margin: 0;
+  padding: 0 calc(var(--u) * 10);
+  font-size: calc(var(--u) * 20);
+  font-weight: 400;
+  line-height: calc(var(--u) * 30);
+  text-align: center;
+  color: #ffffff;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .landing-faq-inner {
-    flex-direction: column;
-  }
-  .landing-faq-text {
-    position: relative;
-    top: 0;
-    margin-bottom: 2rem;
-  }
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
   .landing-footer-inner {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 2rem;
+    gap: calc(var(--u) * 48);
   }
-  .footer-desc {
-    margin: 0 auto;
+
+  .footer-links {
+    margin-left: 0;
   }
-  .footer-contact p {
-    justify-content: center;
+}
+
+@media (max-width: 1000px) {
+  .landing-footer {
+    min-height: 0;
+    padding: calc(var(--u) * 40) calc(var(--u) * 24) calc(var(--u) * 24);
+  }
+
+  .landing-footer-inner {
+    flex-direction: column;
+    gap: calc(var(--u) * 24);
+  }
+
+  .footer-brand {
+    flex: none;
+    margin-right: 0;
+  }
+
+  .footer-links,
+  .footer-contact {
+    width: 100%;
   }
 }
 
 @media (max-width: 600px) {
-  .landing-header-wrapper { padding: 1rem 1rem 0; }
-  .landing-title { font-size: 2.2rem; }
-  .landing-section-title { font-size: 1.8rem; }
-  .landing-features-grid { grid-template-columns: 1fr; }
+  .footer-logo {
+    font-size: calc(var(--u) * 48);
+    line-height: calc(var(--u) * 72);
+  }
+
+  .footer-links h4,
+  .footer-contact h4 {
+    font-size: calc(var(--u) * 20);
+    line-height: calc(var(--u) * 30);
+  }
+
+  .footer-links a {
+    font-size: calc(var(--u) * 18);
+    line-height: calc(var(--u) * 28);
+  }
+
+  .footer-contact p {
+    font-size: calc(var(--u) * 16);
+    line-height: calc(var(--u) * 24);
+  }
+
+  .footer-bottom p {
+    font-size: calc(var(--u) * 14);
+    line-height: calc(var(--u) * 22);
+  }
 }
 
 /* ============================================================
@@ -5720,209 +5823,277 @@ body > .alert-success {
 }
 
 /* ============================================================
-      Popup edit materi 
+   POPUP EDIT MATERI — FORM, SUKSES, DAN GAGAL
    ============================================================ */
 
+html.edit-materi-modal-open,
+body.edit-materi-modal-open {
+  overflow: hidden;
+}
+
+/* Latar belakang popup */
 .edit-materi-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  overflow-y: auto;
-  background: rgba(20, 36, 48, 0.48);
+  padding: 16px;
+  background: rgba(27, 49, 61, 0.38);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
-.edit-materi-modal {
-  position: relative;
-  width: min(100%, 980px);
-  max-height: min(92vh, 1000px);
+/* Popup form edit: lebih kecil dan tingginya mengikuti isi */
+.edit-materi-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(700px, calc(100vw - 32px));
+  height: auto;
+  min-height: 0;
+  max-height: calc(100dvh - 32px);
+  padding: 18px 22px;
   overflow-y: auto;
-  border: 1px solid #e7eef3;
-  border-radius: 28px;
+  border: 2px solid #d7dfe4;
+  border-radius: 22px;
   background: #fff;
-  box-shadow: 0 24px 70px rgba(15, 40, 60, 0.22);
+  box-shadow: 0 16px 60px rgba(22, 54, 73, 0.18);
+  animation: editMateriPopIn 180ms ease-out;
 }
 
+/* Header */
 .edit-materi-header {
   display: flex;
+  min-height: 46px;
   align-items: center;
-  justify-content: space-between;
-  padding: 28px 34px;
-  border-bottom: 1px solid #dce5eb;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #d7dfe4;
 }
 
-.edit-materi-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.edit-materi-title-wrap h2 {
-  margin: 0;
-  color: #444;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-}
-
-.edit-materi-title-icon {
+.edit-materi-heading-icon {
   display: grid;
-  width: 76px;
-  height: 76px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
   place-items: center;
-  border-radius: 18px;
-  background: #eef8fd;
+  border-radius: 11px;
+  background: #edf8fe;
   color: #55b5ef;
 }
 
-.edit-materi-title-icon svg {
-  width: 38px;
-  height: 38px;
+.edit-materi-heading-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.edit-materi-header h2 {
+  margin: 0;
+  color: #414141;
+  font-size: 23px;
+  line-height: 1.2;
+  font-weight: 750;
 }
 
 .edit-materi-close {
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  padding: 4px;
   border: 0;
   background: transparent;
-  color: #454545;
-  font-size: 2.5rem;
-  line-height: 1;
+  color: #404040;
   cursor: pointer;
 }
 
+.edit-materi-close svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Form dan informasi materi */
 .edit-materi-form {
-  padding: 28px 34px 32px;
+  display: flex;
+  min-height: 0;
+  flex: 0 1 auto;
+  flex-direction: column;
 }
 
-.edit-materi-section {
-  padding-bottom: 28px;
-  border-bottom: 1px solid #e1eaf0;
+.edit-materi-section-title {
+  margin: 12px 0 8px;
+  color: #424242;
+  font-size: 19px;
+  line-height: 1.25;
+  font-weight: 750;
 }
 
-.edit-materi-section h3 {
-  margin: 0 0 24px;
-  color: #444;
-  font-size: 1.5rem;
-}
-
-.edit-materi-grid {
+.edit-materi-fields {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  padding: 0 4px 10px;
 }
 
 .edit-materi-field {
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-.edit-materi-field label {
-  color: #777;
-  font-size: 1rem;
+  gap: 4px;
+  color: #858585;
+  font-size: 13px;
   font-weight: 700;
 }
 
-.edit-materi-field label span {
-  color: #e32929;
+.edit-materi-field-full {
+  grid-column: 1 / -1;
+}
+
+.edit-materi-required {
+  color: #e52b2b;
 }
 
 .edit-materi-field input,
-.edit-materi-field select,
-.edit-materi-field textarea {
+.edit-materi-field select {
+  box-sizing: border-box;
   width: 100%;
-  min-height: 52px;
-  padding: 12px 16px;
-  border: 1.5px solid #dfebf2;
-  border-radius: 16px;
+  height: 38px;
+  padding: 0 11px;
+  border: 1.5px solid #e4edf3;
+  border-radius: 11px;
+  outline: none;
   background: #fff;
   color: #555;
   font: inherit;
+  font-size: 13px;
+  font-weight: 400;
 }
 
-.edit-materi-field textarea {
-  min-height: 90px;
-  resize: vertical;
+.edit-materi-field select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23cbd7e2' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
 }
 
 .edit-materi-field input:focus,
-.edit-materi-field select:focus,
-.edit-materi-field textarea:focus {
-  outline: none;
-  border-color: #55b5ef;
-  box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.14);
+.edit-materi-field select:focus {
+  border-color: #79c8f2;
+  box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.12);
 }
 
+/* File materi */
 .edit-materi-file-section {
-  padding-top: 28px;
+  padding: 9px 4px;
+  border-top: 1.5px solid #e1edf3;
+  border-bottom: 1.5px solid #e1edf3;
 }
 
-.edit-materi-file-box {
+.edit-materi-file-section h3 {
+  margin: 0 0 6px;
+  color: #454545;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.edit-materi-file-row {
   display: flex;
+  min-height: 54px;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px;
-  border-radius: 18px;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: 12px;
   background: #f8fbfd;
-}
-
-.edit-materi-file-info {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 16px;
 }
 
 .edit-materi-file-icon {
   display: grid;
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 42px;
   place-items: center;
-  border-radius: 14px;
-  background: #fee2e2;
-  color: #e32929;
+  border-radius: 9px;
 }
 
 .edit-materi-file-icon svg {
-  width: 34px;
-  height: 34px;
+  width: 27px;
+  height: 30px;
+}
+
+.edit-materi-file-icon--pdf {
+  background: #fee4e4;
+  color: #e52d2d;
+}
+
+.edit-materi-file-icon--docx {
+  background: #e7f5fd;
+  color: #55b5ef;
+}
+
+.edit-materi-file-icon--pptx {
+  background: #fff2cc;
+  color: #f0a000;
+}
+
+.edit-materi-file-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
 }
 
 .edit-materi-file-name {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 4px;
-  color: #555;
-}
-
-.edit-materi-file-name strong {
   overflow: hidden;
+  color: #4b4b4b;
+  font-size: 13px;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.edit-materi-file-name span,
-.edit-materi-file-hint {
-  color: #858d93;
-  font-size: 0.9rem;
+.edit-materi-file-type {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.edit-materi-file-type--pdf {
+  background: #fee4e4;
+  color: #dc2626;
+}
+
+.edit-materi-file-type--docx {
+  background: #e7f5fd;
+  color: #329ed6;
+}
+
+.edit-materi-file-type--pptx {
+  background: #fff2cc;
+  color: #df9200;
 }
 
 .edit-materi-change-file {
-  display: inline-flex;
-  min-height: 48px;
+  display: grid;
   flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  border: 1.5px solid #dfebf2;
-  border-radius: 14px;
-  color: #666;
+  min-width: 112px;
+  height: 36px;
+  margin-left: auto;
+  place-items: center;
+  border: 2px solid #e5edf2;
+  border-radius: 11px;
+  color: #7b7b7b;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.edit-materi-change-file:hover {
+  border-color: #87cef2;
+  color: #318ebd;
 }
 
 .edit-materi-change-file input {
@@ -5930,112 +6101,262 @@ body > .alert-success {
 }
 
 .edit-materi-file-hint {
-  margin: 10px 0 0;
+  margin: 5px 4px 0;
+  color: #858585;
+  font-size: 10px;
 }
 
-.edit-materi-error {
-  margin: 18px 0 0;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #b42323;
-}
-
+/* Tombol bawah */
 .edit-materi-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
-  padding-top: 28px;
+  gap: 9px;
+  margin-top: 12px;
+  padding-top: 8px;
 }
 
 .edit-materi-actions button {
-  min-width: 170px;
-  min-height: 52px;
-  padding: 12px 20px;
-  border-radius: 16px;
+  min-width: 112px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 11px;
   font: inherit;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
 }
 
-.edit-materi-actions button:disabled,
-.edit-materi-close:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
 .edit-materi-cancel {
-  border: 1.5px solid #dfebf2;
+  border: 2px solid #e5edf2;
   background: #fff;
-  color: #666;
+  color: #858585;
 }
 
 .edit-materi-save {
+  display: inline-flex;
+  min-width: 170px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 0;
   background: #55b5ef;
   color: #fff;
 }
 
-@media (max-width: 640px) {
-  .edit-materi-overlay {
-    align-items: flex-start;
-    padding: 12px;
+.edit-materi-save:hover:not(:disabled) {
+  background: #399fdc;
+}
+
+.edit-materi-save svg {
+  width: 18px;
+  height: 18px;
+}
+
+.edit-materi-actions button:disabled,
+.edit-materi-close:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* Popup hasil sukses atau gagal */
+.edit-materi-result {
+  box-sizing: border-box;
+  display: flex;
+  width: min(700px, calc(100vw - 32px));
+  min-height: min(500px, calc(100dvh - 32px));
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 4vw, 42px);
+  overflow: hidden;
+  border: 2px solid #d7dfe4;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 16px 60px rgba(22, 54, 73, 0.18);
+  text-align: center;
+  animation: editMateriPopIn 180ms ease-out;
+}
+
+.edit-materi-result-icon {
+  display: grid;
+  width: clamp(110px, 18vw, 170px);
+  height: clamp(110px, 18vw, 170px);
+  place-items: center;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.edit-materi-result-icon svg {
+  width: 68%;
+  height: 68%;
+}
+
+.edit-materi-result--success .edit-materi-result-icon {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.edit-materi-result--error .edit-materi-result-icon {
+  background: #fee2e2;
+  color: #e32626;
+}
+
+.edit-materi-result h2 {
+  margin: 0 0 12px;
+  color: #414141;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 750;
+}
+
+.edit-materi-result p {
+  max-width: 520px;
+  margin: 0;
+  color: #858585;
+  font-size: clamp(14px, 2vw, 18px);
+  line-height: 1.45;
+}
+
+/* Animasi popup */
+@keyframes editMateriPopIn {
+  from {
+    transform: scale(0.98);
+    opacity: 0;
   }
 
-  .edit-materi-modal {
-    max-height: 96vh;
-    border-radius: 20px;
-  }
-
-  .edit-materi-header {
-    padding: 18px;
-  }
-
-  .edit-materi-title-icon {
-    width: 54px;
-    height: 54px;
-  }
-
-  .edit-materi-title-icon svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  .edit-materi-title-wrap {
-    gap: 12px;
-  }
-
-  .edit-materi-form {
-    padding: 20px 18px;
-  }
-
-  .edit-materi-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .edit-materi-file-box {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .edit-materi-actions {
-    flex-direction: column-reverse;
-  }
-
-  .edit-materi-actions button {
-    width: 100%;
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* CSS khusus popup konfirmasi hapus materi. */
+/* Penyesuaian popup untuk layar desktop yang pendek */
+@media (max-height: 760px) and (min-width: 701px) {
+  .edit-materi-dialog {
+    padding: 13px 18px;
+  }
+
+  .edit-materi-header {
+    min-height: 40px;
+    padding-bottom: 7px;
+  }
+
+  .edit-materi-heading-icon {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .edit-materi-heading-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .edit-materi-section-title {
+    margin: 8px 0 6px;
+  }
+
+  .edit-materi-fields {
+    gap: 6px 10px;
+    padding-bottom: 7px;
+  }
+
+  .edit-materi-field input,
+  .edit-materi-field select {
+    height: 35px;
+  }
+
+  .edit-materi-file-section {
+    padding: 7px 4px;
+  }
+
+  .edit-materi-file-row {
+    min-height: 48px;
+  }
+
+  .edit-materi-actions {
+    margin-top: 8px;
+    padding-top: 6px;
+  }
+
+  .edit-materi-actions button {
+    height: 35px;
+  }
+}
+
+/* Penyesuaian untuk layar kecil */
+@media (max-width: 700px) {
+  .edit-materi-overlay {
+    align-items: center;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .edit-materi-dialog {
+    width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 15px;
+    overflow-y: auto;
+  }
+
+  .edit-materi-header {
+    min-height: 42px;
+  }
+
+  .edit-materi-heading-icon {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .edit-materi-header h2 {
+    font-size: 20px;
+  }
+
+  .edit-materi-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-materi-file-row {
+    flex-wrap: wrap;
+  }
+
+  .edit-materi-file-meta {
+    flex: 1 1 calc(100% - 60px);
+  }
+
+  .edit-materi-change-file {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+
+  .edit-materi-actions button {
+    min-width: 0;
+  }
+
+  .edit-materi-save {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .edit-materi-result {
+    width: 100%;
+    min-height: 55vh;
+    padding: 22px 16px;
+  }
+}
+
+/* ==============================================================
+   POPUP KONFIRMASI HAPUS MATERI — UKURAN LEBIH KECIL
+   ============================================================== */
+
 .hapus-materi-overlay {
   position: fixed;
   inset: 0;
   z-index: 11000;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 16px;
   background: rgba(24, 36, 44, 0.28);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -6044,22 +6365,22 @@ body > .alert-success {
 .hapus-materi-dialog {
   position: relative;
   box-sizing: border-box;
-  width: min(680px, 100%);
-  padding: 42px 48px 36px;
+  width: min(560px, 100%);
+  padding: 30px 32px 26px;
   border: 2px solid #d5dce0;
-  border-radius: 24px;
+  border-radius: 22px;
   background: #fff;
-  box-shadow: 0 20px 60px rgba(20, 48, 64, 0.18);
+  box-shadow: 0 16px 44px rgba(20, 48, 64, 0.18);
   text-align: center;
 }
 
 .hapus-materi-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 12px;
+  right: 12px;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   place-items: center;
   padding: 0;
   border: 0;
@@ -6069,8 +6390,8 @@ body > .alert-success {
 }
 
 .hapus-materi-close svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   stroke: currentColor;
   stroke-width: 2.5;
   stroke-linecap: round;
@@ -6078,9 +6399,9 @@ body > .alert-success {
 
 .hapus-materi-icon {
   display: grid;
-  width: 112px;
-  height: 112px;
-  margin: 0 auto 24px;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
   place-items: center;
   border-radius: 50%;
   background: #fee2e2;
@@ -6088,8 +6409,8 @@ body > .alert-success {
 }
 
 .hapus-materi-icon svg {
-  width: 58px;
-  height: 58px;
+  width: 46px;
+  height: 46px;
   stroke: currentColor;
   stroke-width: 2.4;
   stroke-linecap: round;
@@ -6097,9 +6418,9 @@ body > .alert-success {
 }
 
 .hapus-materi-dialog h2 {
-  margin: 0 0 22px;
+  margin: 0 0 16px;
   color: #414141;
-  font-size: clamp(25px, 3vw, 34px);
+  font-size: clamp(23px, 3vw, 29px);
   line-height: 1.2;
   font-weight: 700;
 }
@@ -6108,7 +6429,7 @@ body > .alert-success {
 .hapus-materi-name,
 .hapus-materi-warning {
   margin: 0;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: clamp(15px, 1.8vw, 17px);
   line-height: 1.45;
 }
 
@@ -6125,7 +6446,7 @@ body > .alert-success {
 }
 
 .hapus-materi-warning {
-  margin-top: 10px;
+  margin-top: 8px;
   font-style: italic;
 }
 
@@ -6135,31 +6456,31 @@ body > .alert-success {
 }
 
 .hapus-materi-error {
-  margin: 16px 0 0;
-  padding: 10px 12px;
-  border-radius: 10px;
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border-radius: 9px;
   background: #fee2e2;
   color: #b91c1c;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .hapus-materi-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-top: 34px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .hapus-materi-actions button {
   display: inline-flex;
-  min-height: 58px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 15px;
   font: inherit;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.15s ease;
@@ -6175,7 +6496,7 @@ body > .alert-success {
 }
 
 .hapus-materi-cancel {
-  border: 3px solid #e6eef2;
+  border: 2px solid #e6eef2;
   background: #fff;
   color: #858585;
 }
@@ -6185,7 +6506,7 @@ body > .alert-success {
 }
 
 .hapus-materi-confirm {
-  border: 3px solid #e52222;
+  border: 2px solid #e52222;
   background: #e52222;
   color: #fff;
 }
@@ -6196,8 +6517,8 @@ body > .alert-success {
 }
 
 .hapus-materi-confirm svg {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
@@ -6206,41 +6527,42 @@ body > .alert-success {
 
 @media (max-width: 600px) {
   .hapus-materi-overlay {
-    padding: 14px;
+    padding: 12px;
   }
 
   .hapus-materi-dialog {
-    padding: 38px 20px 22px;
-    border-radius: 20px;
+    width: 100%;
+    padding: 30px 18px 20px;
+    border-radius: 18px;
   }
 
   .hapus-materi-close {
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
   }
 
   .hapus-materi-icon {
-    width: 88px;
-    height: 88px;
-    margin-bottom: 18px;
+    width: 76px;
+    height: 76px;
+    margin-bottom: 16px;
   }
 
   .hapus-materi-icon svg {
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
   }
 
   .hapus-materi-actions {
-    gap: 10px;
-    margin-top: 24px;
+    gap: 8px;
+    margin-top: 20px;
   }
 
   .hapus-materi-actions button {
-    min-height: 50px;
-    padding: 8px;
-    border-radius: 14px;
-    font-size: 16px;
+    min-height: 44px;
+    padding: 7px;
+    border-radius: 12px;
+    font-size: 15px;
   }
 }
