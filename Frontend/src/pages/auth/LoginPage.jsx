@@ -42,6 +42,7 @@ export default function LoginPage() {
     setSuccess('');
 
     const nim = form.nim.trim();
+
     const nextErrors = {
       nim: validateNimLogin(nim),
       password: form.password ? '' : 'Password wajib diisi.',
@@ -75,11 +76,36 @@ export default function LoginPage() {
         );
       }, 1200);
     } catch (error) {
-      setServerError(
+      const message =
         error instanceof ApiError
           ? error.message
-          : 'Gagal terhubung ke server, periksa koneksi Anda.',
-      );
+          : String(error?.message || '');
+
+      const status =
+        error?.status ??
+        error?.statusCode ??
+        error?.response?.status;
+
+      const passwordDitolak =
+        status === 401 ||
+        status === 403 ||
+        /password salah|password tidak cocok|password incorrect|invalid credentials|string should have at least 8 characters/i.test(
+          message,
+        );
+
+      if (passwordDitolak) {
+        setErrors((current) => ({
+          ...current,
+          password: 'Password Salah!',
+        }));
+        setServerError('');
+      } else {
+        setServerError(
+          error instanceof ApiError
+            ? message || 'Terjadi kesalahan saat login.'
+            : 'Gagal terhubung ke server, periksa koneksi Anda.',
+        );
+      }
     } finally {
       setLoading(false);
     }
