@@ -1,6 +1,5 @@
-
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const REQUEST_TIMEOUT_MS = 15_000;
 
 const PUBLIC_PATHS = ['/auth/login', '/auth/registrasi'];
 
@@ -25,19 +24,57 @@ export async function request(path, options = {}) {
     ...options.headers,
   };
 
+  const controller = new AbortController();
+  let timedOut = false;
+
+  // Hormati AbortSignal dari pemanggil jika tersedia.
+  const externalSignal = options.signal;
+  const abortFromExternalSignal = () => controller.abort();
+
+  if (externalSignal?.aborted) {
+    controller.abort();
+  } else {
+    externalSignal?.addEventListener('abort', abortFromExternalSignal);
+  }
+
+  const timeoutId = window.setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, REQUEST_TIMEOUT_MS);
+
   let response;
 
   try {
     response = await fetch(`${BASE_URL}${path}`, {
       ...options,
       headers,
+      signal: controller.signal,
     });
   } catch (error) {
+    if (timedOut) {
+      throw new ApiError(
+        'Koneksi terlalu lambat. Periksa jaringan Anda, lalu coba lagi.',
+        0,
+        error,
+      );
+    }
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      throw new ApiError(
+        'Periksa koneksi jaringan Anda, lalu coba registrasi kembali.',
+        0,
+        error,
+      );
+    }
+
     throw new ApiError(
-      'Gagal terhubung ke server. Pastikan Backend sedang berjalan.',
+      'Gagal terhubung ke server. Periksa koneksi jaringan Anda dan pastikan backend tersedia.',
       0,
-      error
+      error,
     );
+  } finally {
+    window.clearTimeout(timeoutId);
+    externalSignal?.removeEventListener('abort', abortFromExternalSignal);
   }
 
   let data = null;
@@ -69,11 +106,12 @@ export async function request(path, options = {}) {
     throw new ApiError(message, response.status, data);
   }
 
-  // 204 (mis. DELETE) memang tidak punya body. Selain itu, body wajib JSON.
+  // Response 204 memang tidak memiliki body.
+  // Response sukses lainnya harus mengembalikan JSON.
   if (response.status !== 204 && data === null) {
     throw new ApiError(
       'Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.',
-      response.status
+      response.status,
     );
   }
 
@@ -86,22 +124,36 @@ export const api = {
   },
 
   post(path, body) {
-    return request(path, { method: 'POST', body: JSON.stringify(body) });
+    return request(path, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
   },
 
   postFormData(path, body) {
-    return request(path, { method: 'POST', body });
+    return request(path, {
+      method: 'POST',
+      body,
+    });
   },
 
   put(path, body) {
-    return request(path, { method: 'PUT', body: JSON.stringify(body) });
+    return request(path, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
   },
 
   putFormData(path, body) {
-    return request(path, { method: 'PUT', body });
+    return request(path, {
+      method: 'PUT',
+      body,
+    });
   },
 
   delete(path) {
-    return request(path, { method: 'DELETE' });
+    return request(path, {
+      method: 'DELETE',
+    });
   },
 };
