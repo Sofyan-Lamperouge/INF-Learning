@@ -21,6 +21,19 @@ import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
 const PAGE_SIZE = 20;
 
+// Backend menyimpan file dengan nama acak (uuid), jadi nama asli tidak tersedia.
+// Untuk tampilan, nama file dibuat dari judul materi + ekstensi, mis. "pengantar_algoritma.pdf".
+function namaFileTampil(materi) {
+  const slug = String(materi.judul || "materi")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 30);
+  return `${slug || "materi"}.${String(materi.jenis || "").toLowerCase()}`;
+}
+
 export default function MateriPage() {
   const [loading, setLoading] = useState(true); // skeleton hanya untuk load pertama
   const [error, setError] = useState("");
@@ -98,12 +111,12 @@ export default function MateriPage() {
   }
 
   // Semester kini berupa angka dari backend
-  const getSemesterBadge = (s) => `badge-s${s >= 1 && s <= 5 ? s : 1}`;
+  const getSemesterBadge = (s) => `badge-s${s >= 1 && s <= 8 ? s : 1}`;
 
   return (
     <DashboardLayout>
       <div className="materi-container">
-        {/* === 1. KARTU HEADER MATERI KULIAH === */}
+        {/* === 1. HEADER MATERI KULIAH (satu kartu dengan filter & tabel) === */}
         <div className="materi-header-card">
           <div className="materi-header-left">
             <div className="materi-icon-bg">
@@ -259,17 +272,21 @@ export default function MateriPage() {
           </div>
         </div>
 
-        {error && <ErrorMessage message={error} />}
+        {error && (
+          <div className="materi-error-wrap">
+            <ErrorMessage message={error} />
+          </div>
+        )}
 
         {/* === 3. TABEL DATA MATERI === */}
         <div className="materi-table-card">
           <table className="materi-table">
             <thead>
               <tr>
-                <th width="5%">No</th>
-                <th width="20%">Semester</th>
-                <th width="25%">Mata Kuliah</th>
-                <th width="40%">Nama Materi</th>
+                <th width="6%">No</th>
+                <th width="16%">Semester</th>
+                <th width="22%">Mata Kuliah</th>
+                <th width="26%">Nama Materi</th>
                 <th width="20%">File</th>
                 <th width="10%">Aksi</th>
               </tr>
@@ -294,16 +311,21 @@ export default function MateriPage() {
                         Semester {materi.semester}
                       </span>
                     </td>
-                    <td style={{ color: "#6b7280" }}>{materi.mata_kuliah}</td>
-                    <td style={{ color: "#4b5563" }}>{materi.judul}</td>
-                    <td style={{ color: "#6b7280" }}>
-                      <a href={materi.url} target="_blank" rel="noreferrer">
-                        {materi.jenis.toUpperCase()}
+                    <td className="materi-cell-matkul">{materi.mata_kuliah}</td>
+                    <td className="materi-cell-judul">{materi.judul}</td>
+                    <td className="materi-cell-file">
+                      <a
+                        href={materi.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Buka file materi"
+                      >
+                        {namaFileTampil(materi)}
                       </a>
                     </td>
                     <td>
                       {/*  3. Tombol Edit & Hapus dengan SVG */}
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <div className="materi-actions">
                         <button
                           type="button"
                           onClick={() => setEditingMateri(materi)}
@@ -319,8 +341,8 @@ export default function MateriPage() {
                           }}
                         >
                           <svg
-                            width="20"
-                            height="20"
+                            width="26"
+                            height="24"
                             viewBox="0 0 30 26"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -348,18 +370,12 @@ export default function MateriPage() {
                           }}
                         >
                           <svg
-                            width="24"
-                            height="24"
+                            width="28"
+                            height="28"
                             viewBox="0 0 50 50"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >
-                            <rect
-                              width="50"
-                              height="50"
-                              rx="18"
-                              fill="#FEE2E2"
-                            />
                             <path
                               d="M16.5625 16.5625L17.7344 35.3125C17.79 36.3959 18.5781 37.1875 19.6094 37.1875H30.3906C31.426 37.1875 32.1994 36.3959 32.2656 35.3125L33.4375 16.5625"
                               strokeWidth="2"

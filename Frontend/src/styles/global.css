@@ -5016,34 +5016,38 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 /* ============================================================
    MATERI PAGE (Dashboard Admin)
    ============================================================ */
-
-/* Container Utama */
+ 
+/* Container Utama: satu kartu putih berisi header, filter, tabel, paginasi */
 .materi-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid #e3eef7;
+  box-shadow: 0 4px 12px rgba(30, 90, 140, 0.06);
+  overflow: hidden;
 }
-
-/* --- Header Card --- */
+ 
+/* --- Header --- */
 .materi-header-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid #e9f0f6;
 }
-
+ 
 .materi-header-left {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
+ 
 .materi-icon-bg {
   width: 56px;
   height: 56px;
+  flex-shrink: 0;
   background: #eaf5fc;
   border-radius: 12px;
   display: flex;
@@ -5051,123 +5055,177 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   justify-content: center;
   color: #1e6f9e;
 }
-
+ 
 .materi-title h2 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 0.25rem;
 }
-
+ 
 .materi-title p {
   font-size: 0.85rem;
   color: #6b7280;
   margin: 0;
 }
-
+ 
 .btn-upload-materi {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   background: #55b5ef;
   color: #ffffff;
-  padding: 0.65rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.7rem 1.5rem;
+  border-radius: 14px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
   transition: background 0.2s ease;
 }
-
+ 
 .btn-upload-materi:hover {
   background: #3aa8e0;
 }
-
+ 
 /* --- Filter Bar --- */
 .materi-filter-bar {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
   gap: 1rem;
+  padding: 1.25rem 1.75rem;
+  background: #f8fbfe;
 }
-
+ 
 .filter-item {
   position: relative;
   display: flex;
   align-items: center;
 }
-
+ 
 .filter-item select,
 .filter-item input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  height: 48px;
+  padding: 0 1.1rem;
+  border: 1px solid #e3eef7;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 0.95rem;
   color: #404040;
   background: #ffffff;
   outline: none;
   appearance: none; /* Hilangkan panah default select */
 }
-
+ 
 .filter-item select {
-  padding-right: 2.5rem;
+  padding-right: 2.75rem;
+  font-weight: 500;
   cursor: pointer;
 }
-
+ 
 .filter-item .icon-dropdown {
   position: absolute;
   right: 1rem;
   color: #9ca3af;
   pointer-events: none;
 }
-
+ 
 .filter-item .icon-search {
   position: absolute;
   left: 1rem;
   color: #9ca3af;
 }
-
+ 
 .filter-item input {
-  padding-left: 2.5rem;
+  padding-left: 2.75rem;
 }
-
+ 
+.filter-item input::placeholder {
+  color: #94a3b8;
+}
+ 
 .filter-item input:focus,
 .filter-item select:focus {
   border-color: #7ec8f5;
   box-shadow: 0 0 0 3px rgba(126, 200, 245, 0.2);
 }
-
-/* --- Tabel Card --- */
+ 
+.materi-error-wrap {
+  padding: 0 1.75rem 1rem;
+  background: #f8fbfe;
+}
+ 
+.materi-error-wrap > * {
+  margin: 0;
+}
+ 
+/* --- Tabel --- */
 .materi-table-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow: hidden; /* Agar border-radius bekerja di tabel */
+  background: #f8fbfe;
 }
-
+ 
 .materi-table {
-  width: 100%;
+  width: calc(100% - 3.5rem);
+  margin: 0.25rem 1.75rem 1.5rem;
   border-collapse: collapse;
+  background: #ffffff;
+  border: 1px solid #e3eef7;
 }
-
+ 
 .materi-table th {
-  background: #f8fafc;
-  color: #1a1a1a;
-  font-weight: 700;
-  font-size: 0.85rem;
+  background: #eef6fc;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
   text-align: left;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid #e3eef7;
 }
-
+ 
 .materi-table td {
-  padding: 1rem 1.5rem;
-  font-size: 0.85rem;
-  color: #4b5563;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 1.1rem 1rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  border-bottom: 1px solid #eef2f6;
+  vertical-align: middle;
 }
-
+ 
+.materi-table tbody tr:last-child td {
+  border-bottom: none;
+}
+ 
+.materi-table tbody tr:hover td {
+  background: #fafdff;
+}
+ 
+.materi-cell-judul {
+  font-weight: 600;
+  color: #4b5563 !important;
+}
+ 
+.materi-cell-file a {
+  color: #6b7280;
+  text-decoration: none;
+  word-break: break-all;
+}
+ 
+.materi-cell-file a:hover {
+  color: #2f9fe0;
+  text-decoration: underline;
+}
+ 
+.materi-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+ 
+.materi-actions button:hover {
+  opacity: 0.75;
+}
+ 
 /* Empty State (Saat Data Kosong) */
 .materi-empty-state {
   text-align: center;
@@ -5175,75 +5233,97 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   color: #6b7280;
   font-style: italic;
 }
-
+ 
 /* Badge Semester */
 .badge-semester {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: 0.3rem 0.9rem;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #ffffff;
   white-space: nowrap;
 }
-.badge-s1 { background: #ef4444; } /* Merah */
-.badge-s2 { background: #f59e0b; } /* Orange */
-.badge-s3 { background: #eab308; } /* Kuning */
-.badge-s4 { background: #10b981; } /* Hijau */
-.badge-s5 { background: #14b8a6; } /* Teal */
-
+.badge-s1 { background: #ff3b47; } /* Merah */
+.badge-s2 { background: #ff8a1f; } /* Orange */
+.badge-s3 { background: #ffc800; } /* Kuning */
+.badge-s4 { background: #34c759; } /* Hijau */
+.badge-s5 { background: #00c9a7; } /* Teal */
+.badge-s6 { background: #3b9eff; } /* Biru */
+.badge-s7 { background: #8b5cf6; } /* Ungu */
+.badge-s8 { background: #ec4899; } /* Pink */
+ 
 /* --- Footer Paginasi --- */
 .materi-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  padding: 1.1rem 1.75rem;
+  border-top: 1px solid #e9f0f6;
+  background: #ffffff;
 }
-
+ 
 .pagination-text {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #6b7280;
 }
-
+ 
 .pagination-buttons {
   display: flex;
   gap: 0.5rem;
 }
-
+ 
 .btn-page {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  border: 1px solid #e3eef7;
   background: #ffffff;
   color: #6b7280;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
 }
-
+ 
 .btn-page:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: #f3f8fc;
 }
-
+ 
 .btn-page.active {
   background: #55b5ef;
   color: #ffffff;
   border-color: #55b5ef;
 }
-
+ 
 .btn-page:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
+ 
+@media (max-width: 900px) {
+  .materi-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .materi-filter-bar {
+    grid-template-columns: 1fr;
+  }
+  .materi-table-card {
+    overflow-x: auto;
+  }
+  .materi-table {
+    min-width: 760px;
+  }
+}
+ 
 /* ============================================================
    UPLOAD MATERI PAGE (DESAIN BARU - MENYATU)
    ============================================================ */
-
+ 
 /* 1. Kartu Utama */
 .upload-main-card {
   background: #ffffff;
@@ -5254,7 +5334,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   flex-direction: column;
   width: 100%;
 }
-
+ 
 /* 2. Header */
 .upload-header-inner {
   padding: 1.5rem 2rem;
@@ -5262,7 +5342,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   display: flex;
   align-items: center;
 }
-
+ 
 /* 3. Stepper (1-2-3) */
 .upload-stepper {
   display: flex;
@@ -5270,13 +5350,13 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   justify-content: center;
   padding: 1.5rem 3rem;
 }
-
+ 
 .step-item {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
+ 
 .step-circle {
   width: 40px;
   height: 40px;
@@ -5289,24 +5369,24 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   align-items: center;
   justify-content: center;
 }
-
+ 
 .step-item.active .step-circle {
   background: #d1d5db;
   color: #4b5563;
 }
-
+ 
 .step-line {
   flex: 1;
   height: 2px;
   background: #e5e7eb;
   margin: 0 1rem;
 }
-
+ 
 /* 4. Konten Form */
 .upload-form-content {
   padding: 2rem 3rem;
 }
-
+ 
 /* Kotak Abu-abu */
 /* Mengatur input Nama Materi */
 .upload-input {
@@ -5321,24 +5401,24 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
 }
-
+ 
 /* Efek saat di-klik (fokus): Border biru tipis tanpa efek glow yang tebal */
 .upload-input:focus {
   border-color: #7ec8f5 !important; 
   box-shadow: 0 0 0 2px rgba(126, 200, 245, 0.2) !important;
 }
-
+ 
 /* Warna placeholder */
 .upload-input::placeholder {
   color: #9ca3af;
 }
-
+ 
 .upload-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
-
+ 
 /* 5. Tombol Aksi Bawah */
 .upload-actions {
   display: flex;
@@ -5347,7 +5427,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   padding: 1.5rem 3rem;
   border-top: 1px solid #e5e7eb;
 }
-
+ 
 .btn-kembali {
   padding: 0.75rem 2rem;
   border: 1px solid #e5e7eb;
@@ -5360,7 +5440,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   transition: all 0.2s;
 }
 .btn-kembali:hover { background: #f3f4f6; color: #1f2937; text-decoration: none; }
-
+ 
 .btn-lanjutkan {
   padding: 0.75rem 2rem;
   border: none;
@@ -5373,7 +5453,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   transition: background 0.2s;
 }
 .btn-lanjutkan:hover { background: #3aa8e0; }
-
+ 
 /* 6. Tombol Pilih File */
 .btn-pilih-file {
   background: #e5e7eb !important;
@@ -5388,7 +5468,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   transition: all 0.2s;
 }
 .btn-pilih-file:hover { background: #d1d5db !important; color: #374151 !important; }
-
+ 
 @media (max-width: 768px) {
   .upload-grid-2 {
     grid-template-columns: 1fr;
@@ -5397,8 +5477,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
     flex-direction: column;
     align-items: stretch;
   }
-}
-
+}  
 /* ============================================================
    DASHBOARD SKELETON
    ============================================================ */
@@ -6079,6 +6158,9 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 
 /* ============================================================
    POPUP EDIT MATERI — FORM, SUKSES, DAN GAGAL
+   (ganti seluruh blok lama "POPUP EDIT MATERI" di global.css)
+   Ukuran mengikuti desain Figma 774 x 902 lewat variabel --u
+   (1 satuan = 1px Figma, mengecil otomatis di layar kecil).
    ============================================================ */
 
 html.edit-materi-modal-open,
@@ -6086,7 +6168,7 @@ body.edit-materi-modal-open {
   overflow: hidden;
 }
 
-/* Latar belakang popup */
+/* Latar belakang popup: tipis & blur kuat seperti di Figma */
 .edit-materi-overlay {
   position: fixed;
   inset: 0;
@@ -6095,71 +6177,75 @@ body.edit-materi-modal-open {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(27, 49, 61, 0.38);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* Popup form edit: lebih kecil dan tingginya mengikuti isi */
+/* ---------- Kotak popup form ---------- */
 .edit-materi-dialog {
+  --u: max(
+    0.5px,
+    min(0.9px, calc((100vw - 32px) / 774), calc((100dvh - 48px) / 980))
+  );
+  position: relative;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  width: min(700px, calc(100vw - 32px));
-  height: auto;
-  min-height: 0;
+  width: min(calc(var(--u) * 774), calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
-  padding: 18px 22px;
-  overflow-y: auto;
-  border: 2px solid #d7dfe4;
-  border-radius: 22px;
+  padding: calc(var(--u) * 32) calc(var(--u) * 32) calc(var(--u) * 44);
+  overflow: hidden;
+  border: 2px solid #d5dce0;
+  border-radius: calc(var(--u) * 30);
   background: #fff;
-  box-shadow: 0 16px 60px rgba(22, 54, 73, 0.18);
+  box-shadow: 0 20px 60px rgba(22, 54, 73, 0.16);
   animation: editMateriPopIn 180ms ease-out;
 }
 
-/* Header */
+/* ---------- Header ---------- */
 .edit-materi-header {
   display: flex;
-  min-height: 46px;
   align-items: center;
-  gap: 10px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #d7dfe4;
+  gap: calc(var(--u) * 20);
+  padding-bottom: calc(var(--u) * 28);
+  border-bottom: 2px solid #d5dce0;
 }
 
 .edit-materi-heading-icon {
   display: grid;
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
+  flex: 0 0 calc(var(--u) * 80);
+  width: calc(var(--u) * 80);
+  height: calc(var(--u) * 80);
   place-items: center;
-  border-radius: 11px;
-  background: #edf8fe;
-  color: #55b5ef;
+  border-radius: calc(var(--u) * 18);
+  background: #edf7fd;
+  color: #1f6e9f;
 }
 
 .edit-materi-heading-icon svg {
-  width: 28px;
-  height: 28px;
+  width: calc(var(--u) * 48);
+  height: calc(var(--u) * 48);
 }
 
 .edit-materi-header h2 {
   margin: 0;
-  color: #414141;
-  font-size: 23px;
+  color: #404040;
+  font-size: calc(var(--u) * 28);
   line-height: 1.2;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .edit-materi-close {
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
-  padding: 4px;
+  position: absolute;
+  top: calc(var(--u) * 23);
+  right: calc(var(--u) * 23);
+  width: calc(var(--u) * 32);
+  height: calc(var(--u) * 32);
+  padding: 0;
   border: 0;
   background: transparent;
-  color: #404040;
+  color: #333;
   cursor: pointer;
 }
 
@@ -6168,37 +6254,42 @@ body.edit-materi-modal-open {
   height: 100%;
 }
 
-/* Form dan informasi materi */
+/* ---------- Form & informasi materi ---------- */
 .edit-materi-form {
   display: flex;
-  min-height: 0;
-  flex: 0 1 auto;
   flex-direction: column;
 }
 
 .edit-materi-section-title {
-  margin: 12px 0 8px;
-  color: #424242;
-  font-size: 19px;
+  margin: calc(var(--u) * 40) 0 0 calc(var(--u) * 17);
+  color: #404040;
+  font-size: calc(var(--u) * 24);
   line-height: 1.25;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .edit-materi-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 12px;
-  padding: 0 4px 10px;
+  gap: calc(var(--u) * 21) calc(var(--u) * 21);
+  margin-top: calc(var(--u) * 40);
+  padding: 0 calc(var(--u) * 10);
 }
 
 .edit-materi-field {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 4px;
-  color: #858585;
-  font-size: 13px;
-  font-weight: 700;
+  gap: calc(var(--u) * 12);
+  padding-left: 0;
+  color: #7a7a7a;
+  font-size: calc(var(--u) * 20);
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.edit-materi-field > span {
+  padding-left: calc(var(--u) * 10);
 }
 
 .edit-materi-field-full {
@@ -6206,144 +6297,159 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-required {
-  color: #e52b2b;
+  color: #e11d1d;
 }
 
 .edit-materi-field input,
 .edit-materi-field select {
   box-sizing: border-box;
   width: 100%;
-  height: 38px;
-  padding: 0 11px;
-  border: 1.5px solid #e4edf3;
-  border-radius: 11px;
+  height: calc(var(--u) * 57);
+  padding: 0 calc(var(--u) * 21);
+  border: 1.5px solid #e3ecf3;
+  border-radius: calc(var(--u) * 22);
   outline: none;
   background: #fff;
-  color: #555;
+  color: #6b6b6b;
   font: inherit;
-  font-size: 13px;
+  font-size: calc(var(--u) * 18);
   font-weight: 400;
 }
 
 .edit-materi-field select {
   appearance: none;
-  padding-right: 36px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23cbd7e2' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  padding-right: calc(var(--u) * 56);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c2cfdc' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 9 7 7 7-7'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 11px center;
+  background-position: right calc(var(--u) * 20) center;
+  background-size: calc(var(--u) * 26);
+  cursor: pointer;
 }
 
 .edit-materi-field input:focus,
 .edit-materi-field select:focus {
   border-color: #79c8f2;
-  box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.12);
+  box-shadow: 0 0 0 3px rgba(85, 181, 239, 0.14);
 }
 
-/* File materi */
+/* ---------- File materi ---------- */
 .edit-materi-file-section {
-  padding: 9px 4px;
-  border-top: 1.5px solid #e1edf3;
-  border-bottom: 1.5px solid #e1edf3;
+  margin-top: calc(var(--u) * 43);
+  padding: calc(var(--u) * 30) calc(var(--u) * 10) calc(var(--u) * 30);
+  border-top: 1px solid #e8eef2;
+  border-bottom: 1px solid #e8eef2;
 }
 
 .edit-materi-file-section h3 {
-  margin: 0 0 6px;
-  color: #454545;
-  font-size: 16px;
-  font-weight: 750;
+  margin: 0 0 calc(var(--u) * 11) calc(var(--u) * 10);
+  color: #404040;
+  font-size: calc(var(--u) * 21);
+  line-height: 1.3;
+  font-weight: 700;
 }
 
 .edit-materi-file-row {
   display: flex;
-  min-height: 54px;
   align-items: center;
-  gap: 9px;
-  padding: 7px 9px;
-  border-radius: 12px;
-  background: #f8fbfd;
+  gap: calc(var(--u) * 20);
+  padding: calc(var(--u) * 14) calc(var(--u) * 20);
+  border-radius: calc(var(--u) * 24);
+  background: #f9fbfd;
 }
 
 .edit-materi-file-icon {
+  --icon-fill: #f6b9b9;
   display: grid;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 42px;
+  flex: 0 0 calc(var(--u) * 70);
+  width: calc(var(--u) * 70);
+  height: calc(var(--u) * 70);
   place-items: center;
-  border-radius: 9px;
+  border-radius: calc(var(--u) * 15);
 }
 
 .edit-materi-file-icon svg {
-  width: 27px;
-  height: 30px;
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 40);
+}
+
+.edit-materi-file-icon svg path:first-child {
+  fill: var(--icon-fill);
 }
 
 .edit-materi-file-icon--pdf {
-  background: #fee4e4;
-  color: #e52d2d;
+  --icon-fill: #f6b9b9;
+  background: #fde0e0;
+  color: #e11d1d;
 }
 
 .edit-materi-file-icon--docx {
-  background: #e7f5fd;
-  color: #55b5ef;
+  --icon-fill: #b9def5;
+  background: #e1f1fc;
+  color: #2b8fd0;
 }
 
 .edit-materi-file-icon--pptx {
-  background: #fff2cc;
-  color: #f0a000;
+  --icon-fill: #fbdf9a;
+  background: #fff1cc;
+  color: #e09400;
 }
 
 .edit-materi-file-meta {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 7px;
+  gap: calc(var(--u) * 12);
 }
 
 .edit-materi-file-name {
   overflow: hidden;
-  color: #4b4b4b;
-  font-size: 13px;
-  font-weight: 600;
+  color: #404040;
+  font-size: calc(var(--u) * 20);
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .edit-materi-file-type {
   flex: 0 0 auto;
-  padding: 3px 8px;
+  padding: calc(var(--u) * 3) calc(var(--u) * 12);
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: calc(var(--u) * 16);
+  line-height: 1.3;
+  font-weight: 500;
 }
 
 .edit-materi-file-type--pdf {
-  background: #fee4e4;
-  color: #dc2626;
+  background: #fde3e3;
+  color: #e11d1d;
 }
 
 .edit-materi-file-type--docx {
-  background: #e7f5fd;
-  color: #329ed6;
+  background: #e1f1fc;
+  color: #2b8fd0;
 }
 
 .edit-materi-file-type--pptx {
-  background: #fff2cc;
-  color: #df9200;
+  background: #fff1cc;
+  color: #d98f00;
 }
 
 .edit-materi-change-file {
   display: grid;
   flex: 0 0 auto;
-  min-width: 112px;
-  height: 36px;
+  width: calc(var(--u) * 186);
+  height: calc(var(--u) * 53);
   margin-left: auto;
   place-items: center;
-  border: 2px solid #e5edf2;
-  border-radius: 11px;
-  color: #7b7b7b;
-  font-size: 12px;
-  font-weight: 700;
+  border: 2px solid #e4edf4;
+  border-radius: calc(var(--u) * 27);
+  background: #fff;
+  color: #858585;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
   cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .edit-materi-change-file:hover {
@@ -6356,43 +6462,48 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-file-hint {
-  margin: 5px 4px 0;
-  color: #858585;
-  font-size: 10px;
+  margin: calc(var(--u) * 10) 0 0 calc(var(--u) * 10);
+  color: #7a7a7a;
+  font-size: calc(var(--u) * 13);
 }
 
-/* Tombol bawah */
+/* ---------- Tombol bawah ---------- */
 .edit-materi-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 9px;
-  margin-top: 12px;
-  padding-top: 8px;
+  gap: calc(var(--u) * 20);
+  padding: calc(var(--u) * 56) calc(var(--u) * 10) 0;
 }
 
 .edit-materi-actions button {
-  min-width: 112px;
-  height: 38px;
-  padding: 0 12px;
-  border-radius: 11px;
+  height: calc(var(--u) * 54);
+  padding: 0 calc(var(--u) * 10);
+  border-radius: calc(var(--u) * 24);
   font: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: calc(var(--u) * 20);
+  font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .edit-materi-cancel {
-  border: 2px solid #e5edf2;
+  width: calc(var(--u) * 154);
+  border: 2px solid #e4edf4;
   background: #fff;
   color: #858585;
 }
 
+.edit-materi-cancel:hover:not(:disabled) {
+  background: #f7fafb;
+}
+
 .edit-materi-save {
   display: inline-flex;
-  min-width: 170px;
+  width: calc(var(--u) * 280);
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: calc(var(--u) * 10);
   border: 0;
   background: #55b5ef;
   color: #fff;
@@ -6403,8 +6514,8 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-save svg {
-  width: 18px;
-  height: 18px;
+  width: calc(var(--u) * 30);
+  height: calc(var(--u) * 30);
 }
 
 .edit-materi-actions button:disabled,
@@ -6413,37 +6524,40 @@ body.edit-materi-modal-open {
   opacity: 0.7;
 }
 
-/* Popup hasil sukses atau gagal */
+/* ---------- Popup hasil (sukses / gagal) — dipakai juga oleh Hapus Materi ---------- */
 .edit-materi-result {
+  --u: max(
+    0.62px,
+    min(1px, calc((100vw - 32px) / 500), calc((100dvh - 32px) / 476))
+  );
   box-sizing: border-box;
   display: flex;
-  width: min(700px, calc(100vw - 32px));
-  min-height: min(500px, calc(100dvh - 32px));
+  width: min(calc(var(--u) * 500), calc(100vw - 32px));
+  min-height: calc(var(--u) * 476);
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(24px, 4vw, 42px);
-  overflow: hidden;
-  border: 2px solid #d7dfe4;
-  border-radius: 22px;
+  padding: calc(var(--u) * 73) calc(var(--u) * 34) calc(var(--u) * 60);
+  border: 2px solid #d5dce0;
+  border-radius: calc(var(--u) * 28);
   background: #fff;
-  box-shadow: 0 16px 60px rgba(22, 54, 73, 0.18);
+  box-shadow: 0 20px 60px rgba(22, 54, 73, 0.16);
   text-align: center;
   animation: editMateriPopIn 180ms ease-out;
 }
 
 .edit-materi-result-icon {
   display: grid;
-  width: clamp(110px, 18vw, 170px);
-  height: clamp(110px, 18vw, 170px);
+  flex: 0 0 auto;
+  width: calc(var(--u) * 200);
+  height: calc(var(--u) * 200);
   place-items: center;
-  margin-bottom: 24px;
+  margin-bottom: calc(var(--u) * 30);
   border-radius: 50%;
 }
 
 .edit-materi-result-icon svg {
-  width: 68%;
-  height: 68%;
+  width: 100%;
+  height: 100%;
 }
 
 .edit-materi-result--success .edit-materi-result-icon {
@@ -6457,21 +6571,27 @@ body.edit-materi-modal-open {
 }
 
 .edit-materi-result h2 {
-  margin: 0 0 12px;
-  color: #414141;
-  font-size: clamp(22px, 3vw, 28px);
-  font-weight: 750;
+  margin: 0 0 calc(var(--u) * 16);
+  color: #404040;
+  font-size: calc(var(--u) * 26);
+  line-height: 1.25;
+  font-weight: 700;
 }
 
 .edit-materi-result p {
-  max-width: 520px;
   margin: 0;
   color: #858585;
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: calc(var(--u) * 17);
   line-height: 1.45;
 }
 
-/* Animasi popup */
+.edit-materi-result p strong {
+  color: #6b6b6b;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Animasi ---------- */
 @keyframes editMateriPopIn {
   from {
     transform: scale(0.98);
@@ -6484,125 +6604,121 @@ body.edit-materi-modal-open {
   }
 }
 
-/* Penyesuaian popup untuk layar desktop yang pendek */
-@media (max-height: 760px) and (min-width: 701px) {
-  .edit-materi-dialog {
-    padding: 13px 18px;
-  }
-
-  .edit-materi-header {
-    min-height: 40px;
-    padding-bottom: 7px;
-  }
-
-  .edit-materi-heading-icon {
-    flex-basis: 38px;
-    width: 38px;
-    height: 38px;
-  }
-
-  .edit-materi-heading-icon svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .edit-materi-section-title {
-    margin: 8px 0 6px;
-  }
-
-  .edit-materi-fields {
-    gap: 6px 10px;
-    padding-bottom: 7px;
-  }
-
-  .edit-materi-field input,
-  .edit-materi-field select {
-    height: 35px;
-  }
-
-  .edit-materi-file-section {
-    padding: 7px 4px;
-  }
-
-  .edit-materi-file-row {
-    min-height: 48px;
-  }
-
-  .edit-materi-actions {
-    margin-top: 8px;
-    padding-top: 6px;
-  }
-
-  .edit-materi-actions button {
-    height: 35px;
-  }
-}
-
-/* Penyesuaian untuk layar kecil */
-@media (max-width: 700px) {
+/* ---------- Layar kecil (HP) ---------- */
+@media (max-width: 560px) {
   .edit-materi-overlay {
-    align-items: center;
-    overflow-y: auto;
     padding: 12px;
   }
 
   .edit-materi-dialog {
+    --u: 0.7px;
     width: 100%;
-    height: auto;
     max-height: calc(100dvh - 24px);
-    padding: 15px;
     overflow-y: auto;
-  }
-
-  .edit-materi-header {
-    min-height: 42px;
-  }
-
-  .edit-materi-heading-icon {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .edit-materi-header h2 {
-    font-size: 20px;
   }
 
   .edit-materi-fields {
     grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .edit-materi-field input,
+  .edit-materi-field select {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .edit-materi-field {
+    font-size: 15px;
+  }
+
+  .edit-materi-header h2 {
+    font-size: 22px;
+  }
+
+  .edit-materi-section-title {
+    margin-left: 0;
+    font-size: 19px;
+  }
+
+  .edit-materi-file-section {
+    padding-inline: 0;
+  }
+
+  .edit-materi-file-section h3,
+  .edit-materi-file-hint {
+    margin-left: 0;
+  }
+
+  .edit-materi-file-section h3 {
+    font-size: 17px;
+  }
+
+  .edit-materi-file-name {
+    font-size: 15px;
+  }
+
+  .edit-materi-file-type {
+    font-size: 12px;
+  }
+
+  .edit-materi-file-hint {
+    font-size: 12px;
   }
 
   .edit-materi-file-row {
     flex-wrap: wrap;
+    padding: 12px;
+    gap: 12px;
   }
 
   .edit-materi-file-meta {
-    flex: 1 1 calc(100% - 60px);
+    flex: 1 1 calc(100% - 90px);
   }
 
   .edit-materi-change-file {
     flex: 1 1 100%;
-    margin-left: 0;
+    width: auto;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .edit-materi-actions {
+    padding: 28px 0 0;
   }
 
   .edit-materi-actions button {
-    min-width: 0;
+    height: 46px;
+    font-size: 15px;
   }
 
-  .edit-materi-save {
-    min-width: 0;
+  .edit-materi-cancel {
+    width: auto;
     flex: 1;
   }
 
+  .edit-materi-save {
+    width: auto;
+    flex: 1.6;
+  }
+
+  .edit-materi-save svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .edit-materi-result {
+    --u: 0.7px;
     width: 100%;
-    min-height: 55vh;
-    padding: 22px 16px;
   }
 }
 
 /* ==============================================================
-   POPUP KONFIRMASI HAPUS MATERI — UKURAN LEBIH KECIL
+   POPUP KONFIRMASI HAPUS MATERI
+   (ganti seluruh blok lama "POPUP KONFIRMASI HAPUS MATERI" di global.css)
+   Ukuran mengikuti desain Figma 520 x 438 lewat variabel --u.
+   Popup sukses hapus memakai kelas .edit-materi-result (ada di
+   blok Edit Materi), jadi blok Edit Materi harus ikut terpasang.
    ============================================================== */
 
 .hapus-materi-overlay {
@@ -6612,71 +6728,79 @@ body.edit-materi-modal-open {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(24, 36, 44, 0.28);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .hapus-materi-dialog {
+  --u: max(
+    0.5px,
+    min(0.85px, calc((100vw - 32px) / 520), calc((100dvh - 32px) / 438))
+  );
   position: relative;
   box-sizing: border-box;
-  width: min(560px, 100%);
-  padding: 30px 32px 26px;
+  display: flex;
+  width: min(calc(var(--u) * 520), calc(100vw - 32px));
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--u) * 56) calc(var(--u) * 32) calc(var(--u) * 31);
   border: 2px solid #d5dce0;
-  border-radius: 22px;
+  border-radius: calc(var(--u) * 28);
   background: #fff;
-  box-shadow: 0 16px 44px rgba(20, 48, 64, 0.18);
+  box-shadow: 0 20px 60px rgba(22, 54, 73, 0.16);
   text-align: center;
+  animation: editMateriPopIn 180ms ease-out;
 }
 
 .hapus-materi-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: calc(var(--u) * 22);
+  right: calc(var(--u) * 24);
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: calc(var(--u) * 34);
+  height: calc(var(--u) * 34);
   place-items: center;
   padding: 0;
   border: 0;
   background: transparent;
-  color: #444;
+  color: #333;
   cursor: pointer;
 }
 
 .hapus-materi-close svg {
-  width: 24px;
-  height: 24px;
+  width: 100%;
+  height: 100%;
+  fill: none;
   stroke: currentColor;
-  stroke-width: 2.5;
+  stroke-width: 2.4;
   stroke-linecap: round;
 }
 
 .hapus-materi-icon {
   display: grid;
-  width: 88px;
-  height: 88px;
-  margin: 0 auto 18px;
+  width: calc(var(--u) * 100);
+  height: calc(var(--u) * 100);
   place-items: center;
   border-radius: 50%;
-  background: #fee2e2;
-  color: #e52222;
+  background: #fde2e2;
+  color: #dc2626;
 }
 
 .hapus-materi-icon svg {
-  width: 46px;
-  height: 46px;
+  width: calc(var(--u) * 46);
+  height: calc(var(--u) * 46);
   stroke: currentColor;
-  stroke-width: 2.4;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .hapus-materi-dialog h2 {
-  margin: 0 0 16px;
-  color: #414141;
-  font-size: clamp(23px, 3vw, 29px);
-  line-height: 1.2;
+  margin: calc(var(--u) * 17) 0 0;
+  color: #404040;
+  font-size: calc(var(--u) * 28);
+  line-height: 1.3;
   font-weight: 700;
 }
 
@@ -6684,58 +6808,62 @@ body.edit-materi-modal-open {
 .hapus-materi-name,
 .hapus-materi-warning {
   margin: 0;
-  font-size: clamp(15px, 1.8vw, 17px);
   line-height: 1.45;
 }
 
-.hapus-materi-question,
-.hapus-materi-warning {
+.hapus-materi-question {
+  margin-top: calc(var(--u) * 25);
   color: #858585;
+  font-size: calc(var(--u) * 17);
 }
 
 .hapus-materi-name {
-  margin-top: 4px;
-  color: #414141;
-  font-weight: 700;
+  margin-top: calc(var(--u) * 3);
+  color: #404040;
+  font-size: calc(var(--u) * 17);
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .hapus-materi-warning {
-  margin-top: 8px;
+  margin-top: calc(var(--u) * 6);
+  color: #858585;
+  font-size: calc(var(--u) * 15);
   font-style: italic;
 }
 
 .hapus-materi-warning span {
-  color: #e52222;
+  color: #dc2626;
   font-weight: 700;
 }
 
 .hapus-materi-error {
-  margin: 12px 0 0;
-  padding: 8px 10px;
-  border-radius: 9px;
+  margin: calc(var(--u) * 12) 0 0;
+  padding: calc(var(--u) * 8) calc(var(--u) * 12);
+  border-radius: calc(var(--u) * 10);
   background: #fee2e2;
   color: #b91c1c;
-  font-size: 13px;
+  font-size: calc(var(--u) * 14);
 }
 
 .hapus-materi-actions {
   display: grid;
+  width: 100%;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 24px;
+  gap: calc(var(--u) * 20);
+  margin-top: calc(var(--u) * 38);
 }
 
 .hapus-materi-actions button {
   display: inline-flex;
-  min-height: 48px;
+  height: calc(var(--u) * 54);
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 15px;
+  gap: calc(var(--u) * 10);
+  padding: 0 calc(var(--u) * 12);
+  border-radius: calc(var(--u) * 24);
   font: inherit;
-  font-size: 17px;
+  font-size: calc(var(--u) * 21);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.15s ease;
@@ -6745,13 +6873,14 @@ body.edit-materi-modal-open {
   transform: translateY(1px);
 }
 
-.hapus-materi-actions button:disabled {
+.hapus-materi-actions button:disabled,
+.hapus-materi-close:disabled {
   cursor: wait;
   opacity: 0.7;
 }
 
 .hapus-materi-cancel {
-  border: 2px solid #e6eef2;
+  border: 2px solid #e4edf4;
   background: #fff;
   color: #858585;
 }
@@ -6761,69 +6890,90 @@ body.edit-materi-modal-open {
 }
 
 .hapus-materi-confirm {
-  border: 2px solid #e52222;
-  background: #e52222;
+  border: 0;
+  background: #dc2626;
   color: #fff;
 }
 
 .hapus-materi-confirm:hover:not(:disabled) {
-  border-color: #c91c1c;
-  background: #c91c1c;
+  background: #b91c1c;
 }
 
 .hapus-materi-confirm svg {
-  width: 20px;
-  height: 20px;
+  width: calc(var(--u) * 28);
+  height: calc(var(--u) * 28);
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 560px) {
   .hapus-materi-overlay {
     padding: 12px;
   }
 
   .hapus-materi-dialog {
+    --u: 0.72px;
     width: 100%;
-    padding: 30px 18px 20px;
-    border-radius: 18px;
-  }
-
-  .hapus-materi-close {
-    top: 8px;
-    right: 8px;
-    width: 30px;
-    height: 30px;
-  }
-
-  .hapus-materi-icon {
-    width: 76px;
-    height: 76px;
-    margin-bottom: 16px;
-  }
-
-  .hapus-materi-icon svg {
-    width: 40px;
-    height: 40px;
-  }
-
-  .hapus-materi-actions {
-    gap: 8px;
-    margin-top: 20px;
   }
 
   .hapus-materi-actions button {
-    min-height: 44px;
-    padding: 7px;
-    border-radius: 12px;
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 
 /* ============================================================
-   KELOLA MAHASISWA — halaman admin
+   IKON AKSI EDIT & HAPUS DI TABEL MATERI (halaman Materi admin)
+   Hanya CSS: ikon lama di JSX disembunyikan lalu diganti SVG baru.
+   Normal = tanpa latar; saat kursor diarahkan = muncul latar bulat.
+   Tempel di bagian paling bawah global.css.
+   ============================================================ */
+
+button[aria-label^="Edit materi"],
+button[aria-label^="Hapus materi"] {
+  display: block !important;
+  flex: 0 0 auto;
+  width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 14px;
+  background-color: transparent !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  cursor: pointer;
+}
+
+button[aria-label^="Edit materi"] svg,
+button[aria-label^="Hapus materi"] svg {
+  display: none !important;
+}
+
+/* Edit */
+button[aria-label^="Edit materi"] {
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2750%27%20height%3D%2750%27%20viewBox%3D%270%200%2050%2050%27%20fill%3D%27none%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cpath%20d%3D%27M33.4531%2029.5144L35.1198%2027.8894C35.3802%2027.6354%2035.8333%2027.8132%2035.8333%2028.1788V35.5624C35.8333%2036.9081%2034.7135%2037.9999%2033.3333%2037.9999H15C13.6198%2037.9999%2012.5%2036.9081%2012.5%2035.5624V17.6874C12.5%2016.3417%2013.6198%2015.2499%2015%2015.2499H29.2448C29.6146%2015.2499%2029.8021%2015.6866%2029.5417%2015.9456L27.875%2017.5706C27.7969%2017.6468%2027.6927%2017.6874%2027.5781%2017.6874H15V35.5624H33.3333V29.7987C33.3333%2029.6921%2033.375%2029.5905%2033.4531%2029.5144ZM41.6094%2019.2667L27.9323%2032.6019L23.224%2033.1097C21.8594%2033.2569%2020.6979%2032.1347%2020.849%2030.794L21.3698%2026.2034L35.0469%2012.8683C36.2396%2011.7054%2038.1667%2011.7054%2039.3542%2012.8683L41.6042%2015.062C42.7969%2016.2249%2042.7969%2018.1089%2041.6094%2019.2667ZM36.4635%2020.8358L33.4375%2017.8854L23.7604%2027.3257L23.3802%2030.6417L26.7812%2030.271L36.4635%2020.8358ZM39.8385%2016.7886L37.5885%2014.5948C37.375%2014.3866%2037.026%2014.3866%2036.8177%2014.5948L35.2083%2016.164L38.2344%2019.1144L39.8438%2017.5452C40.0521%2017.3319%2040.0521%2016.9968%2039.8385%2016.7886Z%27%20fill%3D%27%2355B5EF%27%2F%3E%3C%2Fsvg%3E") !important;
+}
+
+button[aria-label^="Edit materi"]:hover,
+button[aria-label^="Edit materi"]:focus-visible {
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2750%27%20height%3D%2750%27%20viewBox%3D%270%200%2050%2050%27%20fill%3D%27none%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Crect%20width%3D%2750%27%20height%3D%2750%27%20rx%3D%2718%27%20fill%3D%27%23CDEEFF%27%2F%3E%3Cpath%20d%3D%27M33.4531%2029.5144L35.1198%2027.8894C35.3802%2027.6354%2035.8333%2027.8132%2035.8333%2028.1788V35.5624C35.8333%2036.9081%2034.7135%2037.9999%2033.3333%2037.9999H15C13.6198%2037.9999%2012.5%2036.9081%2012.5%2035.5624V17.6874C12.5%2016.3417%2013.6198%2015.2499%2015%2015.2499H29.2448C29.6146%2015.2499%2029.8021%2015.6866%2029.5417%2015.9456L27.875%2017.5706C27.7969%2017.6468%2027.6927%2017.6874%2027.5781%2017.6874H15V35.5624H33.3333V29.7987C33.3333%2029.6921%2033.375%2029.5905%2033.4531%2029.5144ZM41.6094%2019.2667L27.9323%2032.6019L23.224%2033.1097C21.8594%2033.2569%2020.6979%2032.1347%2020.849%2030.794L21.3698%2026.2034L35.0469%2012.8683C36.2396%2011.7054%2038.1667%2011.7054%2039.3542%2012.8683L41.6042%2015.062C42.7969%2016.2249%2042.7969%2018.1089%2041.6094%2019.2667ZM36.4635%2020.8358L33.4375%2017.8854L23.7604%2027.3257L23.3802%2030.6417L26.7812%2030.271L36.4635%2020.8358ZM39.8385%2016.7886L37.5885%2014.5948C37.375%2014.3866%2037.026%2014.3866%2036.8177%2014.5948L35.2083%2016.164L38.2344%2019.1144L39.8438%2017.5452C40.0521%2017.3319%2040.0521%2016.9968%2039.8385%2016.7886Z%27%20fill%3D%27%2355B5EF%27%2F%3E%3C%2Fsvg%3E") !important;
+}
+
+/* Hapus */
+button[aria-label^="Hapus materi"] {
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2750%27%20height%3D%2750%27%20viewBox%3D%270%200%2050%2050%27%20fill%3D%27none%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cpath%20d%3D%27M16.5625%2016.5625L17.7344%2035.3125C17.79%2036.3959%2018.5781%2037.1875%2019.6094%2037.1875H30.3906C31.426%2037.1875%2032.1994%2036.3959%2032.2656%2035.3125L33.4375%2016.5625%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3Cpath%20d%3D%27M14.6875%2016.5625H35.3125%27%20stroke-width%3D%273%27%20stroke-miterlimit%3D%2710%27%20stroke-linecap%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3Cpath%20d%3D%27M21.25%2016.5625V14.2188C21.2495%2014.0339%2021.2855%2013.8508%2021.3559%2013.68C21.4264%2013.5091%2021.53%2013.3539%2021.6607%2013.2232C21.7914%2013.0925%2021.9466%2012.9889%2022.1175%2012.9184C22.2883%2012.848%2022.4714%2012.812%2022.6562%2012.8125H27.3438C27.5286%2012.812%2027.7117%2012.848%2027.8825%2012.9184C28.0534%2012.9889%2028.2086%2013.0925%2028.3393%2013.2232C28.47%2013.3539%2028.5736%2013.5091%2028.6441%2013.68C28.7145%2013.8508%2028.7505%2014.0339%2028.75%2014.2188V16.5625M25%2020.3125V33.4375M20.7812%2020.3125L21.25%2033.4375M29.2188%2020.3125L28.75%2033.4375%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3C%2Fsvg%3E") !important;
+}
+
+button[aria-label^="Hapus materi"]:hover,
+button[aria-label^="Hapus materi"]:focus-visible {
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2750%27%20height%3D%2750%27%20viewBox%3D%270%200%2050%2050%27%20fill%3D%27none%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Crect%20width%3D%2750%27%20height%3D%2750%27%20rx%3D%2718%27%20fill%3D%27%23FEE2E2%27%2F%3E%3Cpath%20d%3D%27M16.5625%2016.5625L17.7344%2035.3125C17.79%2036.3959%2018.5781%2037.1875%2019.6094%2037.1875H30.3906C31.426%2037.1875%2032.1994%2036.3959%2032.2656%2035.3125L33.4375%2016.5625%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3Cpath%20d%3D%27M14.6875%2016.5625H35.3125%27%20stroke-width%3D%273%27%20stroke-miterlimit%3D%2710%27%20stroke-linecap%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3Cpath%20d%3D%27M21.25%2016.5625V14.2188C21.2495%2014.0339%2021.2855%2013.8508%2021.3559%2013.68C21.4264%2013.5091%2021.53%2013.3539%2021.6607%2013.2232C21.7914%2013.0925%2021.9466%2012.9889%2022.1175%2012.9184C22.2883%2012.848%2022.4714%2012.812%2022.6562%2012.8125H27.3438C27.5286%2012.812%2027.7117%2012.848%2027.8825%2012.9184C28.0534%2012.9889%2028.2086%2013.0925%2028.3393%2013.2232C28.47%2013.3539%2028.5736%2013.5091%2028.6441%2013.68C28.7145%2013.8508%2028.7505%2014.0339%2028.75%2014.2188V16.5625M25%2020.3125V33.4375M20.7812%2020.3125L21.25%2033.4375M29.2188%2020.3125L28.75%2033.4375%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke%3D%27%23DC2626%27%2F%3E%3C%2Fsvg%3E") !important;
+}
+
+/* ============================================================
+   KELOLA MAHASISWA — halaman admin + pop up
+   (ganti seluruh blok lama "KELOLA MAHASISWA" di global.css)
    ============================================================ */
 
 .mahasiswa-page {
@@ -6835,30 +6985,29 @@ body.edit-materi-modal-open {
   color: #404040;
 }
 
+/* ---------- Header ---------- */
 .mahasiswa-header {
-  min-height: 130px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 24px 28px;
+  gap: 20px;
+  padding: 26px 18px;
   border-bottom: 1px solid #e9f0f5;
-  border-radius: 18px 18px 0 0;
   background: #fff;
 }
 
 .mahasiswa-header-info {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   min-width: 0;
 }
 
 .mahasiswa-header-icon {
-  width: 70px;
-  height: 70px;
-  flex: 0 0 70px;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
   display: grid;
   place-items: center;
   border-radius: 10px;
@@ -6867,32 +7016,33 @@ body.edit-materi-modal-open {
 }
 
 .mahasiswa-header-icon svg {
-  width: 44px;
-  height: 40px;
+  width: 48px;
+  height: 32px;
 }
 
 .mahasiswa-header h1 {
   margin: 0;
   color: #404040;
-  font-size: clamp(22px, 2vw, 30px);
+  font-size: 20px;
   font-weight: 700;
+  line-height: 1.3;
 }
 
 .mahasiswa-header p {
-  margin: 5px 0 0;
+  margin: 3px 0 0;
   color: #808080;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .mahasiswa-add-button {
-  min-height: 50px;
+  min-height: 45px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 10px 22px;
+  gap: 10px;
+  padding: 0 20px;
   border: 0;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #55b5ef;
   color: #fff;
   font: inherit;
@@ -6902,31 +7052,31 @@ body.edit-materi-modal-open {
   cursor: pointer;
 }
 
-.mahasiswa-add-button:hover,
-.mahasiswa-modal-save:hover {
+.mahasiswa-add-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mahasiswa-add-button:hover {
   background: #329fdf;
 }
 
-.mahasiswa-add-button span {
-  font-size: 26px;
-  line-height: 1;
-}
-
+/* ---------- Filter & pencarian ---------- */
 .mahasiswa-content {
-  padding: 24px 28px 0;
+  padding: 24px 13px 14px;
 }
 
 .mahasiswa-filters {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(260px, 1.6fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 14px;
+  margin-bottom: 23px;
 }
 
 .mahasiswa-filter,
 .mahasiswa-search {
   box-sizing: border-box;
-  min-height: 64px;
+  min-height: 62px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -6942,46 +7092,56 @@ body.edit-materi-modal-open {
   min-width: 0;
   border: 0;
   outline: 0;
-  background: transparent;
+  background-color: transparent;
   color: #404040;
   font: inherit;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.mahasiswa-filter select {
-  cursor: pointer;
-}
-
-.mahasiswa-search-icon {
-  color: #94a3b8;
-  font-size: 30px;
-  line-height: 1;
+.mahasiswa-search input {
+  font-weight: 400;
 }
 
 .mahasiswa-search input::placeholder {
   color: #94a3b8;
 }
 
-.mahasiswa-notice,
+.mahasiswa-search-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  color: #94a3b8;
+}
+
+.mahasiswa-search-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Dropdown dengan chevron kustom (dipakai filter & form) */
+.mahasiswa-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23b4c3d6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  background-size: 20px;
+  cursor: pointer;
+}
+
 .mahasiswa-error {
   margin: 0 0 16px;
   padding: 12px 16px;
+  border: 1px solid #fecaca;
   border-radius: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
   font-size: 14px;
 }
 
-.mahasiswa-notice {
-  border: 1px solid #bbf7d0;
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.mahasiswa-error {
-  border: 1px solid #fecaca;
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
+/* ---------- Tabel ---------- */
 .mahasiswa-table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -6995,8 +7155,8 @@ body.edit-materi-modal-open {
 }
 
 .mahasiswa-table th {
-  height: 62px;
-  padding: 12px 16px;
+  height: 61px;
+  padding: 10px 12px;
   border-bottom: 1px solid #e9f0f5;
   background: #eef8fd;
   color: #404040;
@@ -7007,8 +7167,8 @@ body.edit-materi-modal-open {
 }
 
 .mahasiswa-table td {
-  height: 64px;
-  padding: 10px 16px;
+  height: 68px;
+  padding: 8px 12px;
   border-bottom: 1px solid #e9f0f5;
   color: #808080;
   font-size: 16px;
@@ -7022,16 +7182,25 @@ body.edit-materi-modal-open {
   background: #f8fcff;
 }
 
-.mahasiswa-table th:first-child,
-.mahasiswa-table td:first-child {
-  width: 55px;
+.mahasiswa-table .col-no {
+  width: 56px;
   text-align: center;
 }
 
-.mahasiswa-table th:last-child,
-.mahasiswa-table td:last-child {
-  width: 110px;
-  text-align: center;
+.mahasiswa-table .col-status {
+  width: 134px;
+}
+
+.mahasiswa-table .col-nim {
+  width: 150px;
+}
+
+.mahasiswa-table .col-angkatan {
+  width: 130px;
+}
+
+.mahasiswa-table .col-aksi {
+  width: 128px;
 }
 
 .mahasiswa-name {
@@ -7041,15 +7210,21 @@ body.edit-materi-modal-open {
 
 .mahasiswa-status,
 .mahasiswa-year {
-  min-width: 96px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 14px;
+  box-sizing: border-box;
+  height: 27px;
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
   white-space: nowrap;
+}
+
+.mahasiswa-status {
+  min-width: 106px;
+  padding: 0 12px;
+  font-weight: 500;
 }
 
 .mahasiswa-status--aktif {
@@ -7057,67 +7232,221 @@ body.edit-materi-modal-open {
   color: #3aa8e0;
 }
 
-.mahasiswa-status--nonaktif,
-.mahasiswa-status--belum_aktif {
+.mahasiswa-status--nonaktif {
   background: #cbd5e1;
   color: #64748b;
 }
 
 .mahasiswa-year {
-  background: #ffcc00;
+  min-width: 103px;
+  padding: 0 12px;
   color: #fff;
+  font-weight: 600;
+}
+
+/* 12 warna angkatan: 2024 kuning, 2023 hijau, lalu bergilir mundur (2025 pink, 2026 cyan) */
+.mahasiswa-year--tone-0 {
+  background: #ffcc00;
+}
+
+.mahasiswa-year--tone-1 {
+  background: #34c759;
+}
+
+.mahasiswa-year--tone-2 {
+  background: #3b82f6;
+}
+
+.mahasiswa-year--tone-3 {
+  background: #ff9500;
+}
+
+.mahasiswa-year--tone-4 {
+  background: #af52de;
+}
+
+.mahasiswa-year--tone-5 {
+  background: #14b8a6;
+}
+
+.mahasiswa-year--tone-6 {
+  background: #f43f5e;
+}
+
+.mahasiswa-year--tone-7 {
+  background: #6366f1;
+}
+
+.mahasiswa-year--tone-8 {
+  background: #65a30d;
+}
+
+.mahasiswa-year--tone-9 {
+  background: #a16207;
+}
+
+.mahasiswa-year--tone-10 {
+  background: #06b6d4;
+}
+
+.mahasiswa-year--tone-11 {
+  background: #ec4899;
 }
 
 .mahasiswa-row-actions {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  gap: 2px;
 }
 
+/* Tombol aksi 50x50; latar muncul saat hover / fokus / diklik (sesuai Figma) */
 .mahasiswa-action {
-  width: 38px;
-  height: 38px;
+  width: 50px;
+  height: 50px;
   display: grid;
   place-items: center;
-  padding: 5px;
+  padding: 0;
   border: 0;
+  border-radius: 18px;
+  outline: 0;
   background: transparent;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .mahasiswa-action svg {
-  width: 27px;
-  height: 27px;
+  display: block;
 }
 
 .mahasiswa-action--edit {
   color: #55b5ef;
 }
 
+.mahasiswa-action--edit:hover,
+.mahasiswa-action--edit:focus-visible,
+.mahasiswa-action--edit:active {
+  background: #cdeeff;
+}
+
 .mahasiswa-action--delete {
-  color: #e52222;
+  color: #dc2626;
 }
 
-.mahasiswa-action:hover {
-  transform: translateY(-1px);
+.mahasiswa-action--delete:hover,
+.mahasiswa-action--delete:focus-visible,
+.mahasiswa-action--delete:active {
+  background: #fee2e2;
 }
 
-.mahasiswa-table-message {
-  height: 180px !important;
-  color: #64748b !important;
+/* Hapus tidak tersedia (mahasiswa Aktif) */
+.mahasiswa-action--delete.is-disabled {
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.mahasiswa-action--delete.is-disabled:hover,
+.mahasiswa-action--delete.is-disabled:focus-visible,
+.mahasiswa-action--delete.is-disabled:active {
+  background: #e9f0f5;
+}
+
+/* Tooltip hapus (muncul di bawah ikon) */
+.mahasiswa-tooltip {
+  position: fixed;
+  z-index: 13000;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border-radius: 8px;
+  background: #111827;
+  box-shadow: 0 8px 24px rgb(17 24 39 / 25%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.mahasiswa-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: var(--pointer-left, 17px);
+  width: 11px;
+  height: 13px;
+  background: #111827;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* ---------- Kosong / memuat ---------- */
+.mahasiswa-table .mahasiswa-table-message {
+  height: auto;
+  padding: 0;
+  border-bottom: 0;
   text-align: center;
-  font-style: italic;
 }
 
+.mahasiswa-empty {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+}
+
+.mahasiswa-empty p {
+  margin: 0;
+  color: #404040;
+  font-size: 14px;
+}
+
+.mahasiswa-empty-icon {
+  width: 44px;
+  height: 44px;
+  color: #404040;
+}
+
+.mahasiswa-empty-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mahasiswa-empty-button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #55b5ef;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mahasiswa-empty-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mahasiswa-empty-button:hover {
+  background: #329fdf;
+}
+
+/* ---------- Footer & paginasi ---------- */
 .mahasiswa-footer {
-  min-height: 78px;
+  min-height: 80px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 24px;
+  padding: 12px 18px;
   border-top: 1px solid #e9f0f5;
   background: #fff;
 }
@@ -7125,32 +7454,37 @@ body.edit-materi-modal-open {
 .mahasiswa-footer p {
   margin: 0;
   color: #808080;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .mahasiswa-pagination {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .mahasiswa-pagination button,
 .mahasiswa-pagination span {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   box-sizing: border-box;
   display: grid;
   place-items: center;
+  padding: 0;
   border: 1px solid #e9f0f5;
   border-radius: 8px;
   background: #fff;
   color: #55b5ef;
   font: inherit;
-  font-size: 23px;
 }
 
 .mahasiswa-pagination button {
   cursor: pointer;
+}
+
+.mahasiswa-pagination button svg {
+  width: 22px;
+  height: 22px;
 }
 
 .mahasiswa-pagination button:disabled {
@@ -7162,10 +7496,13 @@ body.edit-materi-modal-open {
   border-color: #55b5ef;
   background: #55b5ef;
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
 }
 
+/* ============================================================
+   POP UP
+   ============================================================ */
 .mahasiswa-modal-overlay {
   position: fixed;
   inset: 0;
@@ -7173,123 +7510,437 @@ body.edit-materi-modal-open {
   display: grid;
   place-items: center;
   padding: 20px;
+  overflow-y: auto;
   background: rgb(20 34 44 / 42%);
   backdrop-filter: blur(4px);
 }
 
 .mahasiswa-modal {
   position: relative;
-  width: min(520px, 100%);
+  width: min(640px, 100%);
   box-sizing: border-box;
-  padding: 30px;
-  border: 1px solid #d5dce0;
-  border-radius: 20px;
+  padding: 28px;
+  border: 2px solid #d5dce0;
+  border-radius: 24px;
   background: #fff;
   box-shadow: 0 20px 60px rgb(20 48 64 / 20%);
-}
-
-.mahasiswa-modal h2 {
-  margin: 0 40px 22px 0;
   color: #404040;
-  font-size: 24px;
 }
 
-.mahasiswa-modal form {
-  display: grid;
-  gap: 16px;
+.mahasiswa-modal--delete {
+  width: min(466px, 100%);
 }
 
-.mahasiswa-modal label {
-  display: grid;
-  gap: 7px;
-  color: #555;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.mahasiswa-modal input,
-.mahasiswa-modal select {
-  width: 100%;
-  min-height: 44px;
-  box-sizing: border-box;
-  padding: 9px 12px;
-  border: 1px solid #dce7ef;
-  border-radius: 10px;
-  background: #fff;
-  color: #404040;
-  font: inherit;
-  font-weight: 400;
-}
-
-.mahasiswa-modal input:disabled {
-  background: #f3f6f8;
-  color: #777;
+.mahasiswa-modal--success {
+  width: min(470px, 100%);
 }
 
 .mahasiswa-modal-close {
   position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 36px;
-  height: 36px;
+  top: 22px;
+  right: 24px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 4px;
   border: 0;
   background: transparent;
-  color: #555;
-  font-size: 30px;
+  color: #404040;
   cursor: pointer;
 }
 
-.mahasiswa-modal-error {
+.mahasiswa-modal-close svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mahasiswa-modal-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mahasiswa-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 40px 24px 0;
+  border-bottom: 2px solid #d5dce0;
+}
+
+.mahasiswa-modal-icon {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #eef8fd;
+  color: #1e6f9e;
+}
+
+.mahasiswa-modal-icon svg {
+  width: 50px;
+  height: 33px;
+}
+
+.mahasiswa-modal h2 {
   margin: 0;
-  padding: 10px 12px;
-  border-radius: 9px;
+  color: #404040;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.mahasiswa-modal-header p {
+  margin: 4px 0 0;
+  color: #808080;
+  font-size: 13px;
+}
+
+/* ---------- Form ---------- */
+.mahasiswa-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.mahasiswa-field {
+  display: grid;
+  gap: 9px;
+}
+
+.mahasiswa-field label {
+  color: #404040;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mahasiswa-required {
+  margin-left: 2px;
+  color: #dc2626;
+}
+
+.mahasiswa-field input,
+.mahasiswa-field select {
+  width: 100%;
+  height: 52px;
+  box-sizing: border-box;
+  padding: 0 19px;
+  border: 1px solid #e3edf4;
+  border-radius: 22px;
+  outline: 0;
+  background-color: #fff;
+  color: #404040;
+  font: inherit;
+  font-size: 16px;
+}
+
+.mahasiswa-field select {
+  padding-right: 48px;
+  background-position: right 18px center;
+}
+
+.mahasiswa-field select.is-placeholder {
+  color: #7a7a7a;
+}
+
+.mahasiswa-field select option {
+  color: #404040;
+}
+
+.mahasiswa-field input::placeholder {
+  color: #7a7a7a;
+}
+
+.mahasiswa-field input:focus,
+.mahasiswa-field select:focus {
+  border-color: #55b5ef;
+  box-shadow: 0 0 0 3px rgb(85 181 239 / 18%);
+}
+
+.mahasiswa-field [aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.mahasiswa-field input:disabled {
+  background-color: #f3f6f8;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.mahasiswa-field select:disabled {
+  background-color: #f3f6f8;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.mahasiswa-field-hint {
+  margin: 0;
+  color: #808080;
+  font-size: 13px;
+}
+
+.mahasiswa-field-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.mahasiswa-modal-error {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
   background: #fee2e2;
   color: #b91c1c;
   font-size: 14px;
 }
 
+/* ---------- Tombol pop up ---------- */
 .mahasiswa-modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 18px;
+  margin-top: 34px;
 }
 
-.mahasiswa-modal-actions button {
-  min-height: 44px;
-  padding: 9px 18px;
-  border: 1px solid #e3edf4;
-  border-radius: 10px;
+.mahasiswa-modal-actions--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 28px;
+}
+
+.mahasiswa-btn {
+  min-height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 34px;
+  border: 2px solid transparent;
+  border-radius: 18px;
   font: inherit;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.mahasiswa-modal-actions button:disabled {
+.mahasiswa-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mahasiswa-btn:disabled {
   opacity: 0.65;
   cursor: wait;
 }
 
-.mahasiswa-modal-cancel {
+.mahasiswa-btn--ghost {
+  border-color: #e6eef4;
   background: #fff;
-  color: #777;
+  color: #808080;
 }
 
-.mahasiswa-modal-save {
-  border-color: #55b5ef !important;
+.mahasiswa-btn--primary {
   background: #55b5ef;
   color: #fff;
 }
 
-.mahasiswa-modal-delete {
-  border-color: #e52222 !important;
-  background: #e52222;
+.mahasiswa-btn--primary:not(:disabled):hover {
+  background: #329fdf;
+}
+
+.mahasiswa-btn--danger {
+  background: #dc2626;
   color: #fff;
 }
 
-.mahasiswa-delete-modal > p {
-  color: #777;
+.mahasiswa-btn--danger:not(:disabled):hover {
+  background: #b91c1c;
+}
+
+/* ---------- Konfirmasi data ---------- */
+.mahasiswa-detail {
+  margin: 26px 0 0;
+  overflow: hidden;
+  border: 1px solid #e9f0f5;
+  border-radius: 18px;
+}
+
+.mahasiswa-detail-row {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  min-height: 50px;
+  border-bottom: 1px solid #e9f0f5;
+}
+
+.mahasiswa-detail-row:nth-child(odd) {
+  background: #fafcff;
+}
+
+.mahasiswa-detail-row:last-child {
+  border-bottom: 0;
+}
+
+.mahasiswa-detail dt,
+.mahasiswa-detail dd {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 17px;
+}
+
+.mahasiswa-detail dt {
+  border-right: 1px solid #e9f0f5;
+  color: #404040;
+  font-weight: 700;
+}
+
+.mahasiswa-detail dd {
+  min-width: 0;
+  color: #808080;
+  overflow-wrap: anywhere;
+}
+
+.mahasiswa-diff {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.mahasiswa-diff-old {
+  color: #a0a8b4;
+}
+
+.mahasiswa-diff-arrow {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  color: #c7d0da;
+}
+
+.mahasiswa-diff-arrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mahasiswa-diff-new {
+  color: #404040;
+  font-weight: 600;
+}
+
+.mahasiswa-info-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px 22px;
+  border-radius: 20px;
+  background: #eef8fd;
+  color: #4aa8e0;
+}
+
+.mahasiswa-info-box svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.mahasiswa-info-box p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ---------- Hapus & berhasil ---------- */
+.mahasiswa-modal-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  text-align: center;
+}
+
+.mahasiswa-modal-center h2 {
+  margin: 14px 0 14px;
+  font-size: 22px;
+}
+
+.mahasiswa-modal-center p {
+  margin: 0;
+  color: #808080;
+  font-size: 14px;
   line-height: 1.5;
+}
+
+.mahasiswa-delete-icon {
+  width: 90px;
+  height: 90px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.mahasiswa-delete-icon svg {
+  width: 46px;
+  height: 46px;
+}
+
+.mahasiswa-delete-name {
+  margin-top: 4px !important;
+  color: #404040 !important;
+  font-weight: 700;
+}
+
+.mahasiswa-delete-note {
+  margin-top: 6px !important;
+  font-size: 13px !important;
+  font-style: italic;
+}
+
+.mahasiswa-delete-note span {
+  margin-right: 2px;
+  color: #dc2626;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.mahasiswa-success {
+  padding: 16px 0 6px;
+}
+
+.mahasiswa-success-icon {
+  width: 176px;
+  height: 176px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.mahasiswa-success-icon svg {
+  width: 76px;
+  height: 76px;
+}
+
+.mahasiswa-success h2 {
+  margin-top: 22px;
+}
+
+.mahasiswa-success p strong {
+  color: #666;
+}
+
+.mahasiswa-success-button {
+  min-width: 157px;
+  min-height: 52px;
+  margin-top: 30px;
 }
 
 .visually-hidden {
@@ -7302,6 +7953,7 @@ body.edit-materi-modal-open {
   clip-path: inset(50%);
 }
 
+/* ---------- Responsif ---------- */
 @media (max-width: 900px) {
   .mahasiswa-header {
     align-items: flex-start;
@@ -7324,8 +7976,8 @@ body.edit-materi-modal-open {
 @media (max-width: 600px) {
   .mahasiswa-header,
   .mahasiswa-content {
-    padding-right: 14px;
-    padding-left: 14px;
+    padding-right: 12px;
+    padding-left: 12px;
   }
 
   .mahasiswa-header-info {
@@ -7333,18 +7985,14 @@ body.edit-materi-modal-open {
   }
 
   .mahasiswa-header-icon {
-    width: 54px;
-    height: 54px;
-    flex-basis: 54px;
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
   }
 
   .mahasiswa-header-icon svg {
-    width: 34px;
-    height: 32px;
-  }
-
-  .mahasiswa-header p {
-    font-size: 13px;
+    width: 38px;
+    height: 26px;
   }
 
   .mahasiswa-add-button {
@@ -7364,27 +8012,17 @@ body.edit-materi-modal-open {
   .mahasiswa-filter,
   .mahasiswa-search {
     min-height: 50px;
-    border-radius: 12px;
-  }
-
-  .mahasiswa-filter select,
-  .mahasiswa-search input {
-    font-size: 15px;
+    border-radius: 14px;
   }
 
   .mahasiswa-table {
     min-width: 760px;
   }
 
-  .mahasiswa-table th,
-  .mahasiswa-table td {
-    font-size: 14px;
-  }
-
   .mahasiswa-footer {
     align-items: flex-start;
     flex-direction: column;
-    padding: 14px;
+    padding: 14px 12px;
   }
 
   .mahasiswa-pagination {
@@ -7392,6 +8030,51 @@ body.edit-materi-modal-open {
   }
 
   .mahasiswa-modal {
-    padding: 24px 18px;
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .mahasiswa-modal-icon {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+  }
+
+  .mahasiswa-modal-icon svg {
+    width: 38px;
+    height: 26px;
+  }
+
+  .mahasiswa-modal h2 {
+    font-size: 18px;
+  }
+
+  .mahasiswa-modal-actions {
+    margin-top: 26px;
+  }
+
+  .mahasiswa-btn {
+    padding: 0 20px;
+    font-size: 16px;
+  }
+
+  .mahasiswa-detail-row {
+    grid-template-columns: 34% 1fr;
+  }
+
+  .mahasiswa-detail dt,
+  .mahasiswa-detail dd {
+    padding: 8px 12px;
+    font-size: 15px;
+  }
+
+  .mahasiswa-success-icon {
+    width: 130px;
+    height: 130px;
+  }
+
+  .mahasiswa-success-icon svg {
+    width: 56px;
+    height: 56px;
   }
 }
