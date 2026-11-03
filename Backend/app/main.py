@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.db.session import engine
 
 # Import semua router di satu tempat
-from app.api.v1 import auth, materi, admin, mahasiswa,dashboard_mahasiswa
+from app.api.v1 import auth, materi, admin, mahasiswa, dashboard_mahasiswa
 
 app = FastAPI(
     title=settings.APP_NAME,

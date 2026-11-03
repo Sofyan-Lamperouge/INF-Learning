@@ -8,10 +8,13 @@ from app.models.pengguna import Pengguna
 from app.schemas.dashboard_mahasiswa import (
     DashboardMahasiswaResponse,
     MateriDashboard,
+    MateriSelesai,
     ProfilMahasiswa,
     ProgresMataKuliah,
     StatistikBelajar,
 )
+
+JUMLAH_DAFTAR = 5  # jumlah item pada daftar materi di dashboard
 
 
 def _persen(bagian: int, total: int) -> float:
@@ -37,7 +40,7 @@ def get_dashboard(db: Session, mhs: Pengguna) -> DashboardMahasiswaResponse:
     total_materi = crud_materi.count_terbit(db)
     dilihat, selesai = crud_progres.hitung_progres(db, mhs.id)
 
-    terbaru, _ = crud_materi.get_all(db, status="terbit", skip=0, limit=5)
+    terbaru, _ = crud_materi.get_all(db, status="terbit", skip=0, limit=JUMLAH_DAFTAR)
     lanjut = crud_progres.materi_terakhir_dilihat(db, mhs.id)
 
     return DashboardMahasiswaResponse(
@@ -51,6 +54,18 @@ def get_dashboard(db: Session, mhs: Pengguna) -> DashboardMahasiswaResponse:
             persen_selesai=_persen(selesai, total_materi),
         ),
         lanjutkan_belajar=_ke_materi_dashboard(lanjut, status_map) if lanjut else None,
+        materi_selesai_terbaru=[
+            MateriSelesai(
+                id=m.id,
+                judul=m.judul,
+                mata_kuliah=m.mata_kuliah,
+                semester=m.semester,
+                jenis=m.jenis,
+                url=m.url,
+                selesai_pada=waktu,
+            )
+            for m, waktu in crud_progres.materi_selesai_terbaru(db, mhs.id, JUMLAH_DAFTAR)
+        ],
         materi_terbaru=[_ke_materi_dashboard(m, status_map) for m in terbaru],
         progres_mata_kuliah=[
             ProgresMataKuliah(mata_kuliah=mk, total=t, selesai=s, persen=_persen(s, t))
@@ -62,7 +77,5 @@ def get_dashboard(db: Session, mhs: Pengguna) -> DashboardMahasiswaResponse:
 def catat_progres(db: Session, mhs: Pengguna, materi_id: int, status_baru: str):
     materi = crud_materi.get_by_id(db, materi_id)
     if not materi or materi.status != "terbit":
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Materi tidak ditemukan"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Materi tidak ditemukan")
     return crud_progres.upsert(db, mhs.id, materi_id, status_baru)

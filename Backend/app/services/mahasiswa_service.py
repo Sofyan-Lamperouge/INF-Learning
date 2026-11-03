@@ -1,12 +1,11 @@
-# Backend/app/services/mahasiswa_service.py
-#
-# Aturan bisnis CRUD mahasiswa (dipakai admin).
+"""Aturan bisnis CRUD mahasiswa (dipakai admin)."""
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.crud import mahasiswa as crud_mhs
+from app.crud import pengguna as crud_pengguna
 from app.models.pengguna import Pengguna
 from app.schemas.mahasiswa import MahasiswaCreateRequest, MahasiswaUpdateRequest
 
@@ -44,6 +43,16 @@ def list_mahasiswa(
     }
 
 
+def ringkasan(db: Session) -> dict:
+    per_status = crud_mhs.hitung_per_status(db)
+    return {
+        "total": sum(per_status.values()),
+        "belum_aktif": per_status.get("belum_aktif", 0),
+        "aktif": per_status.get("aktif", 0),
+        "nonaktif": per_status.get("nonaktif", 0),
+    }
+
+
 def get_mahasiswa(db: Session, id: int) -> Pengguna:
     mhs = crud_mhs.get_by_id(db, id)
     if not mhs:
@@ -54,13 +63,13 @@ def get_mahasiswa(db: Session, id: int) -> Pengguna:
 
 
 def tambah_mahasiswa(db: Session, data: MahasiswaCreateRequest) -> Pengguna:
-    if crud_mhs.get_by_nim(db, data.nomor_induk):
+    if crud_pengguna.get_by_nomor_induk(db, data.nomor_induk):
         raise _nim_sudah_ada()
     try:
         return crud_mhs.create(db, data.model_dump())
     except IntegrityError:  # dua permintaan bersamaan dengan NIM yang sama
         db.rollback()
-        raise _nim_sudah_ada()
+        raise _nim_sudah_ada() from None
 
 
 def ubah_mahasiswa(db: Session, id: int, data: MahasiswaUpdateRequest) -> Pengguna:
@@ -84,14 +93,22 @@ def ubah_mahasiswa(db: Session, id: int, data: MahasiswaUpdateRequest) -> Penggu
                     status_code=status.HTTP_409_CONFLICT,
                     detail="NIM tidak dapat diubah karena akun sudah diaktivasi",
                 )
-            if crud_mhs.get_by_nim(db, nim_baru):
+            if crud_pengguna.get_by_nomor_induk(db, nim_baru):
                 raise _nim_sudah_ada()
 
     try:
         return crud_mhs.update(db, mhs, fields)
     except IntegrityError:
         db.rollback()
-        raise _nim_sudah_ada()
+        raise _nim_sudah_ada() from None
+
+
+def reset_akun(db: Session, id: int) -> Pengguna:
+    """Kembalikan akun ke belum_aktif tanpa kata sandi (mis. mahasiswa lupa kata sandi).
+
+    Data dan progres belajar tetap. Mahasiswa mengaktifkan lagi lewat registrasi.
+    """
+    return crud_mhs.reset_akun(db, get_mahasiswa(db, id))
 
 
 def hapus_mahasiswa(db: Session, id: int) -> None:

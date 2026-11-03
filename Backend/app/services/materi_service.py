@@ -117,9 +117,7 @@ def get_materi(db: Session, materi_id: int) -> Materi:
 # ------------------------------------------------------------
 # Tulis (admin)
 # ------------------------------------------------------------
-def create_materi(
-    db: Session, data: MateriCreateRequest, admin_id: int
-) -> Materi:
+def create_materi(db: Session, data: MateriCreateRequest, admin_id: int) -> Materi:
     return crud_materi.create(
         db,
         judul=data.judul,
@@ -146,16 +144,16 @@ def upload_materi(
     """POST /materi. Semua validasi dilakukan sebelum file disimpan (tidak ada file yatim)."""
     ext = file_service.cek_ekstensi(file)  # 400 bila format salah
 
-    bidang = dict(
-        judul=judul.strip(),
-        mata_kuliah=mata_kuliah.strip(),
-        semester=semester,
-        deskripsi=(deskripsi or "").strip() or None,
-    )
+    bidang = {
+        "judul": judul.strip(),
+        "mata_kuliah": mata_kuliah.strip(),
+        "semester": semester,
+        "deskripsi": (deskripsi or "").strip() or None,
+    }
     try:
         MateriCreateRequest(**bidang, jenis=ext.lstrip("."), url=_URL_VALIDASI)
     except ValidationError as exc:
-        raise _ke_422(exc)
+        raise _ke_422(exc) from None
 
     jenis, url = file_service.simpan_upload(file)  # 413 bila > batas ukuran
     try:
@@ -165,9 +163,7 @@ def upload_materi(
         raise
 
 
-def update_materi(
-    db: Session, materi_id: int, data: MateriUpdateRequest
-) -> Materi:
+def update_materi(db: Session, materi_id: int, data: MateriUpdateRequest) -> Materi:
     """PUT /materi/{id} (JSON, tanpa ganti file)."""
     materi = get_materi(db, materi_id)
 
@@ -232,7 +228,7 @@ def ubah_materi_form(
     try:  # validasi dulu, sebelum menyentuh disk
         MateriUpdateRequest(**fields)
     except ValidationError as exc:
-        raise _ke_422(exc)
+        raise _ke_422(exc) from None
 
     url_lama = materi.url
     url_baru = None
