@@ -1,16 +1,16 @@
-# Backend/app/api/v1/materi.py
-#
-# Endpoint materi:
-#   GET    /materi                       daftar + filter + paginasi (semua pengguna login)
-#   GET    /materi/kategori/semester     kategori semester 1-8 + jumlah materi
-#   GET    /materi/kategori/mata-kuliah  kategori mata kuliah pada satu semester
-#   GET    /materi/{id}                  detail
-#   POST   /materi                       upload materi (admin)
-#   PUT    /materi/{id}/edit             edit via form + ganti file opsional (admin) <- dipakai frontend
-#   PUT    /materi/{id}                  edit via JSON tanpa ganti file (admin)
-#   DELETE /materi/{id}                  hapus materi + file fisiknya (admin)
-#
-# Mahasiswa hanya melihat materi berstatus "terbit".
+"""Endpoint materi.
+
+  GET    /materi                       daftar + filter + paginasi (semua pengguna login)
+  GET    /materi/kategori/semester     kategori semester 1-8 + jumlah materi
+  GET    /materi/kategori/mata-kuliah  kategori mata kuliah pada satu semester
+  GET    /materi/{id}                  detail
+  POST   /materi                       upload materi (admin)
+  PUT    /materi/{id}/edit             edit via form + ganti file opsional (admin), dipakai frontend
+  PUT    /materi/{id}                  edit via JSON tanpa ganti file (admin)
+  DELETE /materi/{id}                  hapus materi + file fisiknya (admin)
+
+Mahasiswa hanya melihat materi berstatus "terbit".
+"""
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session

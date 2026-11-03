@@ -35,7 +35,7 @@ def map_status_by_materi(db: Session, pengguna_id: int) -> dict[int, str]:
         .filter(ProgresMateri.pengguna_id == pengguna_id)
         .all()
     )
-    return {materi_id: status for materi_id, status in rows}
+    return dict(rows)
 
 
 def hitung_progres(db: Session, pengguna_id: int) -> tuple[int, int]:
@@ -72,7 +72,7 @@ def progres_per_mata_kuliah(db: Session, pengguna_id: int) -> list[tuple[str, in
         .group_by(Materi.mata_kuliah)
         .all()
     )
-    selesai = {mk: n for mk, n in selesai_rows}
+    selesai = dict(selesai_rows)
     return [(mk, int(total), int(selesai.get(mk, 0))) for mk, total in total_rows]
 
 

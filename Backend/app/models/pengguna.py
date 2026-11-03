@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.core.waktu import sekarang_utc
 from app.db.base import Base
 
 
@@ -15,12 +16,10 @@ class Pengguna(Base):
     nama: Mapped[str] = mapped_column(String(100), nullable=False)
     kata_sandi: Mapped[str | None] = mapped_column(String(255), nullable=True)
     angkatan: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    status: Mapped[str] = mapped_column(
-        String(20), default="belum_aktif", nullable=False
-    )
-    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    status: Mapped[str] = mapped_column(String(20), default="belum_aktif", nullable=False)
+    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=sekarang_utc)
     diubah_pada: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, default=sekarang_utc, onupdate=sekarang_utc
     )
 
     sesi_login: Mapped[list["SesiLogin"]] = relationship(
@@ -42,6 +41,6 @@ class SesiLogin(Base):
     perangkat: Mapped[str | None] = mapped_column(String(255), nullable=True)
     alamat_ip: Mapped[str | None] = mapped_column(String(45), nullable=True)
     kedaluwarsa_pada: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=sekarang_utc)
 
     pengguna: Mapped["Pengguna"] = relationship(back_populates="sesi_login")

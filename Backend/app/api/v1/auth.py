@@ -1,10 +1,11 @@
+"""Endpoint autentikasi: registrasi (aktivasi akun), login, dan data pengguna saat ini."""
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.models.pengguna import Pengguna
-
 from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
@@ -12,14 +13,9 @@ from app.schemas.auth import (
     RegistrasiRequest,
     RegistrasiResponse,
 )
-
 from app.services import auth_service
 
-
-router = APIRouter(
-    prefix="/auth",
-    tags=["Auth"],
-)
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post(
@@ -32,10 +28,7 @@ router = APIRouter(
         "Set password dan ubah status akun jadi aktif."
     ),
 )
-def registrasi(
-    data: RegistrasiRequest,
-    db: Session = Depends(get_db),
-):
+def registrasi(data: RegistrasiRequest, db: Session = Depends(get_db)):
     return auth_service.registrasi(db, data)
 
 
@@ -43,25 +36,17 @@ def registrasi(
     "/login",
     response_model=LoginResponse,
     status_code=status.HTTP_200_OK,
+    summary="Login dan ambil access token",
 )
-def login(
-    data: LoginRequest,
-    db: Session = Depends(get_db),
-):
-    return auth_service.login(
-        db,
-        data,
-    )
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    return auth_service.login(db, data)
 
 
 @router.get(
     "/me",
     response_model=PenggunaRingkas,
     status_code=status.HTTP_200_OK,
+    summary="Data pengguna yang sedang login",
 )
-def me(
-    pengguna: Pengguna = Depends(
-        get_current_user
-    ),
-):
+def me(pengguna: Pengguna = Depends(get_current_user)):
     return pengguna

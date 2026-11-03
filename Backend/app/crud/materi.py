@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
+from sqlalchemy.orm import Session
 
 from app.models.materi import Materi
 
@@ -27,17 +27,10 @@ def get_all(
         query = query.filter(Materi.status == status)
     if q:
         like = f"%{q}%"
-        query = query.filter(
-            or_(Materi.judul.ilike(like), Materi.deskripsi.ilike(like))
-        )
+        query = query.filter(or_(Materi.judul.ilike(like), Materi.deskripsi.ilike(like)))
 
     total = query.count()
-    items = (
-        query.order_by(Materi.dibuat_pada.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    items = query.order_by(Materi.dibuat_pada.desc()).offset(skip).limit(limit).all()
     return items, total
 
 
@@ -46,12 +39,12 @@ def count_terbit(db: Session) -> int:
 
 
 def count_by_url(db: Session, url: str) -> int:
-    """Jumlah materi yang memakai URL file tertentu (untuk memutuskan boleh/tidaknya file fisik dihapus)."""
+    """Jumlah materi yang memakai URL file tertentu (dasar untuk menghapus file fisik)."""
     return db.query(Materi).filter(Materi.url == url).count()
 
 
 def kategori_semester(db: Session, *, status: str | None = None) -> list[tuple[int, int, int]]:
-    """Return [(semester, jumlah materi, jumlah mata kuliah berbeda)] hanya semester yang punya materi."""
+    """Return [(semester, jumlah materi, jumlah mata kuliah berbeda)] untuk semester yang berisi."""
     query = db.query(
         Materi.semester,
         func.count(Materi.id),

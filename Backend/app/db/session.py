@@ -7,9 +7,7 @@ from app.core.config import settings
 def _normalisasi_url(url: str) -> str:
     """Normalisasi URL database dari berbagai format Railway."""
     if not url or not url.strip():
-        raise ValueError(
-            "DATABASE_URL kosong. Pastikan environment variable sudah di-set."
-        )
+        raise ValueError("DATABASE_URL kosong. Pastikan environment variable sudah di-set.")
 
     # Hapus spasi / newline di awal & akhir
     url = url.strip()

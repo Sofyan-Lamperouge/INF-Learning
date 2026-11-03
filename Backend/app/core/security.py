@@ -1,16 +1,14 @@
-# Backend/app/core/security.py
+"""Hash kata sandi (bcrypt) dan pembuatan/pembacaan JWT access token."""
 
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
-from jose import JWTError, jwt
+from jose import jwt
 
 from app.core.config import settings
 
 
-# ============================================================
-# Password
-# ============================================================
+# --- Password ---
 def hash_kata_sandi(kata_sandi: str) -> str:
     return bcrypt.hashpw(kata_sandi.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -26,15 +24,11 @@ def verifikasi_kata_sandi(kata_sandi: str, hash_tersimpan: str) -> bool:
         return False
 
 
-# ============================================================
-# JWT (tidak berubah)
-# ============================================================
+# --- JWT ---
 def buat_access_token(data: dict) -> str:
     """Bikin JWT access token. `data` minimal berisi `sub` (user id)."""
     to_encode = data.copy()
-    expired = datetime.now(timezone.utc) + timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    expired = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expired})
     return jwt.encode(
         to_encode,
