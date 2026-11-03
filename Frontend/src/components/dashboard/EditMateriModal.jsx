@@ -27,6 +27,7 @@ function FileTypeIcon({ extension }) {
           d="M13 5h14l11 11v25a2 2 0 0 1-2 2H13a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3Z"
           stroke="currentColor"
           strokeWidth="2.5"
+          strokeLinejoin="round"
         />
         <path
           d="M27 5v10a2 2 0 0 0 2 2h9"
@@ -41,16 +42,15 @@ function FileTypeIcon({ extension }) {
 function ResultIcon({ type }) {
   if (type === "success") {
     return (
-      <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
-        <circle cx="60" cy="60" r="43" stroke="currentColor" strokeWidth="5" />
-        <path d="m39 61 14 14 29-31" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <path d="m33 50 12 11 22-21" stroke="currentColor" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
 
   return (
-    <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
-      <path d="m40 40 40 40M80 40 40 80" stroke="currentColor" strokeWidth="9" strokeLinecap="round" />
+    <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="m36 36 28 28M64 36 36 64" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -146,7 +146,7 @@ export default function EditMateriModal({
     try {
       setSaving(true);
       await updateMateri(materi.id, formData);
-      setResult({ type: "success", message: `Data “${form.judul.trim()}” telah berhasil diperbarui!` });
+      setResult({ type: "success", name: form.judul.trim() });
       window.setTimeout(() => onSaved?.(), 2100);
     } catch (error) {
       setResult({
@@ -177,7 +177,13 @@ export default function EditMateriModal({
             <ResultIcon type={result.type} />
           </div>
           <h2>{result.type === "success" ? "Materi Berhasil Diperbarui!" : "Gagal Memperbarui Materi!"}</h2>
-          <p>{result.message}</p>
+          {result.type === "success" ? (
+            <p>
+              Data "<strong>{result.name}</strong>" telah diperbarui!
+            </p>
+          ) : (
+            <p>{result.message}</p>
+          )}
         </section>
       ) : (
         <section
@@ -248,7 +254,7 @@ export default function EditMateriModal({
                   <input type="file" accept=".pdf,.docx,.pptx" onChange={handleFileChange} disabled={saving} />
                 </label>
               </div>
-              <p className="edit-materi-file-hint">Format: PDF, DOCX, PPTX | Maks. 10 MB. Kosongkan jika file tidak diganti.</p>
+              <p className="edit-materi-file-hint">Format: PDF, DOCX, PPTX | Maks. 10 MB</p>
             </section>
 
             <footer className="edit-materi-actions">

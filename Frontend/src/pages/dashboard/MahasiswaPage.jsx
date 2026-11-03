@@ -1,62 +1,46 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/dashboard/DashboardLayout.jsx';
+import MahasiswaConfirmModal from '../../components/mahasiswa/MahasiswaConfirmModal.jsx';
+import MahasiswaDeleteModal from '../../components/mahasiswa/MahasiswaDeleteModal.jsx';
+import MahasiswaFormModal from '../../components/mahasiswa/MahasiswaFormModal.jsx';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EditIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
+  UsersIcon,
+} from '../../components/mahasiswa/MahasiswaIcons.jsx';
+import MahasiswaSuccessModal from '../../components/mahasiswa/MahasiswaSuccessModal.jsx';
+import MahasiswaTooltip from '../../components/mahasiswa/MahasiswaTooltip.jsx';
 import {
   createMahasiswa,
   deleteMahasiswa,
   getMahasiswaList,
   updateMahasiswa,
 } from '../../services/mahasiswaService.js';
+import {
+  getAngkatanOptions,
+  getAngkatanTone,
+  getStatusKey,
+  getStatusLabel,
+  isAktif,
+  STATUS_FILTER_OPTIONS,
+  toFormValues,
+} from '../../utils/mahasiswaStatus.js';
 
 const PAGE_SIZE = 20;
-const STATUS_OPTIONS = [
-  { value: 'belum_aktif', label: 'Belum aktif' },
-  { value: 'aktif', label: 'Aktif' },
-  { value: 'nonaktif', label: 'Non-aktif' },
-];
+const ANGKATAN_OPTIONS = getAngkatanOptions(null, 16);
 
-function getStatusLabel(status) {
-  return STATUS_OPTIONS.find((option) => option.value === status)?.label
-    || status
-    || 'Tidak diketahui';
-}
+// Sesuai Figma: ikon hapus abu-abu (nonaktif/tidak bisa diklik) pada mahasiswa Aktif,
+// dan merah pada mahasiswa Non-aktif. Ubah ke false jika semua mahasiswa boleh dihapus.
+const HANYA_NONAKTIF_BISA_DIHAPUS = true;
 
-function UserIcon() {
-  return (
-    <svg viewBox="0 0 50 43" fill="none" aria-hidden="true">
-      <path
-        d="M22.87 26.97a11 11 0 1 0-13.22 0A18 18 0 0 0 1.4 34.5a1.8 1.8 0 0 0 3 2A14 14 0 0 1 16.26 29a14 14 0 0 1 11.6 7.5 1.8 1.8 0 0 0 3-2 18 18 0 0 0-8-7.53ZM7.52 17a8.74 8.74 0 1 1 17.48 0 8.74 8.74 0 0 1-17.48 0ZM49.28 34.5a21 21 0 0 0-8.92-7.53 12 12 0 0 0-8.07-21.1 1.8 1.8 0 0 0 .1 3.6 8.74 8.74 0 0 1 3.7 16.65 1.8 1.8 0 0 0 .8 3.4 17 17 0 0 1 9.36 7 1.8 1.8 0 0 0 3.03-2Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
+const EMPTY_FORM = { nomor_induk: '', nama: '', angkatan: '', status: 'nonaktif' };
 
-function EditIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9M16 3l5 5M10 14l8.5-8.5a2.12 2.12 0 0 1 3 3L13 17l-4 1 1-4Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function canDelete(mahasiswa) {
+  return !HANYA_NONAKTIF_BISA_DIHAPUS || !isAktif(mahasiswa.status);
 }
 
 export default function MahasiswaPage() {
@@ -66,7 +50,6 @@ export default function MahasiswaPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -75,20 +58,15 @@ export default function MahasiswaPage() {
   const [page, setPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const [editingMahasiswa, setEditingMahasiswa] = useState(null);
-  const [formOpen, setFormOpen] = useState(false);
-  const [form, setForm] = useState({
-    nomor_induk: '',
-    nama: '',
-    angkatan: '',
-    status: 'belum_aktif',
-  });
-  const [formError, setFormError] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const [deletingMahasiswa, setDeletingMahasiswa] = useState(null);
-  const [deleteError, setDeleteError] = useState('');
-  const [deleting, setDeleting] = useState(false);
+  // Alur pop up: null | form | confirm | added | updated | delete | deleted
+  const [modal, setModal] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [draft, setDraft] = useState(EMPTY_FORM);
+  const [target, setTarget] = useState(null);
+  const [deletedName, setDeletedName] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [modalError, setModalError] = useState('');
+  const [tip, setTip] = useState(null); // DOMRect ikon hapus yang di-hover
 
   // Debounce pencarian agar tidak request ke backend untuk setiap ketikan.
   useEffect(() => {
@@ -144,120 +122,115 @@ export default function MahasiswaPage() {
     };
   }, [search, angkatan, status, page, reloadKey]);
 
+  // Sembunyikan tooltip saat halaman di-scroll / diubah ukurannya.
+  useEffect(() => {
+    if (!tip) return undefined;
+    const hide = () => setTip(null);
+    window.addEventListener('scroll', hide, true);
+    window.addEventListener('resize', hide);
+    return () => {
+      window.removeEventListener('scroll', hide, true);
+      window.removeEventListener('resize', hide);
+    };
+  }, [tip]);
+
+  const reload = () => setReloadKey((current) => current + 1);
+
+  function closeModal() {
+    if (busy) return;
+    setModal(null);
+    setEditing(null);
+    setTarget(null);
+    setModalError('');
+  }
+
   function openCreateModal() {
-    setEditingMahasiswa(null);
-    setForm({
-      nomor_induk: '',
-      nama: '',
-      angkatan: '',
-      status: 'belum_aktif',
-    });
-    setFormError('');
-    setFormOpen(true);
+    setEditing(null);
+    setDraft(EMPTY_FORM);
+    setModalError('');
+    setModal('form');
   }
 
   function openEditModal(mahasiswa) {
-    setEditingMahasiswa(mahasiswa);
-    setForm({
-      nomor_induk: mahasiswa.nomor_induk || '',
-      nama: mahasiswa.nama || '',
-      angkatan: mahasiswa.angkatan ? String(mahasiswa.angkatan) : '',
-      status: mahasiswa.status || 'belum_aktif',
-    });
-    setFormError('');
-    setFormOpen(true);
+    setEditing(mahasiswa);
+    setDraft(toFormValues(mahasiswa));
+    setModalError('');
+    setModal('form');
   }
 
-  function closeFormModal() {
-    if (saving) return;
-    setFormOpen(false);
-    setEditingMahasiswa(null);
-    setFormError('');
+  function openDeleteModal(mahasiswa) {
+    if (!canDelete(mahasiswa)) return;
+    setTarget(mahasiswa);
+    setModalError('');
+    setModal('delete');
   }
 
-  function handleFormChange(event) {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-    setFormError('');
+  // Submit form (tambah / edit) -> selalu ke pop up konfirmasi dulu.
+  function handleFormSubmit(values) {
+    setDraft(values);
+    setModalError('');
+    setModal('confirm');
   }
 
-  async function handleSave(event) {
-    event.preventDefault();
-    setFormError('');
-    setNotice('');
+  async function handleUpdateConfirm() {
+    if (!editing) return;
 
-    const nim = form.nomor_induk.trim();
-    const nama = form.nama.trim();
-    const tahun = Number(form.angkatan);
+    const original = toFormValues(editing);
+    const payload = { nama: draft.nama, angkatan: Number(draft.angkatan) };
+    if (draft.status !== original.status) payload.status = draft.status;
 
-    if (!editingMahasiswa && !/^2\d88\d{6}$/.test(nim)) {
-      setFormError('Format NIM tidak sesuai. Pastikan NIM berisi 10 digit yang valid.');
-      return;
-    }
-
-    if (nama.length < 3) {
-      setFormError('Nama mahasiswa minimal 3 karakter.');
-      return;
-    }
-
-    if (!form.angkatan || !Number.isInteger(tahun) || tahun < 1900) {
-      setFormError('Angkatan harus diisi dengan tahun yang valid.');
-      return;
-    }
-
-    const payload = {
-      nama,
-      angkatan: tahun,
-    };
-
-    if (editingMahasiswa) {
-      payload.status = form.status;
-    } else {
-      payload.nomor_induk = nim;
-    }
-
-    setSaving(true);
+    setBusy(true);
+    setModalError('');
 
     try {
-      if (editingMahasiswa) {
-        await updateMahasiswa(editingMahasiswa.id, payload);
-        setNotice('Data mahasiswa berhasil diperbarui.');
-      } else {
-        await createMahasiswa(payload);
-        setNotice('Mahasiswa berhasil ditambahkan.');
-      }
-
-      setFormOpen(false);
-      setEditingMahasiswa(null);
-      setPage(1);
-      setReloadKey((current) => current + 1);
+      await updateMahasiswa(editing.id, payload);
+      setModal('updated');
+      reload();
     } catch (saveError) {
-      setFormError(
-        saveError.message || 'Data mahasiswa gagal disimpan. Silakan coba lagi.',
-      );
+      setModalError(saveError.message || 'Data mahasiswa gagal disimpan. Silakan coba lagi.');
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
   }
 
-  async function handleDelete() {
-    if (!deletingMahasiswa || deleting) return;
-
-    setDeleting(true);
-    setDeleteError('');
-    setNotice('');
+  async function handleCreateConfirm() {
+    setBusy(true);
+    setModalError('');
 
     try {
-      await deleteMahasiswa(deletingMahasiswa.id);
-      setNotice(`Data ${deletingMahasiswa.nama} berhasil dihapus.`);
-      setDeletingMahasiswa(null);
-      setReloadKey((current) => current + 1);
-    } catch (deleteRequestError) {
-      setDeleteError(
-        deleteRequestError.message || 'Mahasiswa gagal dihapus. Silakan coba lagi.',
-      );
+      await createMahasiswa({
+        nomor_induk: draft.nomor_induk,
+        nama: draft.nama,
+        angkatan: Number(draft.angkatan),
+      });
+      setModal('added');
+      setPage(1);
+      reload();
+    } catch (saveError) {
+      setModalError(saveError.message || 'Data mahasiswa gagal disimpan. Silakan coba lagi.');
     } finally {
-      setDeleting(false);
+      setBusy(false);
+    }
+  }
+
+  async function handleDeleteConfirm() {
+    if (!target || busy) return;
+
+    setBusy(true);
+    setModalError('');
+
+    try {
+      await deleteMahasiswa(target.id);
+      setDeletedName(target.nama);
+      setModal('deleted');
+      setTarget(null);
+      // Jika yang dihapus adalah item terakhir di halaman > 1, mundur satu halaman.
+      if (items.length === 1 && page > 1) setPage((current) => current - 1);
+      reload();
+    } catch (deleteError) {
+      setModalError(deleteError.message || 'Mahasiswa gagal dihapus. Silakan coba lagi.');
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -266,8 +239,119 @@ export default function MahasiswaPage() {
     setPage(1);
   }
 
-  const firstItem = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const lastItem = Math.min(page * PAGE_SIZE, total);
+  function resetFilters() {
+    setSearchInput('');
+    setSearch('');
+    setAngkatan('');
+    setStatus('');
+    setPage(1);
+  }
+
+  const hasFilter = Boolean(search || angkatan || status);
+
+  function renderBody() {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan="6" className="mahasiswa-table-message">
+            <div className="mahasiswa-empty">
+              <p>Memuat data mahasiswa...</p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    if (error) {
+      return (
+        <tr>
+          <td colSpan="6" className="mahasiswa-table-message">
+            <div className="mahasiswa-empty">
+              <p>Data mahasiswa belum dapat ditampilkan.</p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    if (items.length === 0) {
+      return (
+        <tr>
+          <td colSpan="6" className="mahasiswa-table-message">
+            <div className="mahasiswa-empty">
+              <span className="mahasiswa-empty-icon"><SearchIcon /></span>
+              {hasFilter ? (
+                <>
+                  <p>Tidak ada mahasiswa yang cocok dengan pencarian.</p>
+                  <button type="button" className="mahasiswa-empty-button" onClick={resetFilters}>
+                    Reset filter
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>Belum ada mahasiswa yang ditambahkan</p>
+                  <button type="button" className="mahasiswa-empty-button" onClick={openCreateModal}>
+                    <PlusIcon />
+                    Tambahkan Mahasiswa
+                  </button>
+                </>
+              )}
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    return items.map((mahasiswa, index) => {
+      const deletable = canDelete(mahasiswa);
+
+      return (
+        <tr key={mahasiswa.id}>
+          <td className="col-no">{(page - 1) * PAGE_SIZE + index + 1}</td>
+          <td className="col-status">
+            <span className={`mahasiswa-status mahasiswa-status--${getStatusKey(mahasiswa.status)}`}>
+              {getStatusLabel(mahasiswa.status)}
+            </span>
+          </td>
+          <td className="col-nim">{mahasiswa.nomor_induk}</td>
+          <td className="mahasiswa-name">{mahasiswa.nama}</td>
+          <td className="col-angkatan">
+            {mahasiswa.angkatan ? (
+              <span className={`mahasiswa-year mahasiswa-year--tone-${getAngkatanTone(mahasiswa.angkatan)}`}>
+                {mahasiswa.angkatan}
+              </span>
+            ) : '—'}
+          </td>
+          <td className="col-aksi">
+            <div className="mahasiswa-row-actions">
+              <button
+                className="mahasiswa-action mahasiswa-action--edit"
+                type="button"
+                aria-label={`Edit ${mahasiswa.nama}`}
+                onClick={() => openEditModal(mahasiswa)}
+              >
+                <EditIcon />
+              </button>
+              <button
+                className={`mahasiswa-action mahasiswa-action--delete${deletable ? '' : ' is-disabled'}`}
+                type="button"
+                aria-label={`Hapus ${mahasiswa.nama}`}
+                aria-disabled={!deletable}
+                aria-describedby={!deletable && tip ? 'mahasiswa-tooltip' : undefined}
+                onClick={() => openDeleteModal(mahasiswa)}
+                onMouseEnter={deletable ? undefined : (event) => setTip(event.currentTarget.getBoundingClientRect())}
+                onFocus={deletable ? undefined : (event) => setTip(event.currentTarget.getBoundingClientRect())}
+                onMouseLeave={deletable ? undefined : () => setTip(null)}
+                onBlur={deletable ? undefined : () => setTip(null)}
+              >
+                <TrashIcon />
+              </button>
+            </div>
+          </td>
+        </tr>
+      );
+    });
+  }
 
   return (
     <DashboardLayout>
@@ -275,7 +359,7 @@ export default function MahasiswaPage() {
         <header className="mahasiswa-header">
           <div className="mahasiswa-header-info">
             <div className="mahasiswa-header-icon">
-              <UserIcon />
+              <UsersIcon />
             </div>
 
             <div>
@@ -284,12 +368,8 @@ export default function MahasiswaPage() {
             </div>
           </div>
 
-          <button
-            className="mahasiswa-add-button"
-            type="button"
-            onClick={openCreateModal}
-          >
-            <span aria-hidden="true">＋</span>
+          <button className="mahasiswa-add-button" type="button" onClick={openCreateModal}>
+            <PlusIcon />
             Tambah mahasiswa
           </button>
         </header>
@@ -299,38 +379,33 @@ export default function MahasiswaPage() {
             <label className="mahasiswa-filter">
               <span className="visually-hidden">Filter angkatan</span>
               <select
+                className="mahasiswa-select"
                 value={angkatan}
                 onChange={(event) => changeFilter(setAngkatan, event.target.value)}
               >
                 <option value="">Semua Angkatan</option>
-                {Array.from({ length: 16 }, (_, index) => {
-                  const year = new Date().getFullYear() - index;
-                  return (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  );
-                })}
+                {ANGKATAN_OPTIONS.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
               </select>
             </label>
 
             <label className="mahasiswa-filter">
               <span className="visually-hidden">Filter status</span>
               <select
+                className="mahasiswa-select"
                 value={status}
                 onChange={(event) => changeFilter(setStatus, event.target.value)}
               >
                 <option value="">Semua Status</option>
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </select>
             </label>
 
             <label className="mahasiswa-search">
-              <span className="mahasiswa-search-icon" aria-hidden="true">⌕</span>
+              <span className="mahasiswa-search-icon"><SearchIcon /></span>
               <span className="visually-hidden">Cari mahasiswa</span>
               <input
                 type="search"
@@ -341,280 +416,116 @@ export default function MahasiswaPage() {
             </label>
           </div>
 
-          {notice && (
-            <div className="mahasiswa-notice" role="status">
-              {notice}
-            </div>
-          )}
-
           {error && (
-            <div className="mahasiswa-error" role="alert">
-              {error}
-            </div>
+            <div className="mahasiswa-error" role="alert">{error}</div>
           )}
 
           <div className="mahasiswa-table-wrap">
             <table className="mahasiswa-table">
               <thead>
                 <tr>
-                  <th scope="col">No</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">NIM</th>
+                  <th scope="col" className="col-no">No</th>
+                  <th scope="col" className="col-status">Status</th>
+                  <th scope="col" className="col-nim">NIM</th>
                   <th scope="col">Nama</th>
-                  <th scope="col">Angkatan</th>
-                  <th scope="col">Aksi</th>
+                  <th scope="col" className="col-angkatan">Angkatan</th>
+                  <th scope="col" className="col-aksi">Aksi</th>
                 </tr>
               </thead>
-
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="6" className="mahasiswa-table-message">
-                      Memuat data mahasiswa...
-                    </td>
-                  </tr>
-                ) : error ? (
-                  <tr>
-                    <td colSpan="6" className="mahasiswa-table-message">
-                      Data mahasiswa belum dapat ditampilkan.
-                    </td>
-                  </tr>
-                ) : items.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="mahasiswa-table-message">
-                      Tidak ada data mahasiswa yang cocok.
-                    </td>
-                  </tr>
-                ) : (
-                  items.map((mahasiswa, index) => (
-                    <tr key={mahasiswa.id}>
-                      <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
-                      <td>
-                        <span
-                          className={`mahasiswa-status mahasiswa-status--${mahasiswa.status}`}
-                        >
-                          {getStatusLabel(mahasiswa.status)}
-                        </span>
-                      </td>
-                      <td>{mahasiswa.nomor_induk}</td>
-                      <td className="mahasiswa-name">{mahasiswa.nama}</td>
-                      <td>
-                        <span className="mahasiswa-year">
-                          {mahasiswa.angkatan || '—'}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="mahasiswa-row-actions">
-                          <button
-                            className="mahasiswa-action mahasiswa-action--edit"
-                            type="button"
-                            aria-label={`Edit ${mahasiswa.nama}`}
-                            title="Edit mahasiswa"
-                            onClick={() => openEditModal(mahasiswa)}
-                          >
-                            <EditIcon />
-                          </button>
-                          <button
-                            className="mahasiswa-action mahasiswa-action--delete"
-                            type="button"
-                            aria-label={`Hapus ${mahasiswa.nama}`}
-                            title="Hapus mahasiswa"
-                            onClick={() => {
-                              setDeletingMahasiswa(mahasiswa);
-                              setDeleteError('');
-                            }}
-                          >
-                            <TrashIcon />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
+              <tbody>{renderBody()}</tbody>
             </table>
           </div>
-
-          <footer className="mahasiswa-footer">
-            <p>
-              Menampilkan {firstItem}–{lastItem} dari {total} mahasiswa
-            </p>
-
-            <nav className="mahasiswa-pagination" aria-label="Paginasi mahasiswa">
-              <button
-                type="button"
-                aria-label="Halaman sebelumnya"
-                disabled={page <= 1 || loading}
-                onClick={() => setPage((current) => Math.max(current - 1, 1))}
-              >
-                ‹
-              </button>
-              <span>{page}</span>
-              <button
-                type="button"
-                aria-label="Halaman berikutnya"
-                disabled={page >= totalPages || loading}
-                onClick={() => setPage((current) => Math.min(current + 1, totalPages))}
-              >
-                ›
-              </button>
-            </nav>
-          </footer>
         </div>
+
+        <footer className="mahasiswa-footer">
+          <p>Menampilkan {items.length} dari {total} mahasiswa</p>
+
+          <nav className="mahasiswa-pagination" aria-label="Paginasi mahasiswa">
+            <button
+              type="button"
+              aria-label="Halaman sebelumnya"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((current) => Math.max(current - 1, 1))}
+            >
+              <ChevronLeftIcon />
+            </button>
+            <span>{page}</span>
+            <button
+              type="button"
+              aria-label="Halaman berikutnya"
+              disabled={page >= totalPages || loading}
+              onClick={() => setPage((current) => Math.min(current + 1, totalPages))}
+            >
+              <ChevronRightIcon />
+            </button>
+          </nav>
+        </footer>
       </section>
 
-      {formOpen && (
-        <div
-          className="mahasiswa-modal-overlay"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeFormModal();
-          }}
-        >
-          <section
-            className="mahasiswa-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="mahasiswa-modal-title"
-          >
-            <button
-              className="mahasiswa-modal-close"
-              type="button"
-              onClick={closeFormModal}
-              disabled={saving}
-              aria-label="Tutup"
-            >
-              ×
-            </button>
-
-            <h2 id="mahasiswa-modal-title">
-              {editingMahasiswa ? 'Edit Mahasiswa' : 'Tambah Mahasiswa'}
-            </h2>
-
-            <form onSubmit={handleSave}>
-              <label>
-                NIM
-                <input
-                  name="nomor_induk"
-                  value={form.nomor_induk}
-                  onChange={handleFormChange}
-                  placeholder="Contoh: 2488010001"
-                  disabled={Boolean(editingMahasiswa)}
-                  required={!editingMahasiswa}
-                />
-              </label>
-
-              <label>
-                Nama mahasiswa
-                <input
-                  name="nama"
-                  value={form.nama}
-                  onChange={handleFormChange}
-                  placeholder="Masukkan nama mahasiswa"
-                  minLength={3}
-                  maxLength={100}
-                  required
-                />
-              </label>
-
-              <label>
-                Angkatan
-                <input
-                  name="angkatan"
-                  type="number"
-                  value={form.angkatan}
-                  onChange={handleFormChange}
-                  placeholder="Contoh: 2024"
-                  min="1900"
-                  max={new Date().getFullYear() + 1}
-                  required
-                />
-              </label>
-
-              {editingMahasiswa && (
-                <label>
-                  Status
-                  <select
-                    name="status"
-                    value={form.status}
-                    onChange={handleFormChange}
-                  >
-                    {STATUS_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-
-              {formError && (
-                <p className="mahasiswa-modal-error" role="alert">
-                  {formError}
-                </p>
-              )}
-
-              <div className="mahasiswa-modal-actions">
-                <button
-                  type="button"
-                  className="mahasiswa-modal-cancel"
-                  onClick={closeFormModal}
-                  disabled={saving}
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="mahasiswa-modal-save"
-                  disabled={saving}
-                >
-                  {saving ? 'Menyimpan...' : 'Simpan'}
-                </button>
-              </div>
-            </form>
-          </section>
-        </div>
+      {modal === 'form' && (
+        <MahasiswaFormModal
+          key={editing ? `edit-${editing.id}` : 'create'}
+          mode={editing ? 'edit' : 'create'}
+          initialValues={draft}
+          original={editing ? toFormValues(editing) : null}
+          statusLocked={editing?.status === 'belum_aktif'}
+          error={modalError}
+          onSubmit={handleFormSubmit}
+          onClose={closeModal}
+        />
       )}
 
-      {deletingMahasiswa && (
-        <div className="mahasiswa-modal-overlay">
-          <section
-            className="mahasiswa-modal mahasiswa-delete-modal"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="mahasiswa-delete-title"
-          >
-            <h2 id="mahasiswa-delete-title">Hapus Mahasiswa?</h2>
-            <p>
-              Data <strong>{deletingMahasiswa.nama}</strong> akan dihapus
-              dari sistem.
-            </p>
+      {modal === 'confirm' && (
+        <MahasiswaConfirmModal
+          mode={editing ? 'edit' : 'create'}
+          values={draft}
+          original={editing ? toFormValues(editing) : null}
+          busy={busy}
+          error={modalError}
+          onBack={() => { setModalError(''); setModal('form'); }}
+          onConfirm={editing ? handleUpdateConfirm : handleCreateConfirm}
+          onClose={closeModal}
+        />
+      )}
 
-            {deleteError && (
-              <p className="mahasiswa-modal-error" role="alert">
-                {deleteError}
-              </p>
-            )}
+      {modal === 'added' && (
+        <MahasiswaSuccessModal title="Mahasiswa Berhasil Ditambahkan!" onClose={closeModal}>
+          Data mahasiswa telah disimpan ke dalam sistem!
+        </MahasiswaSuccessModal>
+      )}
 
-            <div className="mahasiswa-modal-actions">
-              <button
-                type="button"
-                className="mahasiswa-modal-cancel"
-                onClick={() => setDeletingMahasiswa(null)}
-                disabled={deleting}
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                className="mahasiswa-modal-delete"
-                onClick={handleDelete}
-                disabled={deleting}
-              >
-                {deleting ? 'Menghapus...' : 'Hapus'}
-              </button>
-            </div>
-          </section>
-        </div>
+      {modal === 'updated' && (
+        <MahasiswaSuccessModal title="Data Berhasil Diperbarui!" onClose={closeModal}>
+          Perubahan data mahasiswa telah disimpan ke dalam sistem!
+        </MahasiswaSuccessModal>
+      )}
+
+      {modal === 'delete' && target && (
+        <MahasiswaDeleteModal
+          mahasiswa={target}
+          busy={busy}
+          error={modalError}
+          onCancel={closeModal}
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
+
+      {modal === 'deleted' && (
+        <MahasiswaSuccessModal
+          title="Mahasiswa Berhasil Dihapus!"
+          withButton={false}
+          autoCloseMs={2200}
+          onClose={closeModal}
+        >
+          Data <strong>&ldquo;{deletedName}&rdquo;</strong> telah dihapus dari sistem!
+        </MahasiswaSuccessModal>
+      )}
+      {tip && (
+        <MahasiswaTooltip anchor={tip}>
+          Hapus mahasiswa harus
+          <br />
+          berstatus Non-aktif
+        </MahasiswaTooltip>
       )}
     </DashboardLayout>
   );
