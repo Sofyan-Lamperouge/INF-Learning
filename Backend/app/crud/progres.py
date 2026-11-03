@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
-from app.core.waktu import sekarang_utc
 from app.models.materi import Materi
 from app.models.progres import ProgresMateri
 
@@ -27,11 +24,6 @@ def upsert(db: Session, pengguna_id: int, materi_id: int, status: str) -> Progre
         db.add(progres)
     elif not (progres.status == "selesai" and status == "dilihat"):
         progres.status = status
-
-    # Catat waktu selesai hanya sekali (saat pertama kali selesai)
-    if progres.status == "selesai" and progres.selesai_pada is None:
-        progres.selesai_pada = sekarang_utc()
-
     db.commit()
     db.refresh(progres)
     return progres
@@ -43,7 +35,7 @@ def map_status_by_materi(db: Session, pengguna_id: int) -> dict[int, str]:
         .filter(ProgresMateri.pengguna_id == pengguna_id)
         .all()
     )
-    return dict(rows)
+    return {materi_id: status for materi_id, status in rows}
 
 
 def hitung_progres(db: Session, pengguna_id: int) -> tuple[int, int]:
@@ -80,31 +72,8 @@ def progres_per_mata_kuliah(db: Session, pengguna_id: int) -> list[tuple[str, in
         .group_by(Materi.mata_kuliah)
         .all()
     )
-    selesai = dict(selesai_rows)
+    selesai = {mk: n for mk, n in selesai_rows}
     return [(mk, int(total), int(selesai.get(mk, 0))) for mk, total in total_rows]
-
-
-def materi_selesai_terbaru(
-    db: Session, pengguna_id: int, limit: int = 5
-) -> list[tuple[Materi, datetime]]:
-    """Materi terbit yang sudah selesai dibaca mahasiswa, yang paling baru diselesaikan dulu.
-
-    Return [(materi, waktu_selesai)]. Baris lama tanpa selesai_pada memakai diubah_pada.
-    """
-    waktu = func.coalesce(ProgresMateri.selesai_pada, ProgresMateri.diubah_pada)
-    rows = (
-        db.query(Materi, waktu)
-        .join(ProgresMateri, ProgresMateri.materi_id == Materi.id)
-        .filter(
-            ProgresMateri.pengguna_id == pengguna_id,
-            ProgresMateri.status == "selesai",
-            Materi.status == "terbit",
-        )
-        .order_by(waktu.desc(), Materi.id.desc())
-        .limit(limit)
-        .all()
-    )
-    return [(materi, selesai_pada) for materi, selesai_pada in rows]
 
 
 def materi_terakhir_dilihat(db: Session, pengguna_id: int) -> Materi | None:

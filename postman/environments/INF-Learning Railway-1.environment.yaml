@@ -6,13 +6,9 @@ values:
     value: ''
   - key: admin_password
     value: ''
-  - key: nim_test
+  - key: nim_register
     value: ''
-  - key: password_test
+  - key: password_register
     value: ''
   - key: admin_token
-    secret: true
-  - key: id_test
-    value: ''
-  - key: token
     value: ''

@@ -1,4 +1,4 @@
-"""Konfigurasi aplikasi, dibaca dari environment variable atau file .env."""
+# Backend/app/core/config.py
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -9,26 +9,23 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     APP_PORT: int = 8000
 
-    # Alamat publik backend (diawali http:// atau https://), dipakai membentuk URL file upload.
+    # [BARU] harus diawali http:// atau https://
     PUBLIC_BASE_URL: str = "https://inf-learning-production.up.railway.app"
 
-    # Domain frontend yang boleh memanggil API, dipisah koma. "*" = semua (cocok untuk
-    # pengembangan). Production sebaiknya diisi, mis. "https://app-anda.vercel.app".
-    CORS_ORIGINS: str = "*"
-
-    # Folder file upload materi. Di Railway arahkan ke folder di dalam Volume
-    # (mis. /data/uploads) agar file tidak hilang saat redeploy.
+    # Folder file upload materi. Di Railway arahkan ke folder di dalam Volume (mis. /data/uploads)
+    # agar file tidak hilang saat redeploy. Di lokal cukup biarkan default.
     UPLOAD_DIR: str = "uploads"
-    # Batas ukuran file upload (MB). Disamakan dengan batas di frontend.
+    # Batas ukuran file upload (MB). Disamakan dengan batas di frontend (10 MB).
     MAX_UPLOAD_MB: int = 10
 
     # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
-    DATABASE_URL: str = Field(validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL"))
+    DATABASE_URL: str = Field(
+        validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL")
+    )
 
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
-    # Belum dipakai: refresh token belum diimplementasikan.
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     model_config = SettingsConfigDict(
@@ -37,12 +34,6 @@ class Settings(BaseSettings):
         case_sensitive=True,
         extra="ignore",
     )
-
-    @property
-    def cors_origins_list(self) -> list[str]:
-        """CORS_ORIGINS sebagai daftar; string kosong dianggap '*'."""
-        daftar = [o.strip().rstrip("/") for o in self.CORS_ORIGINS.split(",") if o.strip()]
-        return daftar or ["*"]
 
 
 settings = Settings()
