@@ -1,30 +1,15 @@
-# Backend/app/schemas/mahasiswa.py
-#
-# [DIUBAH]
-#  - MahasiswaUpdateRequest.status dibatasi: belum_aktif / aktif / nonaktif.
-#  - MahasiswaListResponse dipakai sebagai response_model GET /mahasiswa
-#    supaya hash kata_sandi tidak ikut terkirim ke klien.
-#  - [BARU] nama di-trim dan tidak boleh hanya spasi.
-#  - [BARU] angkatan dibatasi 2000-2100.
-#  - [BARU] MahasiswaUpdateRequest.nomor_induk (hanya boleh untuk akun yang belum diaktivasi,
-#    aturannya diperiksa di mahasiswa_service).
+"""Schema CRUD mahasiswa (admin), ringkasan, dan impor CSV."""
 
-import re
 from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-POLA_NIM = re.compile(r"^2\d88\d{6}$")
+from app.core.validators import validasi_nim
+from app.schemas.tipe import StatusAkun
 
-StatusAkun = Literal["belum_aktif", "aktif", "nonaktif"]
-
-
-def _validasi_nim(v: str) -> str:
-    v = v.strip()
-    if not POLA_NIM.match(v):
-        raise ValueError("Format NIM tidak dikenali")
-    return v
+ANGKATAN_MIN = 2000
+ANGKATAN_MAKS = 2100
 
 
 def _validasi_nama(v: str) -> str:
@@ -37,12 +22,12 @@ def _validasi_nama(v: str) -> str:
 class MahasiswaCreateRequest(BaseModel):
     nomor_induk: str = Field(..., min_length=10, max_length=10)
     nama: str = Field(..., min_length=3, max_length=100)
-    angkatan: int | None = Field(None, ge=2000, le=2100)
+    angkatan: int | None = Field(None, ge=ANGKATAN_MIN, le=ANGKATAN_MAKS)
 
     @field_validator("nomor_induk")
     @classmethod
     def cek_nim(cls, v: str) -> str:
-        return _validasi_nim(v)
+        return validasi_nim(v)
 
     @field_validator("nama")
     @classmethod
@@ -51,15 +36,20 @@ class MahasiswaCreateRequest(BaseModel):
 
 
 class MahasiswaUpdateRequest(BaseModel):
+    """Semua field opsional. `angkatan: null` mengosongkan angkatan; null pada field lain diabaikan.
+
+    `nomor_induk` hanya bisa diganti untuk akun yang belum diaktivasi (aturan di service).
+    """
+
     nomor_induk: str | None = Field(None, min_length=10, max_length=10)
     nama: str | None = Field(None, min_length=3, max_length=100)
-    angkatan: int | None = Field(None, ge=2000, le=2100)
+    angkatan: int | None = Field(None, ge=ANGKATAN_MIN, le=ANGKATAN_MAKS)
     status: StatusAkun | None = None
 
     @field_validator("nomor_induk")
     @classmethod
     def cek_nim(cls, v: str | None) -> str | None:
-        return None if v is None else _validasi_nim(v)
+        return None if v is None else validasi_nim(v)
 
     @field_validator("nama")
     @classmethod
@@ -84,3 +74,30 @@ class MahasiswaListResponse(BaseModel):
     page: int
     limit: int
     total_pages: int
+
+
+class RingkasanMahasiswaResponse(BaseModel):
+    """Jumlah mahasiswa per status akun (untuk kartu statistik halaman Kelola Mahasiswa)."""
+
+    total: int
+    belum_aktif: int
+    aktif: int
+    nonaktif: int
+
+
+class BarisImportBermasalah(BaseModel):
+    baris: int  # nomor baris di file CSV (baris 1 = header)
+    nomor_induk: str | None
+    status: Literal["dilewati", "gagal"]
+    alasan: str
+
+
+class ImportMahasiswaResponse(BaseModel):
+    """Laporan impor CSV. Pada mode simulasi tidak ada data yang disimpan."""
+
+    simulasi: bool
+    total_baris: int
+    ditambahkan: int  # simulasi=true: jumlah yang AKAN ditambahkan
+    dilewati: int  # NIM sudah terdaftar / dobel di file
+    gagal: int  # data baris tidak valid
+    masalah: list[BarisImportBermasalah]

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import BigInteger, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app.core.waktu import sekarang_utc
 from app.db.base import Base
 
 
@@ -21,8 +22,12 @@ class ProgresMateri(Base):
     materi_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("materi.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="dilihat")  # dilihat / selesai
-    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="dilihat"
+    )  # dilihat / selesai
+    # Waktu materi pertama kali ditandai selesai (NULL selama belum selesai)
+    selesai_pada: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=sekarang_utc)
     diubah_pada: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, default=sekarang_utc, onupdate=sekarang_utc
     )

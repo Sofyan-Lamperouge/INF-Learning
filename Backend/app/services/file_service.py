@@ -3,6 +3,8 @@
 Semua file disimpan di settings.UPLOAD_DIR dengan nama acak, lalu dilayani
 lewat /uploads/<nama>. Di Railway, UPLOAD_DIR harus berada di dalam Volume.
 """
+
+import contextlib
 import os
 import uuid
 from urllib.parse import urlparse
@@ -47,9 +49,7 @@ def simpan_upload(file: UploadFile) -> tuple[str, str]:
                     )
                 out.write(chunk)
         if ukuran == 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="File kosong"
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File kosong")
     except BaseException:
         _hapus_lokasi(lokasi)
         raise
@@ -71,7 +71,5 @@ def hapus_file_dari_url(url: str | None) -> None:
 
 
 def _hapus_lokasi(lokasi: str) -> None:
-    try:
+    with contextlib.suppress(OSError):  # sudah tidak ada / tidak bisa dihapus: abaikan
         os.remove(lokasi)
-    except OSError:
-        pass  # sudah tidak ada / tidak bisa dihapus: abaikan

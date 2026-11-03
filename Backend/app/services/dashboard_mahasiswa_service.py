@@ -62,7 +62,5 @@ def get_dashboard(db: Session, mhs: Pengguna) -> DashboardMahasiswaResponse:
 def catat_progres(db: Session, mhs: Pengguna, materi_id: int, status_baru: str):
     materi = crud_materi.get_by_id(db, materi_id)
     if not materi or materi.status != "terbit":
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Materi tidak ditemukan"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Materi tidak ditemukan")
     return crud_progres.upsert(db, mhs.id, materi_id, status_baru)

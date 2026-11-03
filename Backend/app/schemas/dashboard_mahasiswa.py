@@ -1,9 +1,10 @@
+"""Schema dashboard mahasiswa dan pencatatan progres belajar."""
+
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel
 
-StatusBelajar = Literal["belum", "dilihat", "selesai"]
+from app.schemas.tipe import StatusBelajar, StatusProgres
 
 
 class ProfilMahasiswa(BaseModel):
@@ -47,7 +48,7 @@ class DashboardMahasiswaResponse(BaseModel):
 
 
 class ProgresRequest(BaseModel):
-    status: Literal["dilihat", "selesai"]
+    status: StatusProgres
 
 
 class ProgresResponse(BaseModel):

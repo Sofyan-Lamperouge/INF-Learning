@@ -1,13 +1,10 @@
-# Backend/app/schemas/materi.py
-#
-# [DIUBAH] Menambah MateriListResponse (di bagian paling bawah) untuk GET /materi.
-# Selebihnya tidak berubah.
+"""Schema materi: pembuatan, perubahan, respons, daftar, dan kategori."""
 
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.schemas.tipe import StatusBelajar
 
 VALID_JENIS = {"pdf", "ppt", "pptx", "doc", "docx", "xls", "xlsx"}
 
@@ -25,9 +22,7 @@ class MateriCreateRequest(BaseModel):
     def validasi_jenis(cls, v: str) -> str:
         v = v.strip().lower()
         if v not in VALID_JENIS:
-            raise ValueError(
-                f"Jenis harus salah satu dari: {', '.join(sorted(VALID_JENIS))}"
-            )
+            raise ValueError(f"Jenis harus salah satu dari: {', '.join(sorted(VALID_JENIS))}")
         return v
 
     @field_validator("url")
@@ -55,9 +50,7 @@ class MateriUpdateRequest(BaseModel):
             return v
         v = v.strip().lower()
         if v not in VALID_JENIS:
-            raise ValueError(
-                f"Jenis harus salah satu dari: {', '.join(sorted(VALID_JENIS))}"
-            )
+            raise ValueError(f"Jenis harus salah satu dari: {', '.join(sorted(VALID_JENIS))}")
         return v
 
     @field_validator("url")
@@ -94,12 +87,12 @@ class MateriResponse(BaseModel):
     dibuat_pada: datetime
     diubah_pada: datetime
     # Hanya terisi untuk mahasiswa (belum/dilihat/selesai). Untuk admin selalu null.
-    status_belajar: Literal["belum", "dilihat", "selesai"] | None = None
+    status_belajar: StatusBelajar | None = None
 
     model_config = {"from_attributes": True}
 
 
-# [BARU] Bentuk respons GET /materi (dengan paginasi)
+# Bentuk respons GET /materi (dengan paginasi)
 class MateriListResponse(BaseModel):
     items: list[MateriResponse]
     total: int
