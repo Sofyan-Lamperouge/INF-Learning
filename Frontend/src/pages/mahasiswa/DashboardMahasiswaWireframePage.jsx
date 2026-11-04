@@ -4,9 +4,12 @@
 // kotak abu-abu ini dengan komponen asli satu per satu.
 
 // Kotak berisi tanda silang = tempat gambar / ikon
-function Ph({ className = '', round = false }) {
+function Ph({ className = "", round = false }) {
   return (
-    <span className={`dmw-ph${round ? ' dmw-ph--round' : ''} ${className}`} aria-hidden="true">
+    <span
+      className={`dmw-ph${round ? " dmw-ph--round" : ""} ${className}`}
+      aria-hidden="true"
+    >
       <svg viewBox="0 0 100 100" preserveAspectRatio="none">
         <path d="M0 0 100 100M100 0 0 100" />
       </svg>
@@ -15,16 +18,22 @@ function Ph({ className = '', round = false }) {
 }
 
 // Pil biru = tempat teks menu / tautan
-function Pill({ w = 100, className = '' }) {
-  return <span className={`dmw-pill ${className}`} style={{ width: w }} aria-hidden="true" />;
+function Pill({ w = 100, className = "" }) {
+  return (
+    <span
+      className={`dmw-pill ${className}`}
+      style={{ width: w }}
+      aria-hidden="true"
+    />
+  );
 }
 
-function Button({ children = 'button', className = '' }) {
+function Button({ children = "button", className = "" }) {
   return <span className={`dmw-btn ${className}`}>{children}</span>;
 }
 
 // Kartu daftar: judul + pil tautan, garis, lalu isi kosong (ikon, teks, tombol)
-function ListCard({ className = '' }) {
+function ListCard({ className = "" }) {
   return (
     <section className={`dmw-card dmw-list ${className}`}>
       <header className="dmw-list-head">
@@ -33,9 +42,9 @@ function ListCard({ className = '' }) {
       </header>
       <hr className="dmw-line" />
       <div className="dmw-empty">
-        <Ph className="dmw-ph--sm" />
-        <p>Lorem ipsum dolor sit amet</p>
-        <Button />
+        {/* <Ph className="dmw-ph--sm" />
+  <p>Lorem ipsum dolor sit amet</p>
+  <Button /> */}
       </div>
     </section>
   );
@@ -69,8 +78,8 @@ export default function DashboardMahasiswaWireframePage() {
         <div className="dmw-banner-text">
           <h1>Selamat Datang, Haikal!</h1>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </p>
         </div>
       </section>
@@ -87,7 +96,9 @@ export default function DashboardMahasiswaWireframePage() {
             <div className="dmw-lanjut-body">
               <Pill w={260} className="dmw-pill--lg" />
               <Pill w={140} />
-              <div className="dmw-bar"><span /></div>
+              <div className="dmw-bar">
+                <span />
+              </div>
               <Button className="dmw-btn--sm">button</Button>
             </div>
           </div>
