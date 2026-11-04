@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{}"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      pm.test(\"Status code 422\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Field wajib tervalidasi\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail).to.be.an(\"array\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/REG-08 - Field Wajib Tidak Dikirim.resources/examples
+order: 8000

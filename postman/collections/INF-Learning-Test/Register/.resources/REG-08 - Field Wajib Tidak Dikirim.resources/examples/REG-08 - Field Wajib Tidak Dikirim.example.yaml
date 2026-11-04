@@ -1,0 +1,45 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/registrasi"
+  method: POST
+  body:
+    type: json
+    content: "{}"
+response:
+  statusCode: 422
+  statusText: ""
+  headers:
+    :status: "422"
+    content-type: application/json
+    date: Tue, 03 Nov 2026 16:53:43 GMT
+    server: railway-hikari
+    x-railway-request-id: fecK_GF3So6x8h7VnPRhug
+    content-length: "175"
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "nomor_induk"
+            ],
+            "msg": "Field required",
+            "input": {}
+          },
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "kata_sandi"
+            ],
+            "msg": "Field required",
+            "input": {}
+          }
+        ]
+      }
+order: 1000

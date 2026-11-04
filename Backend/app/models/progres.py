@@ -25,8 +25,6 @@ class ProgresMateri(Base):
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default="dilihat"
     )  # dilihat / selesai
-    # Waktu materi pertama kali ditandai selesai (NULL selama belum selesai)
-    selesai_pada: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=sekarang_utc)
     diubah_pada: Mapped[datetime] = mapped_column(
         DateTime, default=sekarang_utc, onupdate=sekarang_utc

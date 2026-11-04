@@ -1,13 +1,11 @@
-# Backend/app/crud/mahasiswa.py
-#
-# [DIUBAH] get_all kini mendukung pencarian (q), filter status, dan filter angkatan.
-# [BARU]   get_by_nim, dipakai untuk memeriksa NIM ganda.
-# update() menerima dict apa adanya; service yang memutuskan field mana yang boleh null.
+"""Query tabel pengguna khusus peran mahasiswa."""
 
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.models.pengguna import Pengguna
+
+_UKURAN_POTONGAN_IN = 500  # batasi jumlah nilai pada satu klausa IN
 
 
 def get_all(
@@ -34,31 +32,46 @@ def get_all(
     return items, total
 
 
-def get_by_id(db: Session, id: int):
+def get_by_id(db: Session, id: int) -> Pengguna | None:
     return db.query(Pengguna).filter(Pengguna.id == id, Pengguna.peran == "mahasiswa").first()
 
 
-def get_by_nim(db: Session, nomor_induk: str):
-    """Cari pengguna mana pun (admin/mahasiswa) berdasarkan NIM/nomor induk."""
-    return db.query(Pengguna).filter(Pengguna.nomor_induk == nomor_induk).first()
-
-
-def create(db: Session, data: dict):
-    mhs = Pengguna(
-        peran="mahasiswa",
-        nomor_induk=data["nomor_induk"],
-        nama=data["nama"],
-        angkatan=data.get("angkatan"),
-        status="belum_aktif",
-        kata_sandi=None,
+def hitung_per_status(db: Session) -> dict[str, int]:
+    """Jumlah mahasiswa per status akun, mis. {"aktif": 10, "belum_aktif": 3}."""
+    rows = (
+        db.query(Pengguna.status, func.count(Pengguna.id))
+        .filter(Pengguna.peran == "mahasiswa")
+        .group_by(Pengguna.status)
+        .all()
     )
+    return {status: int(jumlah) for status, jumlah in rows}
+
+
+def nim_yang_sudah_ada(db: Session, daftar_nim: list[str]) -> set[str]:
+    """Himpunan NIM dari daftar_nim yang sudah dipakai pengguna mana pun."""
+    ada: set[str] = set()
+    for awal in range(0, len(daftar_nim), _UKURAN_POTONGAN_IN):
+        potongan = daftar_nim[awal : awal + _UKURAN_POTONGAN_IN]
+        rows = db.query(Pengguna.nomor_induk).filter(Pengguna.nomor_induk.in_(potongan)).all()
+        ada.update(nim for (nim,) in rows)
+    return ada
+
+
+def create(db: Session, data: dict) -> Pengguna:
+    mhs = _baru(data)
     db.add(mhs)
     db.commit()
     db.refresh(mhs)
     return mhs
 
 
-def update(db: Session, mhs: Pengguna, data: dict):
+def create_banyak(db: Session, daftar: list[dict]) -> None:
+    """Tambah banyak mahasiswa sekaligus dalam satu transaksi."""
+    db.add_all([_baru(data) for data in daftar])
+    db.commit()
+
+
+def update(db: Session, mhs: Pengguna, data: dict) -> Pengguna:
     for key, value in data.items():
         setattr(mhs, key, value)
     db.commit()
@@ -66,6 +79,26 @@ def update(db: Session, mhs: Pengguna, data: dict):
     return mhs
 
 
-def delete(db: Session, mhs: Pengguna):
+def reset_akun(db: Session, mhs: Pengguna) -> Pengguna:
+    """Kosongkan kata sandi dan kembalikan ke belum_aktif agar mahasiswa bisa registrasi ulang."""
+    mhs.kata_sandi = None
+    mhs.status = "belum_aktif"
+    db.commit()
+    db.refresh(mhs)
+    return mhs
+
+
+def delete(db: Session, mhs: Pengguna) -> None:
     db.delete(mhs)
     db.commit()
+
+
+def _baru(data: dict) -> Pengguna:
+    return Pengguna(
+        peran="mahasiswa",
+        nomor_induk=data["nomor_induk"],
+        nama=data["nama"],
+        angkatan=data.get("angkatan"),
+        status="belum_aktif",
+        kata_sandi=None,
+    )

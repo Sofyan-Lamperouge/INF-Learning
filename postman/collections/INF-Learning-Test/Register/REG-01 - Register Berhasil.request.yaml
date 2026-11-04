@@ -1,0 +1,86 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"{{nim_register}}\",\r
+
+    \  \"kata_sandi\": \"{{password_register}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki data pengguna\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response).to.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.have.property(\"peran\");\r
+
+      \    pm.expect(response).to.have.property(\"status\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status akun menjadi aktif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"NIM response sesuai request\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.nomor_induk)\r
+
+      \        .to.eql(pm.environment.get(\"nim_register\"));\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Password tidak muncul dalam response\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.not.have.property(\"kata_sandi\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/REG-01 - Register Berhasil.resources/examples
+order: 1000

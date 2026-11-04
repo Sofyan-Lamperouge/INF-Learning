@@ -1,0 +1,40 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"{{nim_register}}\",\r
+
+    \  \"kata_sandi\": \"{{password_register}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      pm.test(\"Status code 409 Conflict\", function () {\r
+
+      \    pm.response.to.have.status(409);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pesan akun sudah aktif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail)\r
+
+      \        .to.include(\"Akun sudah aktif\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/REG-03 - Akun Sudah Aktif.resources/examples
+order: 3000

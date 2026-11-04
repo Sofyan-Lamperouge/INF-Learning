@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/registrasi"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nomor_induk\": \"\",\r
+
+      \  \"kata_sandi\": \"{{password_register}}\",\r
+
+      \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 422
+  statusText: ""
+  headers:
+    :status: "422"
+    content-type: application/json
+    date: Tue, 03 Nov 2026 17:02:22 GMT
+    server: railway-hikari
+    x-railway-request-id: XTu0HPbCSQaT9Tur9fVATg
+    content-length: "154"
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": [
+          {
+            "type": "string_too_short",
+            "loc": [
+              "body",
+              "nomor_induk"
+            ],
+            "msg": "String should have at least 10 characters",
+            "input": "",
+            "ctx": {
+              "min_length": 10
+            }
+          }
+        ]
+      }
+order: 1000

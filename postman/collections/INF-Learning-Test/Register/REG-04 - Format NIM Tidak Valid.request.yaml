@@ -1,0 +1,38 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"1234567890\",\r
+
+    \  \"kata_sandi\": \"{{password_register}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      pm.test(\"Status code 422 Unprocessable Entity\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Validasi NIM ditolak\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/REG-04 - Format NIM Tidak Valid.resources/examples
+order: 4000
