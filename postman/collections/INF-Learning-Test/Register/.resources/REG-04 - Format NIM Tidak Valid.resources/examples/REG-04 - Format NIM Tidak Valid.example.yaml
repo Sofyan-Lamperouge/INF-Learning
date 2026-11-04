@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/registrasi"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nomor_induk\": \"1234567890\",\r
+
+      \  \"kata_sandi\": \"{{password_register}}\",\r
+
+      \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 422
+  statusText: ""
+  headers:
+    :status: "422"
+    content-type: application/json
+    date: Tue, 03 Nov 2026 16:32:48 GMT
+    server: railway-hikari
+    x-railway-request-id: _cKH_Q0ISfKLDLzb-_9nXA
+    content-length: "151"
+    x-hikari-trace: sin1.98a6
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": [
+              "body",
+              "nomor_induk"
+            ],
+            "msg": "Value error, Format NIM tidak dikenali",
+            "input": "1234567890",
+            "ctx": {
+              "error": {}
+            }
+          }
+        ]
+      }
+order: 1000

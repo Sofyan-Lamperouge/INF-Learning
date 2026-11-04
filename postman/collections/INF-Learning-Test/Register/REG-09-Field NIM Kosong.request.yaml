@@ -1,0 +1,32 @@
+$kind: http-request
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"\",\r
+
+    \  \"kata_sandi\": \"{{password_register}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Nomor induk kosong ditolak\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      \r
+
+      \    const response = pm.response.json();\r
+
+      \    pm.expect(JSON.stringify(response))\r
+
+      \        .to.include(\"nomor_induk\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/REG-09-Field NIM Kosong.resources/examples
+order: 9000

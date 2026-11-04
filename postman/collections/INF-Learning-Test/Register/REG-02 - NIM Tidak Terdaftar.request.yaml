@@ -1,4 +1,40 @@
 $kind: http-request
-url: ""
-method: GET
+url: "{{base_url}}/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nomor_induk\": \"2488010098\",\r
+
+    \  \"kata_sandi\": \"{{password_register}}\",\r
+
+    \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      pm.test(\"Status code 404 Not Found\", function () {\r
+
+      \    pm.response.to.have.status(404);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pesan NIM tidak terdaftar\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail)\r
+
+      \        .to.include(\"NIM tidak terdaftar\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/REG-02 - NIM Tidak Terdaftar.resources/examples
 order: 2000

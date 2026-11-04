@@ -1,0 +1,39 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/registrasi"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nomor_induk\": \"{{nim_register}}\",\r
+
+      \  \"kata_sandi\": \"{{password_register}}\",\r
+
+      \  \"konfirmasi_kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Tue, 03 Nov 2026 16:15:00 GMT
+    server: railway-hikari
+    x-railway-request-id: rLmU5itYQAyGI4o8lt7tkg
+    content-length: "134"
+    x-hikari-trace: sin1.98a6
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 13,
+        "peran": "mahasiswa",
+        "nomor_induk": "2488010099",
+        "nama": "KURUMI TOKISAKI",
+        "status": "aktif",
+        "dibuat_pada": "2026-11-03T15:08:20"
+      }
+order: 1000
