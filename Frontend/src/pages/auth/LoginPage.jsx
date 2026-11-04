@@ -71,7 +71,7 @@ export default function LoginPage() {
 
       setTimeout(() => {
         navigate(
-          result.role === 'admin' ? '/dashboard' : '/materi',
+          result.role === 'admin' ? '/dashboard' : '/beranda',
           { replace: true },
         );
       }, 1200);
