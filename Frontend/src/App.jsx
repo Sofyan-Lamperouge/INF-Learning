@@ -14,7 +14,7 @@ import KuisPage from "./pages/dashboard/KuisPage.jsx";
 import MahasiswaPage from "./pages/dashboard/MahasiswaPage.jsx";
 import UploadMateriPage from "./pages/dashboard/UploadMateriPage.jsx";
 import KonfirmasiMateriPage from "./pages/dashboard/KonfirmasiMateriPage.jsx"; //
-import DashboardMahasiswaSkeleton from "./components/skeletons/DashboardMahasiswaSkeleton.jsx";
+import DashboardMahasiswaPage from "./pages/mahasiswa/DashboardMahasiswaPage.jsx";
 
 export default function App() {
   return (
@@ -97,10 +97,10 @@ export default function App() {
       />
 
       <Route
-        path="/beranda"
+        path="/mahasiswa"
         element={
           <ProtectedRoute>
-            <DashboardMahasiswaSkeleton />
+            <DashboardMahasiswaPage />
           </ProtectedRoute>
         }
       />
