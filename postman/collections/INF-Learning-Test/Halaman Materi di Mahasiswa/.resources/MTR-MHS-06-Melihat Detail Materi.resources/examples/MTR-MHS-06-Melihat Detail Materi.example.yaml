@@ -1,0 +1,35 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/8"
+  method: GET
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 05 Nov 2026 09:01:08 GMT
+    server: railway-hikari
+    x-railway-request-id: KK51doFwQ_aQY_AVnPRhug
+    content-encoding: gzip
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "id": 8,
+        "judul": "Teorema CAP",
+        "deskripsi": "Membahas Teorema CAP",
+        "mata_kuliah": "Sistem Terdistribusi",
+        "semester": 5,
+        "jenis": "pdf",
+        "url": "https://inf-learning-production.up.railway.app/uploads/086a6b3f7ad54bcbb6dd969d40403c0e.pdf",
+        "dibuat_oleh": 1,
+        "status": "terbit",
+        "dibuat_pada": "2026-11-04T17:25:54",
+        "diubah_pada": "2026-11-04T17:25:54",
+        "status_belajar": "belum"
+      }
+order: 1000

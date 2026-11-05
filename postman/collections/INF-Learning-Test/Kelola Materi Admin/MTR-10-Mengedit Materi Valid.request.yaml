@@ -1,0 +1,70 @@
+$kind: http-request
+url: "{{base_url}}/materi/{{materi_id}}"
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"judul\": \"Pengantar Sistem Terdistribusi - Revisi\",\r
+
+    \    \"mata_kuliah\": \"Sistem Terdistribusi\",\r
+
+    \    \"semester\": 4,\r
+
+    \    \"deskripsi\": \"Materi pengantar sistem terdistribusi yang telah diperbarui.\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code harus 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Judul materi berhasil diperbarui\", function () {\r
+
+      \    pm.expect(json.judul).to.eql(\r
+
+      \        \"Pengantar Sistem Terdistribusi - Revisi\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID materi tidak berubah\", function () {\r
+
+      \    pm.expect(json.id).to.eql(\r
+
+      \        Number(pm.environment.get(\"materi_id\"))\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Mata kuliah tetap sesuai\", function () {\r
+
+      \    pm.expect(json.mata_kuliah).to.eql(\r
+
+      \        \"Sistem Terdistribusi\"\r
+
+      \    );\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-10-Mengedit Materi Valid.resources/examples
+order: 10000

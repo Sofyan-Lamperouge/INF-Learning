@@ -1,0 +1,36 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: "{}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code adalah 422\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Request tanpa body ditolak\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Access token tidak diberikan\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \    pm.expect(response).to.not.have.property(\"access_token\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/LOG-06-Field Wajib Tidak Dikirim.resources/examples
+order: 6000

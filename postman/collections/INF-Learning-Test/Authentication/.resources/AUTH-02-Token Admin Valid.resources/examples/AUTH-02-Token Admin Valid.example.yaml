@@ -1,0 +1,27 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/me"
+  method: GET
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 14:58:07 GMT
+    server: railway-hikari
+    x-railway-request-id: zIhehf50SROgmk6Djq4OvQ
+    content-length: "87"
+    x-hikari-trace: sin1.462z,hnd1.4cm0
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 1,
+        "peran": "admin",
+        "nomor_induk": "ADM001",
+        "nama": "Administrator",
+        "status": "aktif"
+      }
+order: 1000

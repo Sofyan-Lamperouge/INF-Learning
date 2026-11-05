@@ -1,0 +1,74 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi?page=1&limit=20"
+  method: GET
+  queryParams:
+    page: "1"
+    limit: "20"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 05 Nov 2026 08:31:30 GMT
+    server: railway-hikari
+    x-railway-request-id: afThLBSXSSed4ME1ljLL4A
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 10,
+            "judul": "Fault Tolerance",
+            "deskripsi": "Membahas Fault Tolerance",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/b3c8d7e6975846cbbae80dcbc15c7de3.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-04T17:28:58",
+            "diubah_pada": "2026-11-04T17:28:58",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 8,
+            "judul": "Teorema CAP",
+            "deskripsi": "Membahas Teorema CAP",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/086a6b3f7ad54bcbb6dd969d40403c0e.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-04T17:25:54",
+            "diubah_pada": "2026-11-04T17:25:54",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 5,
+            "judul": "Pengambilan Keputusan",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/0fa178a383914251b1e887ec61a8e04a.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-10-30T07:10:08",
+            "diubah_pada": "2026-10-30T07:11:27",
+            "status_belajar": "belum"
+          }
+        ],
+        "total": 3,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

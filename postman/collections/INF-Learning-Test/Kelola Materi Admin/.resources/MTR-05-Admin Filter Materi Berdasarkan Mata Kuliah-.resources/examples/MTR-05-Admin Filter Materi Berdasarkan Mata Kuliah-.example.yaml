@@ -1,0 +1,46 @@
+$kind: http-example
+name: MTR-05-Admin Filter Materi Berdasarkan Mata Kuliah.
+request:
+  url: "{{base_url}}/materi?mata_kuliah=Sistem%20Terdistribusi"
+  method: GET
+  queryParams:
+    mata_kuliah: Sistem%20Terdistribusi
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 16:11:39 GMT
+    server: railway-hikari
+    x-railway-request-id: xNmEbr8_SJe3gCO1LPU1MQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 7,
+            "judul": "Pengantar sistem terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 4,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/79258d0be7624124960c7695fa2e5b52.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-02T10:16:08",
+            "diubah_pada": "2026-11-03T03:57:08",
+            "status_belajar": null
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

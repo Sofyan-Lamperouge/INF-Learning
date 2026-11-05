@@ -1,0 +1,48 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/{{materi_id}}"
+  method: PUT
+  body:
+    type: json
+    content: "{\r
+
+      \    \"judul\": \"Pengantar Sistem Terdistribusi - Revisi\",\r
+
+      \    \"mata_kuliah\": \"Sistem Terdistribusi\",\r
+
+      \    \"semester\": 4,\r
+
+      \    \"deskripsi\": \"Materi pengantar sistem terdistribusi yang telah diperbarui.\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 05 Nov 2026 01:57:57 GMT
+    server: railway-hikari
+    x-railway-request-id: up_C-hKhRraYu4Xt2prcFg
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "id": 7,
+        "judul": "Pengantar Sistem Terdistribusi - Revisi",
+        "deskripsi": "Materi pengantar sistem terdistribusi yang telah diperbarui.",
+        "mata_kuliah": "Sistem Terdistribusi",
+        "semester": 4,
+        "jenis": "pdf",
+        "url": "https://inf-learning-production.up.railway.app/uploads/79258d0be7624124960c7695fa2e5b52.pdf",
+        "dibuat_oleh": 1,
+        "status": "terbit",
+        "dibuat_pada": "2026-11-02T10:16:08",
+        "diubah_pada": "2026-11-05T01:57:58",
+        "status_belajar": null
+      }
+order: 1000

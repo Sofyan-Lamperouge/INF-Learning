@@ -1,0 +1,118 @@
+$kind: http-request
+name: MTR-MHS-02-Filter Berdasarkan Semester
+url: "{{base_url}}/materi?semester=5&page=1&limit=20"
+method: GET
+queryParams:
+  semester: "5"
+  page: "1"
+  limit: "20"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Struktur response tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur pagination tersedia\", function () {\r
+
+      \    pm.expect(response.total).to.be.a(\"number\");\r
+
+      \    pm.expect(response.page).to.be.a(\"number\");\r
+
+      \    pm.expect(response.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(response.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pagination sesuai request\", function () {\r
+
+      \    pm.expect(response.page).to.eql(1);\r
+
+      \    pm.expect(response.limit).to.eql(20);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semua materi sesuai semester yang dipilih\", function () {\r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.semester).to.eql(5);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Mahasiswa hanya melihat materi terbit\", function () {\r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Setiap materi memiliki struktur yang sesuai\", function () {\r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.id).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.judul).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.semester).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.jenis).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.url).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.status).to.be.a(\"string\");\r
+
+      \        pm.expect(materi).to.have.property(\"status_belajar\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah item tidak melebihi limit\", function () {\r
+
+      \    pm.expect(response.items.length).to.be.at.most(response.limit);\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-MHS-02-Filter Berdasarkan Semester-1.resources/examples
+order: 2000

@@ -1,0 +1,38 @@
+$kind: http-request
+url: https://inf-learning-production.up.railway.app/uploads/086a6b3f7ad54bcbb6dd969d40403c0e.pdf
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response file tidak kosong\", function () {\r
+
+      \    pm.expect(pm.response.responseSize).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Content-Type sesuai jenis file\", function () {\r
+
+      \    const contentType = pm.response.headers.get(\"Content-Type\");\r
+
+      \r
+
+      \    pm.expect(contentType).to.exist;\r
+
+      \    pm.expect(contentType).to.include(\"application/pdf\");\r
+
+      });"
+    language: text/javascript
+order: 7000

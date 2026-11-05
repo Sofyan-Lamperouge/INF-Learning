@@ -1,0 +1,111 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/{{mahasiswa_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Detail mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      \    pm.expect(response).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur data mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response).to.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.have.property(\"angkatan\");\r
+
+      \    pm.expect(response).to.have.property(\"status\");\r
+
+      \    pm.expect(response).to.have.property(\"dibuat_pada\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID mahasiswa sesuai dengan request\", function () {\r
+
+      \    const mahasiswaId = Number(\r
+
+      \        pm.environment.get(\"mahasiswa_id\")\r
+
+      \    );\r
+
+      \r
+
+      \    pm.expect(response.id).to.eql(mahasiswaId);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor induk tidak kosong\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nama mahasiswa tidak kosong\", function () {\r
+
+      \    pm.expect(response.nama).to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Angkatan berupa angka\", function () {\r
+
+      \    pm.expect(response.angkatan).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status mahasiswa sesuai ketentuan\", function () {\r
+
+      \    const statusValid = [\"aktif\", \"nonaktif\"];\r
+
+      \r
+
+      \    pm.expect(statusValid).to.include(response.status);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tanggal dibuat tersedia\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\").and.not.empty;\r
+
+      \    pm.expect(Date.parse(response.dibuat_pada)).to.not.be.NaN;\r
+
+      });"
+    language: text/javascript
+examples: .resources/MHS-02-Melihat Detail Mahasiswa.resources/examples
+order: 2000

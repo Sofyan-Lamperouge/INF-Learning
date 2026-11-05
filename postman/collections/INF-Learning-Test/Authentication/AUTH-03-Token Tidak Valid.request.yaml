@@ -1,0 +1,29 @@
+$kind: http-request
+url: "{{base_url}}/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Token tidak valid ditolak\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      });\r\n"
+    language: text/javascript
+examples: .resources/AUTH-03-Token Tidak Valid.resources/examples
+order: 3000

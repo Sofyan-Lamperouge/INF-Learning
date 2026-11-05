@@ -1,0 +1,45 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/mahasiswa"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"id\": 14,\r
+
+      \    \"nomor_induk\": \"2488010100\",\r
+
+      \    \"nama\": \"MIKASA ACKERMAN\",\r
+
+      \    \"angkatan\": 2024,\r
+
+      \    \"status\": \"belum_aktif\",\r
+
+      \    \"dibuat_pada\": \"2026-11-05T09:00:00\"\r
+
+      }"
+response:
+  statusCode: 201
+  statusText: ""
+  headers:
+    :status: "201"
+    content-type: application/json
+    date: Thu, 05 Nov 2026 02:22:51 GMT
+    server: railway-hikari
+    x-railway-request-id: dQ2gnJhwSeGr93bh0_TJvA
+    content-length: "136"
+    x-hikari-trace: sin1.462z
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 15,
+        "nomor_induk": "2488010100",
+        "nama": "MIKASA ACKERMAN",
+        "angkatan": 2024,
+        "status": "belum_aktif",
+        "dibuat_pada": "2026-11-05T02:22:51"
+      }
+order: 1000

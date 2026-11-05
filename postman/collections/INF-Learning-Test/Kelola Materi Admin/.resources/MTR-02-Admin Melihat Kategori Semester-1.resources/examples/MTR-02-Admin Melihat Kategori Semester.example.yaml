@@ -1,0 +1,65 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/kategori/semester"
+  method: GET
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 15:56:47 GMT
+    server: railway-hikari
+    x-railway-request-id: fN07j8FoR8WagL5CxtoGcA
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00,hnd1.df23
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "semester": 1,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          },
+          {
+            "semester": 2,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          },
+          {
+            "semester": 3,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          },
+          {
+            "semester": 4,
+            "total_materi": 1,
+            "total_mata_kuliah": 1
+          },
+          {
+            "semester": 5,
+            "total_materi": 1,
+            "total_mata_kuliah": 1
+          },
+          {
+            "semester": 6,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          },
+          {
+            "semester": 7,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          },
+          {
+            "semester": 8,
+            "total_materi": 0,
+            "total_mata_kuliah": 0
+          }
+        ]
+      }
+order: 1000

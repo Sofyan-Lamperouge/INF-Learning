@@ -1,0 +1,67 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data mahasiswa tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur pagination tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.total).to.be.a(\"number\");\r
+
+      \    pm.expect(response.page).to.be.a(\"number\");\r
+
+      \    pm.expect(response.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(response.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur setiap mahasiswa sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (mahasiswa) {\r
+
+      \        pm.expect(mahasiswa).to.have.property(\"id\");\r
+
+      \r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/MHS-01-Melihat Daftar Mahasiswa.resources/examples
+order: 1000

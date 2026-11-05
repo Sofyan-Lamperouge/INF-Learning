@@ -1,0 +1,117 @@
+$kind: http-request
+name: MTR-MHS-05-Pagination
+url: "{{base_url}}/materi?page=1&limit=2"
+method: GET
+queryParams:
+  page: "1"
+  limit: "2"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Struktur response tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur pagination tersedia\", function () {\r
+
+      \    pm.expect(response.total).to.be.a(\"number\");\r
+
+      \    pm.expect(response.page).to.be.a(\"number\");\r
+
+      \    pm.expect(response.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(response.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor halaman sesuai request\", function () {\r
+
+      \    pm.expect(response.page).to.eql(1);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Limit sesuai request\", function () {\r
+
+      \    pm.expect(response.limit).to.eql(2);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah item tidak melebihi limit\", function () {\r
+
+      \    pm.expect(response.items.length).to.be.at.most(2);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Total halaman dihitung dengan benar\", function () {\r
+
+      \    const expectedPages = response.total === 0\r
+
+      \        ? 0\r
+
+      \        : Math.ceil(response.total / response.limit);\r
+
+      \r
+
+      \    pm.expect(response.total_pages).to.eql(expectedPages);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Mahasiswa hanya melihat materi terbit\", function () {\r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tidak ada ID materi yang duplikat\", function () {\r
+
+      \    const ids = response.items.map(function (materi) {\r
+
+      \        return materi.id;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(new Set(ids).size).to.eql(ids.length);\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-MHS-05-Pagination-1.resources/examples
+order: 5000

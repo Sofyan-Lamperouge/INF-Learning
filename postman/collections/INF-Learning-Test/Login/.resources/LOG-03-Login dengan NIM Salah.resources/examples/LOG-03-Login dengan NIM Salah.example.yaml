@@ -1,0 +1,32 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"2488010098\",\r
+
+      \    \"kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 13:22:31 GMT
+    server: railway-hikari
+    x-railway-request-id: aU0UdVJxTp2x_Yfwn6XIxQ
+    content-length: "38"
+    x-hikari-trace: sin1.462z,hnd1.y5sc
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "NIM atau kata sandi salah"
+      }
+order: 1000

@@ -1,0 +1,166 @@
+$kind: http-request
+url: "{{base_url}}/materi"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: judul
+      value: Fault Tolerance
+      description: ""
+      disabled: false
+    - type: text
+      key: mata_kuliah
+      value: Sistem Terdistribusi
+      description: ""
+      disabled: false
+    - type: text
+      key: semester
+      value: "5"
+      description: ""
+      disabled: false
+    - type: text
+      key: deskripsi
+      value: Membahas Fault Tolerance
+      description: ""
+      disabled: false
+    - type: file
+      key: file
+      src:
+        - /D:/SEMESTER 5/Sistem Terdistribusi/04. Fault Tolerance.pdf
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 201 Created\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur response materi tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    const requiredFields = [\r
+
+      \        \"id\",\r
+
+      \        \"judul\",\r
+
+      \        \"deskripsi\",\r
+
+      \        \"mata_kuliah\",\r
+
+      \        \"semester\",\r
+
+      \        \"jenis\",\r
+
+      \        \"url\",\r
+
+      \        \"dibuat_oleh\",\r
+
+      \        \"status\",\r
+
+      \        \"dibuat_pada\",\r
+
+      \        \"diubah_pada\",\r
+
+      \        \"status_belajar\"\r
+
+      \    ];\r
+
+      \r
+
+      \    requiredFields.forEach(function (field) {\r
+
+      \        pm.expect(response).to.have.property(field);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Judul materi sesuai request\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.judul)\r
+
+      \        .to.eql(\"Fault Tolerance\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Mata kuliah dan semester sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.mata_kuliah).to.eql(\"Sistem Terdistribusi\");\r
+
+      \    pm.expect(response.semester).to.eql(5);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Format file sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.jenis).to.eql(\"pdf\");\r
+
+      \    pm.expect(response.url).to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID materi berhasil dibuat\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.id).to.be.a(\"number\");\r
+
+      \    pm.expect(response.id).to.be.above(0);\r
+
+      \r
+
+      \    pm.environment.set(\"materi_id\", response.id);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status materi valid\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect([\"draft\", \"terbit\", \"arsip\"])\r
+
+      \        .to.include(response.status);\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-09-Menambahkan Materi Dengan File Valid.resources/examples
+order: 9000

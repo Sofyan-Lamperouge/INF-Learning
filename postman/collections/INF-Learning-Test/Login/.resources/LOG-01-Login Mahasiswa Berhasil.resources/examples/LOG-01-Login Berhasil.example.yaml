@@ -1,0 +1,42 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"{{nim_register}}\",\r
+
+      \    \"kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 13:03:39 GMT
+    server: railway-hikari
+    x-railway-request-id: 9p7JwQG4R3KETm07CYBc-A
+    content-encoding: gzip
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImV4cCI6MTc5Mzc5ODMxOX0.WBpqe2HC7MQX36Vv9YeovYwobjUUwg_ecwqOAqniBBs",
+        "token_type": "bearer",
+        "expires_in": 900,
+        "pengguna": {
+          "id": 13,
+          "peran": "mahasiswa",
+          "nomor_induk": "2488010099",
+          "nama": "KURUMI TOKISAKI",
+          "status": "aktif"
+        }
+      }
+order: 1000

@@ -1,0 +1,89 @@
+$kind: http-request
+url: "{{base_url}}/materi/8"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response berupa object detail materi\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID materi sesuai request\", function () {\r
+
+      \    pm.expect(response.id).to.eql(8);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Informasi utama materi tersedia\", function () {\r
+
+      \    pm.expect(response.judul).to.be.a(\"string\");\r
+
+      \    pm.expect(response.deskripsi === null ||\r
+
+      \        typeof response.deskripsi === \"string\").to.be.true;\r
+
+      \r
+
+      \    pm.expect(response.mata_kuliah).to.be.a(\"string\");\r
+
+      \    pm.expect(response.semester).to.be.a(\"number\");\r
+
+      \    pm.expect(response.jenis).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status materi adalah terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Informasi pembuat dan waktu tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"dibuat_oleh\");\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(response.diubah_pada).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status belajar tersedia dalam response\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"status_belajar\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-MHS-06-Melihat Detail Materi.resources/examples
+order: 6000

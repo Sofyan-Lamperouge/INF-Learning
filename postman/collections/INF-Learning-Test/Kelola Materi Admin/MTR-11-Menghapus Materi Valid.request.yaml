@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{base_url}}/materi/{{materi_id}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code harus 204\", function () {\r
+
+      \    pm.response.to.have.status(204);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response body harus kosong\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.eql(\"\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-11-Menghapus Materi Valid.resources/examples
+order: 11000

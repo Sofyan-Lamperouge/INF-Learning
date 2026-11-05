@@ -1,0 +1,99 @@
+$kind: http-request
+url: "{{base_url}}/materi?q=Pengantar"
+method: GET
+queryParams:
+  q: Pengantar
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur pagination tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response).to.have.property(\"total\");\r
+
+      \    pm.expect(response).to.have.property(\"page\");\r
+
+      \    pm.expect(response).to.have.property(\"limit\");\r
+
+      \    pm.expect(response).to.have.property(\"total_pages\");\r
+
+      \r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semua hasil mengandung kata kunci pada judul\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (item) {\r
+
+      \        pm.expect(item.judul.toLowerCase())\r
+
+      \            .to.include(\"pengantar\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah total materi tidak negatif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.total).to.be.at.least(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur data materi sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (item) {\r
+
+      \        pm.expect(item).to.have.property(\"id\");\r
+
+      \        pm.expect(item).to.have.property(\"judul\");\r
+
+      \        pm.expect(item).to.have.property(\"mata_kuliah\");\r
+
+      \        pm.expect(item).to.have.property(\"semester\");\r
+
+      \        pm.expect(item).to.have.property(\"jenis\");\r
+
+      \        pm.expect(item).to.have.property(\"status\");\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-06-Admin Mencari Materi Berdasarkan Judul.resources/examples
+order: 6000

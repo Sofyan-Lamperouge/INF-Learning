@@ -1,0 +1,30 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/me"
+  method: GET
+  body:
+    type: json
+    content: ""
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 14:53:24 GMT
+    server: railway-hikari
+    x-railway-request-id: aSOPjPlgToKIpiTw2h0iww
+    content-length: "98"
+    x-hikari-trace: sin1.nzn2,hnd1.sx1d
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 13,
+        "peran": "mahasiswa",
+        "nomor_induk": "2488010099",
+        "nama": "KURUMI TOKISAKI",
+        "status": "aktif"
+      }
+order: 1000

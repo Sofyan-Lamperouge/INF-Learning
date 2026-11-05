@@ -1,0 +1,128 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"id\": 14,\r
+
+    \    \"nomor_induk\": \"2488010100\",\r
+
+    \    \"nama\": \"MIKASA ACKERMAN\",\r
+
+    \    \"angkatan\": 2024,\r
+
+    \    \"status\": \"belum_aktif\",\r
+
+    \    \"dibuat_pada\": \"2026-11-05T09:00:00\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Data mahasiswa berhasil ditambahkan\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      \    pm.expect(response).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur response mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response).to.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.have.property(\"angkatan\");\r
+
+      \    pm.expect(response).to.have.property(\"status\");\r
+
+      \    pm.expect(response).to.have.property(\"dibuat_pada\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID mahasiswa valid\", function () {\r
+
+      \    pm.expect(response.id).to.be.a(\"number\");\r
+
+      \    pm.expect(response.id).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor induk sesuai request\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(\"2488010100\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nama mahasiswa sesuai request\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(\"MIKASA ACKERMAN\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Angkatan sesuai request\", function () {\r
+
+      \    pm.expect(response.angkatan).to.eql(2024);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status awal mahasiswa belum aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tanggal dibuat tersedia dan valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\").and.not.empty;\r
+
+      \    pm.expect(Date.parse(response.dibuat_pada)).to.not.be.NaN;\r
+
+      });\r
+
+      \r
+
+      // Simpan ID untuk pengujian berikutnya\r
+
+      if (pm.response.code === 201) {\r
+
+      \    pm.environment.set(\"mahasiswa_id\", response.id);\r
+
+      }"
+    language: text/javascript
+examples: .resources/MHS-03-Menambahkan Mahasiswa.resources/examples
+order: 3000

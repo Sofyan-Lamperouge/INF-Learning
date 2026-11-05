@@ -1,0 +1,64 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi"
+  method: POST
+  body:
+    type: formdata
+    content:
+      - type: text
+        key: judul
+        value: Fault Tolerance
+        description: ""
+        disabled: false
+      - type: text
+        key: mata_kuliah
+        value: Sistem Terdistribusi
+        description: ""
+        disabled: false
+      - type: text
+        key: semester
+        value: "5"
+        description: ""
+        disabled: false
+      - type: text
+        key: deskripsi
+        value: Membahas Fault Tolerance
+        description: ""
+        disabled: false
+      - type: file
+        key: file
+        src:
+          - /D:/SEMESTER 5/Sistem Terdistribusi/04. Fault Tolerance.pdf
+        description: ""
+        disabled: false
+response:
+  statusCode: 201
+  statusText: ""
+  headers:
+    :status: "201"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 17:28:58 GMT
+    server: railway-hikari
+    x-railway-request-id: S6Hdba4WQ_mujOA6npoFkQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "id": 10,
+        "judul": "Fault Tolerance",
+        "deskripsi": "Membahas Fault Tolerance",
+        "mata_kuliah": "Sistem Terdistribusi",
+        "semester": 5,
+        "jenis": "pdf",
+        "url": "https://inf-learning-production.up.railway.app/uploads/b3c8d7e6975846cbbae80dcbc15c7de3.pdf",
+        "dibuat_oleh": 1,
+        "status": "terbit",
+        "dibuat_pada": "2026-11-04T17:28:58",
+        "diubah_pada": "2026-11-04T17:28:58",
+        "status_belajar": null
+      }
+order: 1000
