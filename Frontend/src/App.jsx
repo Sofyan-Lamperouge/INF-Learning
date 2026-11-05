@@ -105,8 +105,6 @@ export default function App() {
         }
       />
 
-      <Route path="/beranda" element={<DashboardMahasiswaSkeleton />} />
-
       {/* === FALLBACK (Jika URL tidak ditemukan, lempar ke Landing Page) === */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
