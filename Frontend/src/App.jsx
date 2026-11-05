@@ -109,7 +109,7 @@ export default function App() {
         path="/beranda"
         element={
           <ProtectedRoute>
-            <DashboardMahasiswaSkeleton />
+            <DashboardMahasiswaWireframePage />
           </ProtectedRoute>
         }
       />
