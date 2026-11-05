@@ -14,7 +14,7 @@ import KuisPage from "./pages/dashboard/KuisPage.jsx";
 import MahasiswaPage from "./pages/dashboard/MahasiswaPage.jsx";
 import UploadMateriPage from "./pages/dashboard/UploadMateriPage.jsx";
 import KonfirmasiMateriPage from "./pages/dashboard/KonfirmasiMateriPage.jsx"; //
-import DashboardMahasiswaPage from "./pages/mahasiswa/DashboardMahasiswaPage.jsx";
+import DashboardMahasiswaSkeleton from "./pages/mahasiswa/DashboardMahasiswaSkeleton.jsx";
 
 export default function App() {
   return (
@@ -104,6 +104,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/beranda" element={<DashboardMahasiswaSkeleton />} />
 
       {/* === FALLBACK (Jika URL tidak ditemukan, lempar ke Landing Page) === */}
       <Route path="*" element={<Navigate to="/" replace />} />
