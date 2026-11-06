@@ -314,7 +314,7 @@ export default function MahasiswaPage() {
             </span>
           </td>
           <td className="col-nim">{mahasiswa.nomor_induk}</td>
-          <td className="mahasiswa-name">{mahasiswa.nama}</td>
+          <td className="mahasiswa-name" title={mahasiswa.nama}>{mahasiswa.nama}</td>
           <td className="col-angkatan">
             {mahasiswa.angkatan ? (
               <span className={`mahasiswa-year mahasiswa-year--tone-${getAngkatanTone(mahasiswa.angkatan)}`}>

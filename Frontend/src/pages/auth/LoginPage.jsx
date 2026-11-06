@@ -176,8 +176,8 @@ export default function LoginPage() {
             </div>
 
             <p className="auth-footer">
-              Belum punya akun? Buat{' '}
-              <Link to="/register">di sini</Link>
+              Belum punya akun? {' '}
+              <Link to="/register">Buat di sini</Link>
             </p>
           </div>
         </section>
