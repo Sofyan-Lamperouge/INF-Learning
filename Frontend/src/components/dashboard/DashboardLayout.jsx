@@ -1,5 +1,5 @@
-import Sidebar from "./Sidebar.jsx";
-import OfflineBanner from "../common/OfflineBanner.jsx";
+import Sidebar from './Sidebar.jsx';
+import OfflineBanner from '../common/OfflineBanner.jsx';
 
 export default function DashboardLayout({ children }) {
   return (
@@ -7,11 +7,8 @@ export default function DashboardLayout({ children }) {
       <Sidebar />
 
       <main className="dashboard-content">
-        <main className="dashboard-content">
-          <OfflineBanner />
-          <div className="dashboard-main">{children}</div>
-        </main>
-        ;<div className="dashboard-main">{children}</div>
+        <OfflineBanner />
+        <div className="dashboard-main">{children}</div>
       </main>
     </div>
   );
