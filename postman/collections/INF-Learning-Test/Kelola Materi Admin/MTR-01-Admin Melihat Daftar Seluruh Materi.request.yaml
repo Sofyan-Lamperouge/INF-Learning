@@ -1,0 +1,99 @@
+$kind: http-request
+url: "{{base_url}}/materi"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data materi tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur pagination tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.total).to.be.a(\"number\");\r
+
+      \    pm.expect(response.page).to.be.a(\"number\");\r
+
+      \    pm.expect(response.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(response.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur setiap materi sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi).to.have.property(\"id\");\r
+
+      \        pm.expect(materi).to.have.property(\"judul\");\r
+
+      \        pm.expect(materi).to.have.property(\"mata_kuliah\");\r
+
+      \        pm.expect(materi).to.have.property(\"semester\");\r
+
+      \        pm.expect(materi).to.have.property(\"jenis\");\r
+
+      \        pm.expect(materi).to.have.property(\"url\");\r
+
+      \        pm.expect(materi).to.have.property(\"status\");\r
+
+      \        pm.expect(materi).to.have.property(\"dibuat_pada\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status materi sesuai ketentuan\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \    const statusValid = [\"draft\", \"terbit\", \"arsip\"];\r
+
+      \r
+
+      \    response.items.forEach(function (materi) {\r
+
+      \        pm.expect(statusValid).to.include(materi.status);\r
+
+      \    });\r
+
+      });\r
+
+      \r\n"
+    language: text/javascript
+examples: .resources/MTR-01-Admin Melihat Daftar Seluruh Materi.resources/examples
+order: 1000

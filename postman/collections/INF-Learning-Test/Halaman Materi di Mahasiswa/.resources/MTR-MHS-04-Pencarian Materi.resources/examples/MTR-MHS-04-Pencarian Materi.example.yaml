@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi?q=Teorema&page=1&limit=20"
+  method: GET
+  queryParams:
+    q: Teorema
+    page: "1"
+    limit: "20"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 05 Nov 2026 08:50:12 GMT
+    server: railway-hikari
+    x-railway-request-id: zAjSBo60TtOm9qh5n6XIxQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 8,
+            "judul": "Teorema CAP",
+            "deskripsi": "Membahas Teorema CAP",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/086a6b3f7ad54bcbb6dd969d40403c0e.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-04T17:25:54",
+            "diubah_pada": "2026-11-04T17:25:54",
+            "status_belajar": "belum"
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

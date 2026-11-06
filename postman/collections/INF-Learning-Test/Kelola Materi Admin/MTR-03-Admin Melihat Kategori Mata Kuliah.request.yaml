@@ -1,0 +1,87 @@
+$kind: http-request
+url: "{{base_url}}/materi/kategori/mata-kuliah?semester=4"
+method: GET
+queryParams:
+  semester: "4"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki semester dan items\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"semester\");\r
+
+      \    pm.expect(response).to.have.property(\"items\");\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semester sesuai dengan parameter request\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.semester).to.eql(4);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur kategori mata kuliah sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (item) {\r
+
+      \        pm.expect(item).to.have.property(\"mata_kuliah\");\r
+
+      \        pm.expect(item).to.have.property(\"total_materi\");\r
+
+      \r
+
+      \        pm.expect(item.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(item.total_materi).to.be.a(\"number\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah materi tidak bernilai negatif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    response.items.forEach(function (item) {\r
+
+      \        pm.expect(item.total_materi).to.be.at.least(0);\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-03-Admin Melihat Kategori Mata Kuliah.resources/examples
+order: 3000

@@ -1,0 +1,112 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{nim_admin}}\",\r
+
+    \    \"kata_sandi\": \"{{password_admin}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Access token tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.access_token).to.be.a(\"string\");\r
+
+      \    pm.expect(response.access_token).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Token type adalah bearer\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data pengguna tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"status\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"peran\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status akun aktif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Role pengguna adalah admin\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.pengguna.peran).to.eql(\"admin\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token admin secara otomatis\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    response.access_token &&\r
+
+      \    response.pengguna?.peran === \"admin\"\r
+
+      ) {\r
+
+      \    pm.environment.set(\"admin_access_token\", response.access_token);\r
+
+      }"
+    language: text/javascript
+examples: .resources/LOG-07-Login Admin Berhasil.resources/examples
+order: 7000

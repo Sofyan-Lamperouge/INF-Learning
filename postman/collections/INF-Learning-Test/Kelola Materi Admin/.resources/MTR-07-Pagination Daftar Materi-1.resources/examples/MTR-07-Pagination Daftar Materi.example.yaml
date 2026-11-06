@@ -1,0 +1,46 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi?page=1&limit=1"
+  method: GET
+  queryParams:
+    page: "1"
+    limit: "1"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 16:58:09 GMT
+    server: railway-hikari
+    x-railway-request-id: Kx2WI9l0QyytrHmr9fVATg
+    content-encoding: gzip
+    x-hikari-trace: sin1.98a6
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 7,
+            "judul": "Pengantar sistem terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 4,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/79258d0be7624124960c7695fa2e5b52.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-02T10:16:08",
+            "diubah_pada": "2026-11-03T03:57:08",
+            "status_belajar": null
+          }
+        ],
+        "total": 2,
+        "page": 1,
+        "limit": 1,
+        "total_pages": 2
+      }
+order: 1000

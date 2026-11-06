@@ -1,0 +1,96 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/{{mahasiswa_id}}"
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"status\": \"belum_aktif\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Data mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      \    pm.expect(response).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur response mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response).to.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.have.property(\"angkatan\");\r
+
+      \    pm.expect(response).to.have.property(\"status\");\r
+
+      \    pm.expect(response).to.have.property(\"dibuat_pada\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID mahasiswa tidak berubah\", function () {\r
+
+      \    pm.expect(response.id).to.eql(15);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status mahasiswa berhasil diubah\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor induk tidak berubah\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(\"2488010100\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nama mahasiswa tidak berubah\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(\"MIKASA ACKERMAN\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Angkatan tidak berubah\", function () {\r
+
+      \    pm.expect(response.angkatan).to.eql(2024);\r
+
+      });"
+    language: text/javascript
+examples: .resources/MHS-04-Mengedit Status Mahasiswa.resources/examples
+order: 4000

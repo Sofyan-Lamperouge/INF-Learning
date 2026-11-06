@@ -6,3 +6,15 @@ values:
     value: ''
   - key: password_register
     value: ''
+  - key: nim_admin
+    value: ''
+  - key: password_admin
+    value: ''
+  - key: admin_access_token
+    value: ''
+  - key: token
+    value: ''
+  - key: materi_id
+    value: ''
+  - key: mahasiswa_id
+    value: ''

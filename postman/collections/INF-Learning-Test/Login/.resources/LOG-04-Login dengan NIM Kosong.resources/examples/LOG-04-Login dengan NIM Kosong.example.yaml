@@ -1,0 +1,45 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"\",\r
+
+      \    \"kata_sandi\": \"{{password_register}}\"\r
+
+      }"
+response:
+  statusCode: 422
+  statusText: ""
+  headers:
+    :status: "422"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 13:25:36 GMT
+    server: railway-hikari
+    x-railway-request-id: KNhQ-0TARLOEf8Z72h0iww
+    content-length: "152"
+    x-hikari-trace: sin1.tr00,hnd1.2zrd
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": [
+          {
+            "type": "string_too_short",
+            "loc": [
+              "body",
+              "nomor_induk"
+            ],
+            "msg": "String should have at least 3 characters",
+            "input": "",
+            "ctx": {
+              "min_length": 3
+            }
+          }
+        ]
+      }
+order: 1000

@@ -1,0 +1,94 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{nim_register}}\",\r
+
+    \    \"kata_sandi\": \"{{password_register}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Access token tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.access_token).to.be.a(\"string\");\r
+
+      \    pm.expect(response.access_token).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Token type adalah bearer\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data pengguna tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"nama\");\r
+
+      \    pm.expect(response.pengguna).to.have.property(\"status\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status akun aktif\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"NIM sesuai dengan request\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \    const requestBody = JSON.parse(pm.request.body.raw);\r
+
+      \r
+
+      \    pm.expect(response.pengguna.nomor_induk)\r
+
+      \        .to.eql(requestBody.nomor_induk);\r
+
+      });"
+    language: text/javascript
+examples: .resources/LOG-01-Login Mahasiswa Berhasil.resources/examples
+order: 1000

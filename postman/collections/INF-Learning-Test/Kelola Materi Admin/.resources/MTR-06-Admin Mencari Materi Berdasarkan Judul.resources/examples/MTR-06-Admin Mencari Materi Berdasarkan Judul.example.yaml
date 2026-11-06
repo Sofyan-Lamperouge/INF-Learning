@@ -1,0 +1,45 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi?q=Pengantar"
+  method: GET
+  queryParams:
+    q: Pengantar
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 16:15:31 GMT
+    server: railway-hikari
+    x-railway-request-id: _WMrDD5zSrios-6x6WHkDg
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00,hnd1.y5sc
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 7,
+            "judul": "Pengantar sistem terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 4,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/79258d0be7624124960c7695fa2e5b52.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-02T10:16:08",
+            "diubah_pada": "2026-11-03T03:57:08",
+            "status_belajar": null
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

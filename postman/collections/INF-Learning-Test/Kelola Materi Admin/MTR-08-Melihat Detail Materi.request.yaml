@@ -1,0 +1,115 @@
+$kind: http-request
+url: "{{base_url}}/materi/7"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID materi sesuai request\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.id).to.eql(7);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Judul materi sesuai\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.judul)\r
+
+      \        .to.eql(\"Pengantar sistem terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Properti detail materi tersedia\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    const requiredFields = [\r
+
+      \        \"id\",\r
+
+      \        \"judul\",\r
+
+      \        \"deskripsi\",\r
+
+      \        \"mata_kuliah\",\r
+
+      \        \"semester\",\r
+
+      \        \"jenis\",\r
+
+      \        \"url\",\r
+
+      \        \"dibuat_oleh\",\r
+
+      \        \"status\",\r
+
+      \        \"dibuat_pada\",\r
+
+      \        \"diubah_pada\",\r
+
+      \        \"status_belajar\"\r
+
+      \    ];\r
+
+      \r
+
+      \    requiredFields.forEach(function (field) {\r
+
+      \        pm.expect(response).to.have.property(field);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data semester valid\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.semester).to.be.within(1, 8);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status materi valid\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect([\"draft\", \"terbit\", \"arsip\"])\r
+
+      \        .to.include(response.status);\r
+
+      });"
+    language: text/javascript
+examples: .resources/MTR-08-Melihat Detail Materi.resources/examples
+order: 8000

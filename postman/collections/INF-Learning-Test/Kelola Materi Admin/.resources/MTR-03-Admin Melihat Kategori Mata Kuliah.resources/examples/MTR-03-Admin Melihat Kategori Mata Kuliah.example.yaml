@@ -1,0 +1,31 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/kategori/mata-kuliah?semester=4"
+  method: GET
+  queryParams:
+    semester: "4"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Wed, 04 Nov 2026 16:03:36 GMT
+    server: railway-hikari
+    x-railway-request-id: vwjZkoxVQNCcEPJk-_9nXA
+    content-length: "80"
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "semester": 4,
+        "items": [
+          {
+            "mata_kuliah": "Sistem Terdistribusi",
+            "total_materi": 1
+          }
+        ]
+      }
+order: 1000
