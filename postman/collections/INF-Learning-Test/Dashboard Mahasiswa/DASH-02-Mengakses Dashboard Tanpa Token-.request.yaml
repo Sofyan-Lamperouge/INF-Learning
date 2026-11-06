@@ -1,0 +1,40 @@
+$kind: http-request
+name: DASH-02-Mengakses Dashboard Tanpa Token.
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+auth:
+  type: bearer
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code adalah 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki field detail\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pesan error menunjukkan token tidak ada\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail).to.eql(\"Token tidak ada\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/DASH-02-Mengakses Dashboard Tanpa Token-.resources/examples
+order: 2000

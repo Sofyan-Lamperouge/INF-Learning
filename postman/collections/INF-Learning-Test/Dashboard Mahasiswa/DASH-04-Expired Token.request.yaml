@@ -1,0 +1,45 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_expired}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code harus 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki field detail\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json).to.have.property(\"detail\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Token ditolak karena kedaluwarsa atau tidak valid\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.detail).to.eql(\r
+
+      \        \"Token tidak valid atau sudah kedaluwarsa\"\r
+
+      \    );\r
+
+      });"
+    language: text/javascript
+examples: .resources/DASH-04-Expired Token.resources/examples
+order: 4000
