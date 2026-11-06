@@ -166,8 +166,8 @@ export default function RegisterPage() {
             </div>
 
             <p className="auth-footer">
-              Sudah punya akun? Masuk{' '}
-              <Link to="/login">di sini</Link>
+              Sudah punya akun? {' '}
+              <Link to="/login">Masuk di sini</Link>
             </p>
           </div>
         </section>

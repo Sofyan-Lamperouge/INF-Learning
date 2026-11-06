@@ -61,7 +61,7 @@ export async function request(path, options = {}) {
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       throw new ApiError(
-        'Periksa koneksi jaringan Anda, lalu coba registrasi kembali.',
+        'Koneksi internet terputus. Periksa jaringan Anda, lalu coba lagi.',
         0,
         error,
       );
