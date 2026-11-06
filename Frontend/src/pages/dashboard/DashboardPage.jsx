@@ -8,25 +8,26 @@
 //  - [DIPERBAIKI] total_kuis sudah tidak dikirim backend (fitur kuis ditunda) -> pakai ?? 0
 //    agar kartu statistik tidak menampilkan undefined.
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import DashboardLayout from '../../components/dashboard/DashboardLayout.jsx';
-import DashboardHeader from '../../components/dashboard/DashboardHeader.jsx';
-import MainPanel from '../../components/dashboard/MainPanel.jsx';
-import RekapMateri from '../../components/dashboard/RekapMateri.jsx';
-import RekapKuis from '../../components/dashboard/RekapKuis.jsx';
-import TabelMahasiswa from '../../components/dashboard/TabelMahasiswa.jsx';
-import { useAuth } from '../../hooks/useAuth.js';
-import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton.jsx';
-import { getDashboard } from '../../services/adminService.js'; // [BARU]
+import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
+import DashboardHeader from "../../components/dashboard/DashboardHeader.jsx";
+import MainPanel from "../../components/dashboard/MainPanel.jsx";
+import RekapMateri from "../../components/dashboard/RekapMateri.jsx";
+import RekapKuis from "../../components/dashboard/RekapKuis.jsx";
+import TabelMahasiswa from "../../components/dashboard/TabelMahasiswa.jsx";
+import { useAuth } from "../../hooks/useAuth.js";
+import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton.jsx";
+import { getDashboard } from "../../services/adminService.js";
+import ErrorMessage from "../../components/common/ErrorMessage.jsx";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [stats, setStats] = useState({
     totalMateri: 0,
     totalKuis: 0,
@@ -36,12 +37,15 @@ export default function DashboardPage() {
   const [kuisList] = useState([]); // belum ada datanya dari backend
   const [mahasiswaList, setMahasiswaList] = useState([]);
 
+  const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
+
   useEffect(() => {
     let active = true;
 
     async function fetchDashboardData() {
       try {
-        const data = await getDashboard(); 
+        const data = await getDashboard();
 
         if (!active) return;
 
@@ -52,8 +56,8 @@ export default function DashboardPage() {
         });
         setMateriList(data.materi_terbaru);
         setMahasiswaList(data.mahasiswa_terbaru);
-      } catch (error) {
-        console.error('Gagal mengambil data dashboard:', error);
+      } catch (err) {
+        if (active) setError(err.message || "Data dashboard gagal dimuat.");
       } finally {
         if (active) setLoading(false);
       }
@@ -67,7 +71,7 @@ export default function DashboardPage() {
   }, []);
 
   function handleUpload() {
-    navigate('/dashboard/materi');
+    navigate("/dashboard/materi");
   }
 
   if (loading) {
@@ -86,6 +90,19 @@ export default function DashboardPage() {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       />
+
+      {error && (
+        <>
+          <ErrorMessage message={error} />
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setReloadKey((k) => k + 1)}
+          >
+            Coba lagi
+          </button>
+        </>
+      )}
 
       <MainPanel user={user} stats={stats} onUpload={handleUpload} />
 

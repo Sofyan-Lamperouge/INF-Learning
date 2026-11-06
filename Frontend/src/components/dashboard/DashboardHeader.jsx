@@ -17,7 +17,7 @@ export default function DashboardHeader({
         {title}
       </h1>
 
-      <div className="dashboard-search">
+      {/*<div className="dashboard-search">
         <span className="dashboard-search-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@ export default function DashboardHeader({
           </svg>
         </span>
 
-        <input
+        {/*<input
           type="text"
           className="dashboard-search-input"
           placeholder={isFocused ? '' : searchPlaceholder}
@@ -44,7 +44,7 @@ export default function DashboardHeader({
           value={searchValue}
           onChange={onSearchChange}
         />
-      </div>
+      </div>*/}
 
     </header>
   );
