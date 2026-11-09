@@ -1,0 +1,25 @@
+$kind: http-example
+name: DASH-02-Mengakses Dashboard Tanpa Token.
+request:
+  url: "{{base_url}}/mahasiswa/dashboard"
+  method: GET
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Fri, 06 Nov 2026 08:45:07 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: BsDAp1CZQYm846F59o6EoQ
+    content-length: "28"
+    x-hikari-trace: lax1.e74w
+    x-railway-edge: lax1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak ada"
+      }
+order: 1000

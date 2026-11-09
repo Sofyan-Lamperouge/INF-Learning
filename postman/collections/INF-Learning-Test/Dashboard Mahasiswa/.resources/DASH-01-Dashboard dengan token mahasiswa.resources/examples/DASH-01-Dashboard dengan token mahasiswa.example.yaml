@@ -1,0 +1,69 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/mahasiswa/dashboard"
+  method: GET
+  body:
+    type: json
+    content: ""
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Fri, 06 Nov 2026 08:42:27 GMT
+    server: railway-hikari
+    x-railway-request-id: 8PXxeVcqRYmAZmVt0_TJvA
+    content-encoding: gzip
+    x-hikari-trace: lax1.ez9k
+    x-railway-edge: lax1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "profil": {
+          "id": 13,
+          "nama": "KURUMI TOKISAKI",
+          "nomor_induk": "2488010099",
+          "angkatan": 2024
+        },
+        "statistik": {
+          "total_materi": 2,
+          "materi_dilihat": 0,
+          "materi_selesai": 0,
+          "persen_selesai": 0
+        },
+        "lanjutkan_belajar": null,
+        "materi_terbaru": [
+          {
+            "id": 18,
+            "judul": "<script>alert('XSS')</script>",
+            "mata_kuliah": "MP",
+            "semester": 1,
+            "jenis": "docx",
+            "url": "https://inf-learning-production.up.railway.app/uploads/407d997c02144a1cadf2da3fa154a0d5.docx",
+            "dibuat_pada": "2026-11-06T08:02:46",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 17,
+            "judul": "Pengantar manajemen 5",
+            "mata_kuliah": "MP",
+            "semester": 3,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/29c80e00fb4244899e207ffba7c04467.pdf",
+            "dibuat_pada": "2026-11-06T07:44:42",
+            "status_belajar": "belum"
+          }
+        ],
+        "progres_mata_kuliah": [
+          {
+            "mata_kuliah": "MP",
+            "total": 2,
+            "selesai": 0,
+            "persen": 0
+          }
+        ]
+      }
+order: 1000

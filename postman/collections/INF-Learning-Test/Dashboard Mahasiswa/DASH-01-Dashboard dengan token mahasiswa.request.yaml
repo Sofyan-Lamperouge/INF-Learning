@@ -1,0 +1,296 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      // 1. Validasi struktur utama\r
+
+      pm.test(\"Struktur dashboard tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"profil\");\r
+
+      \    pm.expect(response).to.have.property(\"statistik\");\r
+
+      \    pm.expect(response).to.have.property(\"lanjutkan_belajar\");\r
+
+      \    pm.expect(response).to.have.property(\"materi_terbaru\");\r
+
+      \    pm.expect(response).to.have.property(\"progres_mata_kuliah\");\r
+
+      });\r
+
+      \r
+
+      // 2. Validasi profil mahasiswa\r
+
+      pm.test(\"Struktur profil mahasiswa valid\", function () {\r
+
+      \    pm.expect(response.profil).to.be.an(\"object\");\r
+
+      \r
+
+      \    pm.expect(response.profil.id).to.be.a(\"number\");\r
+
+      \    pm.expect(response.profil.nama).to.be.a(\"string\");\r
+
+      \    pm.expect(response.profil.nomor_induk).to.be.a(\"string\");\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.profil.angkatan === null ||\r
+
+      \        typeof response.profil.angkatan === \"number\"\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // 3. Validasi statistik belajar\r
+
+      pm.test(\"Struktur statistik belajar valid\", function () {\r
+
+      \    const statistik = response.statistik;\r
+
+      \r
+
+      \    pm.expect(statistik.total_materi).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.materi_dilihat).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.materi_selesai).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.persen_selesai).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nilai statistik tidak negatif\", function () {\r
+
+      \    const statistik = response.statistik;\r
+
+      \r
+
+      \    pm.expect(statistik.total_materi).to.be.at.least(0);\r
+
+      \    pm.expect(statistik.materi_dilihat).to.be.at.least(0);\r
+
+      \    pm.expect(statistik.materi_selesai).to.be.at.least(0);\r
+
+      \    pm.expect(statistik.persen_selesai).to.be.within(0, 100);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Persentase penyelesaian dihitung dengan benar\", function () {\r
+
+      \    const statistik = response.statistik;\r
+
+      \r
+
+      \    const expectedPercentage = statistik.total_materi === 0\r
+
+      \        ? 0\r
+
+      \        : Number(\r
+
+      \            (statistik.materi_selesai /\r
+
+      \             statistik.total_materi * 100).toFixed(1)\r
+
+      \        );\r
+
+      \r
+
+      \    pm.expect(statistik.persen_selesai)\r
+
+      \        .to.eql(expectedPercentage);\r
+
+      });\r
+
+      \r
+
+      // 4. Validasi materi terakhir dilihat\r
+
+      pm.test(\"Struktur lanjutkan belajar valid\", function () {\r
+
+      \    const materi = response.lanjutkan_belajar;\r
+
+      \r
+
+      \    if (materi !== null) {\r
+
+      \        pm.expect(materi.id).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.judul).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.semester).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.jenis).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.url).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.dibuat_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \        pm.expect([\r
+
+      \            \"belum\",\r
+
+      \            \"dilihat\",\r
+
+      \            \"selesai\"\r
+
+      \        ]).to.include(materi.status_belajar);\r
+
+      \    }\r
+
+      });\r
+
+      \r
+
+      // 5. Validasi materi terbaru\r
+
+      pm.test(\"Materi terbaru berbentuk array\", function () {\r
+
+      \    pm.expect(response.materi_terbaru).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah materi terbaru maksimal 5\", function () {\r
+
+      \    pm.expect(response.materi_terbaru.length).to.be.at.most(5);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur setiap materi terbaru valid\", function () {\r
+
+      \    response.materi_terbaru.forEach(function (materi) {\r
+
+      \        pm.expect(materi.id).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.judul).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.semester).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.jenis).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.url).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.dibuat_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \        pm.expect([\r
+
+      \            \"belum\",\r
+
+      \            \"dilihat\",\r
+
+      \            \"selesai\"\r
+
+      \        ]).to.include(materi.status_belajar);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // 6. Validasi progres mata kuliah\r
+
+      pm.test(\"Progres mata kuliah berbentuk array\", function () {\r
+
+      \    pm.expect(response.progres_mata_kuliah).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Struktur progres setiap mata kuliah valid\", function () {\r
+
+      \    response.progres_mata_kuliah.forEach(function (progres) {\r
+
+      \        pm.expect(progres.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(progres.total).to.be.a(\"number\");\r
+
+      \        pm.expect(progres.selesai).to.be.a(\"number\");\r
+
+      \        pm.expect(progres.persen).to.be.a(\"number\");\r
+
+      \r
+
+      \        pm.expect(progres.total).to.be.at.least(0);\r
+
+      \        pm.expect(progres.selesai).to.be.at.least(0);\r
+
+      \        pm.expect(progres.selesai).to.be.at.most(progres.total);\r
+
+      \        pm.expect(progres.persen).to.be.within(0, 100);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // 7. Validasi perhitungan progres mata kuliah\r
+
+      pm.test(\"Persentase progres mata kuliah benar\", function () {\r
+
+      \    response.progres_mata_kuliah.forEach(function (progres) {\r
+
+      \        const expectedPercentage = progres.total === 0\r
+
+      \            ? 0\r
+
+      \            : Number(\r
+
+      \                (progres.selesai / progres.total * 100).toFixed(1)\r
+
+      \            );\r
+
+      \r
+
+      \        pm.expect(progres.persen).to.eql(expectedPercentage);\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/DASH-01-Dashboard dengan token mahasiswa.resources/examples
+order: 1000

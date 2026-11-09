@@ -1,0 +1,135 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Profil mahasiswa memiliki struktur yang benar\", function () {\r
+
+      \    pm.expect(json.profil).to.be.an(\"object\");\r
+
+      \r
+
+      \    pm.expect(json.profil).to.have.property(\"id\");\r
+
+      \    pm.expect(json.profil.id).to.be.a(\"number\");\r
+
+      \r
+
+      \    pm.expect(json.profil.nama).to.be.a(\"string\");\r
+
+      \    pm.expect(json.profil.nomor_induk).to.be.a(\"string\");\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        json.profil.angkatan === null ||\r
+
+      \        Number.isInteger(json.profil.angkatan)\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Statistik belajar memiliki struktur yang benar\", function () {\r
+
+      \    const statistik = json.statistik;\r
+
+      \r
+
+      \    pm.expect(statistik).to.have.property(\"total_materi\");\r
+
+      \    pm.expect(statistik).to.have.property(\"materi_dilihat\");\r
+
+      \    pm.expect(statistik).to.have.property(\"materi_selesai\");\r
+
+      \    pm.expect(statistik).to.have.property(\"persen_selesai\");\r
+
+      \r
+
+      \    pm.expect(statistik.total_materi).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.materi_dilihat).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.materi_selesai).to.be.a(\"number\");\r
+
+      \    pm.expect(statistik.persen_selesai).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semua jumlah statistik tidak boleh negatif\", function () {\r
+
+      \    const statistik = json.statistik;\r
+
+      \r
+
+      \    pm.expect(statistik.total_materi).to.be.at.least(0);\r
+
+      \    pm.expect(statistik.materi_dilihat).to.be.at.least(0);\r
+
+      \    pm.expect(statistik.materi_selesai).to.be.at.least(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Materi selesai tidak boleh melebihi total materi\", function () {\r
+
+      \    const statistik = json.statistik;\r
+
+      \r
+
+      \    pm.expect(statistik.materi_selesai)\r
+
+      \        .to.be.at.most(statistik.total_materi);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Persentase selesai sesuai perhitungan service\", function () {\r
+
+      \    const statistik = json.statistik;\r
+
+      \r
+
+      \    const expected = statistik.total_materi === 0\r
+
+      \        ? 0\r
+
+      \        : Number((\r
+
+      \            statistik.materi_selesai /\r
+
+      \            statistik.total_materi * 100\r
+
+      \        ).toFixed(1));\r
+
+      \r
+
+      \    pm.expect(statistik.persen_selesai).to.eql(expected);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Persentase selesai berada pada rentang 0-100\", function () {\r
+
+      \    pm.expect(json.statistik.persen_selesai).to.be.within(0, 100);\r
+
+      });"
+    language: text/javascript
+examples: .resources/DASH-05-Validasi Profil dan Statistik.resources/examples
+order: 5000

@@ -1,0 +1,45 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code adalah 403 Forbidden\", function () {\r
+
+      \    pm.response.to.have.status(403);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki field detail\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Admin tidak memiliki akses ke dashboard mahasiswa\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail).to.eql(\r
+
+      \        \"Anda tidak memiliki akses ke endpoint ini\"\r
+
+      \    );\r
+
+      });"
+    language: text/javascript
+examples: .resources/DASH-03-Mengakses Dashboard Menggunakan Token Admin.resources/examples
+order: 3000

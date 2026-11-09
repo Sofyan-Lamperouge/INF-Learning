@@ -1,0 +1,24 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/mahasiswa/dashboard"
+  method: GET
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Fri, 06 Nov 2026 09:15:03 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: 5r72xvHkQzqLw2fTwUFZXw
+    content-length: "53"
+    x-hikari-trace: lax1.ez9k
+    x-railway-edge: lax1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak valid atau sudah kedaluwarsa"
+      }
+order: 1000

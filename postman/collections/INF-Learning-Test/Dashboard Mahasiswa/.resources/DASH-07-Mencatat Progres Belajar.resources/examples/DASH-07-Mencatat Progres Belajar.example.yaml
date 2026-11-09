@@ -1,0 +1,28 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/17/progres"
+  method: POST
+  body:
+    type: json
+    content: "{\r\n  \"status\": \"dilihat\"\r\n}"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Fri, 06 Nov 2026 09:22:03 GMT
+    server: railway-hikari
+    x-railway-request-id: kwm5b4bERZiMSSj6pHNmDw
+    content-length: "71"
+    x-hikari-trace: lax1.v9kt
+    x-railway-edge: lax1
+  body:
+    type: json
+    content: |-
+      {
+        "materi_id": 17,
+        "status": "dilihat",
+        "diubah_pada": "2026-11-06T09:21:45"
+      }
+order: 1000
