@@ -5183,7 +5183,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   background: #ffffff;
   border: 1px solid #e3eef7;
   border-radius: 6px;
-  overflow-x: auto;
+  overflow-x: hidden;    
 }
 
 .materi-table {
@@ -5241,6 +5241,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   color: #6b7280;
   text-decoration: none;
   word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 .materi-cell-file a:hover {
