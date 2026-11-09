@@ -39,6 +39,8 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Tanpa ini, JavaScript di FE tidak bisa membaca nama file dari unduhan lintas-origin
+    expose_headers=["Content-Disposition"],
 )
 
 for router in ROUTERS:

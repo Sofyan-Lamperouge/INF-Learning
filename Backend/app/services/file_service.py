@@ -6,6 +6,7 @@ lewat /uploads/<nama>. Di Railway, UPLOAD_DIR harus berada di dalam Volume.
 
 import contextlib
 import os
+import re
 import uuid
 from urllib.parse import urlparse
 
@@ -58,16 +59,37 @@ def simpan_upload(file: UploadFile) -> tuple[str, str]:
     return ext.lstrip("."), url
 
 
-def hapus_file_dari_url(url: str | None) -> None:
-    """Hapus file fisik milik sebuah URL upload. Aman: hanya menyentuh isi UPLOAD_DIR."""
+def lokasi_file_dari_url(url: str | None) -> str | None:
+    """Lokasi file di disk untuk sebuah URL upload, atau None bila bukan file milik server ini.
+
+    Aman dari path traversal: hanya nama file (basename) yang dipakai, selalu di UPLOAD_DIR.
+    """
     if not url:
-        return
+        return None
     path = urlparse(url).path
     if not path.startswith("/uploads/"):
-        return  # tautan eksternal, bukan file milik server ini
+        return None  # tautan eksternal, bukan file milik server ini
     nama = os.path.basename(path)
-    if nama:
-        _hapus_lokasi(os.path.join(settings.UPLOAD_DIR, nama))
+    if not nama:
+        return None
+    return os.path.join(settings.UPLOAD_DIR, nama)
+
+
+def hapus_file_dari_url(url: str | None) -> None:
+    """Hapus file fisik milik sebuah URL upload. Aman: hanya menyentuh isi UPLOAD_DIR."""
+    lokasi = lokasi_file_dari_url(url)
+    if lokasi:
+        _hapus_lokasi(lokasi)
+
+
+_KARAKTER_TERLARANG = re.compile(r'[\\/:*?"<>|\x00-\x1f]')
+
+
+def nama_unduhan(judul: str | None, ekstensi: str) -> str:
+    """Nama file untuk unduhan, diambil dari judul materi (karakter terlarang dibuang)."""
+    bersih = _KARAKTER_TERLARANG.sub("", judul or "")
+    bersih = re.sub(r"\s+", " ", bersih).strip(" .")[:100].strip(" .")
+    return f"{bersih or 'materi'}{ekstensi}"
 
 
 def _hapus_lokasi(lokasi: str) -> None:

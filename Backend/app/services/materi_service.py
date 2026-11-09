@@ -1,3 +1,5 @@
+import os
+
 from fastapi import HTTPException, UploadFile, status
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
@@ -8,6 +10,13 @@ from app.crud import progres as crud_progres
 from app.models.materi import Materi
 from app.schemas.materi import MateriCreateRequest, MateriUpdateRequest
 from app.services import file_service
+
+MEDIA_TYPE = {
+    ".pdf": "application/pdf",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
 
 # URL sementara hanya untuk memvalidasi field lain SEBELUM file disimpan ke disk
 _URL_VALIDASI = "https://validasi.invalid/file"
@@ -112,6 +121,35 @@ def get_materi(db: Session, materi_id: int) -> Materi:
             detail="Materi tidak ditemukan",
         )
     return materi
+
+
+def siapkan_unduhan(db: Session, materi_id: int, *, hanya_terbit: bool) -> tuple[str, str, str]:
+    """Return (lokasi file, nama unduhan, media type) untuk GET /materi/{id}/unduh."""
+    materi = get_materi(db, materi_id)
+    # Sama seperti detail: mahasiswa tidak boleh tahu materi yang belum terbit
+    if hanya_terbit and materi.status != "terbit":
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Materi tidak ditemukan"
+        )
+
+    lokasi = file_service.lokasi_file_dari_url(materi.url)
+    if lokasi is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Materi ini berupa tautan eksternal dan tidak dapat diunduh dari server",
+        )
+    if not os.path.isfile(lokasi):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File materi tidak ditemukan di server",
+        )
+
+    ekstensi = os.path.splitext(lokasi)[1].lower()
+    return (
+        lokasi,
+        file_service.nama_unduhan(materi.judul, ekstensi),
+        MEDIA_TYPE.get(ekstensi, "application/octet-stream"),
+    )
 
 
 # ------------------------------------------------------------
