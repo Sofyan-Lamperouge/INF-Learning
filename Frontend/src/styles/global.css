@@ -5170,18 +5170,29 @@ div.dashboard-bottom-grid .btn-tambah:hover {
  
 /* ====================================
         TABEL MATERI CARD
-   ====================================  */
+   ==================================== */
 
 .materi-table-card {
   background: #f8fbfe;
+  padding-top: 0.25rem;
 }
- 
+
+/* Pembungkus: memberi jarak dari tepi kartu + garis luar */
+.materi-table-wrap {
+  margin: 0.25rem 1.75rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e3eef7;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
 .materi-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
-  table-layout: fixed;          /* ← baru */
+  table-layout: fixed;
 }
- 
+
 .materi-table th {
   background: #eef6fc;
   color: #1f2937;
@@ -5192,59 +5203,68 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   border-bottom: 1px solid #e3eef7;
   white-space: nowrap;
 }
- 
+
 .materi-table td {
-  padding: 1rem;
+  padding: 1.1rem 1rem;
   font-size: 0.9rem;
   color: #6b7280;
   border-bottom: 1px solid #eef2f6;
   vertical-align: middle;
-  overflow: hidden;                 
-  text-overflow: ellipsis;          
-  white-space: nowrap;    
+  /* sengaja TANPA nowrap / ellipsis / overflow hidden */
 }
- 
+
 .materi-table tbody tr:last-child td {
   border-bottom: none;
 }
- 
+
 .materi-table tbody tr:hover td {
   background: #fafdff;
 }
- 
+
+/* Teks panjang: maksimal 2 baris, lalu dipotong "..." */
+.materi-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
 .materi-cell-judul {
   font-weight: 600;
   color: #4b5563 !important;
 }
- 
+
 .materi-cell-file a {
   color: #6b7280;
   text-decoration: none;
-  word-break: break-all;
+  word-break: normal;
 }
- 
+
 .materi-cell-file a:hover {
   color: #2f9fe0;
   text-decoration: underline;
 }
- 
+
 .materi-actions {
   display: flex;
   align-items: center;
   gap: 0.9rem;
 }
- 
+
 .materi-actions button:hover {
   opacity: 0.75;
 }
- 
+
 /* Empty State (Saat Data Kosong) */
 .materi-empty-state {
   text-align: center;
   padding: 4rem 2rem !important;
   color: #6b7280;
   font-style: italic;
-  white-space: normal;   
+  white-space: normal;
 }
  
 /* Badge Semester */

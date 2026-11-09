@@ -283,14 +283,15 @@ export default function MateriPage() {
 
         {/* === 3. TABEL DATA MATERI === */}
         <div className="materi-table-card">
+          <div className="materi-table-wrap">
           <table className="materi-table">
             <thead>
               <tr>
                 <th width="6%">No</th>
-                <th width="16%">Semester</th>
-                <th width="20%">Mata Kuliah</th>
-                <th width="34%">Nama Materi</th>
-                <th width="12%">File</th>
+                <th width="15%">Semester</th>
+                <th width="21%">Mata Kuliah</th>
+                <th width="26%">Nama Materi</th>
+                <th width="20%">File</th>
                 <th width="12%">Aksi</th>
               </tr>
             </thead>
@@ -314,21 +315,27 @@ export default function MateriPage() {
                         Semester {materi.semester}
                       </span>
                     </td>
-                    <td className="materi-cell-matkul" title={materi.mata_kuliah}>
-                      {materi.mata_kuliah}
+                    <td className="materi-cell-matkul">
+                      <div className="materi-clamp" title={materi.mata_kuliah}>
+                        {materi.mata_kuliah}
+                      </div>
                     </td>
-                    <td className="materi-cell-judul" title={materi.judul}>
-                      {materi.judul}
+                    <td className="materi-cell-judul">
+                      <div className="materi-clamp" title={materi.judul}>
+                        {materi.judul}
+                      </div>
                     </td>
                     <td className="materi-cell-file">
-                      <a
-                        href={materi.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="Buka file materi"
-                      >
-                        {namaFileTampil(materi)}
-                      </a>
+                      <div className="materi-clamp">
+                        <a
+                          href={materi.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={namaFileTampil(materi)}
+                        >
+                          {namaFileTampil(materi)}
+                        </a>
+                      </div>
                     </td>
                     <td>
                       {/*  3. Tombol Edit & Hapus dengan SVG */}
@@ -417,6 +424,7 @@ export default function MateriPage() {
               )}
             </tbody>
           </table>
+          </div>
 
           {/* === 4. FOOTER PAGINASI === */}
           <div className="materi-pagination">
