@@ -1,14 +1,3 @@
-// Frontend/src/pages/dashboard/MateriPage.jsx
-//
-// [DIUBAH]
-//  - DUMMY_MATERI dihapus; data diambil dari GET /materi (materiService.getMateriList).
-//  - Timer palsu 1500ms dihapus. Skeleton hanya tampil saat load pertama.
-//  - Filter Semester / Mata Kuliah / pencarian kini berfungsi (dikirim ke backend, search di-debounce).
-//  - Nama field mengikuti backend: matkul -> mata_kuliah, nama -> judul, file -> url + jenis,
-//    semester berupa angka (bukan teks "Semester 1").
-//  - Tombol hapus berfungsi (DELETE /materi/{id}).
-//  - Paginasi memakai total dan total_pages dari backend.
-//  - Bagian SVG/ikon tidak diubah.
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
