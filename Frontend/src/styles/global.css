@@ -5168,7 +5168,10 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   margin: 0;
 }
  
-/* --- Tabel --- */
+/* ====================================
+        TABEL MATERI CARD
+   ====================================  */
+
 .materi-table-card {
   background: #f8fbfe;
 }
@@ -5179,6 +5182,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   border-collapse: collapse;
   background: #ffffff;
   border: 1px solid #e3eef7;
+  table-layout: fixed;
 }
  
 .materi-table th {
@@ -5187,16 +5191,20 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   font-weight: 600;
   font-size: 0.95rem;
   text-align: left;
-  padding: 1.1rem 1rem;
+  padding: 1rem;
   border-bottom: 1px solid #e3eef7;
+  white-space: nowrap;
 }
  
 .materi-table td {
-  padding: 1.1rem 1rem;
+  padding: 1rem;
   font-size: 0.9rem;
   color: #6b7280;
   border-bottom: 1px solid #eef2f6;
   vertical-align: middle;
+  overflow: hidden;                 
+  text-overflow: ellipsis;          
+  white-space: nowrap;    
 }
  
 .materi-table tbody tr:last-child td {
@@ -5239,6 +5247,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   padding: 4rem 2rem !important;
   color: #6b7280;
   font-style: italic;
+  white-space: normal;   
 }
  
 /* Badge Semester */

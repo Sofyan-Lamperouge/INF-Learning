@@ -55,31 +55,34 @@ export default function MateriPage() {
   useEffect(() => {
     let active = true;
 
-    const timer = setTimeout(async () => {
-      try {
-        setError("");
-        const data = await getMateriList({
-          semester,
-          mataKuliah,
-          q: search,
-          page,
-          limit: PAGE_SIZE,
-        });
+    const timer = setTimeout(
+      async () => {
+        try {
+          setError("");
+          const data = await getMateriList({
+            semester,
+            mataKuliah,
+            q: search,
+            page,
+            limit: PAGE_SIZE,
+          });
 
-        if (!active) return;
+          if (!active) return;
 
-        setMateriList(data.items);
-        setMeta({ total: data.total, totalPages: data.total_pages || 1 });
-        // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
-        setMatkulOptions((prev) => [
-          ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
-        ]);
-      } catch (err) {
-        if (active) setError(err.message);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }, search ? 400 : 0); // debounce hanya saat mengetik
+          setMateriList(data.items);
+          setMeta({ total: data.total, totalPages: data.total_pages || 1 });
+          // Daftar pilihan mata kuliah dikumpulkan dari data yang pernah dimuat
+          setMatkulOptions((prev) => [
+            ...new Set([...prev, ...data.items.map((i) => i.mata_kuliah)]),
+          ]);
+        } catch (err) {
+          if (active) setError(err.message);
+        } finally {
+          if (active) setLoading(false);
+        }
+      },
+      search ? 400 : 0,
+    ); // debounce hanya saat mengetik
 
     return () => {
       active = false;
@@ -285,13 +288,19 @@ export default function MateriPage() {
               <tr>
                 <th width="6%">No</th>
                 <th width="16%">Semester</th>
-                <th width="22%">Mata Kuliah</th>
-                <th width="26%">Nama Materi</th>
-                <th width="20%">File</th>
-                <th width="10%">Aksi</th>
+                <th width="20%">Mata Kuliah</th>
+                <th width="34%">Nama Materi</th>
+                <th width="12%">File</th>
+                <th width="12%">Aksi</th>
               </tr>
             </thead>
             <tbody>
+              <td style={{ color: "#6b7280" }} title={materi.mata_kuliah}>
+                {materi.mata_kuliah}
+              </td>
+              <td style={{ color: "#4b5563" }} title={materi.judul}>
+                {materi.judul}
+              </td>
               {materiList.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="materi-empty-state">
