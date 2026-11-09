@@ -5177,12 +5177,9 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 }
  
 .materi-table {
-  width: calc(100% - 3.5rem);
-  margin: 0.25rem 1.75rem 1.5rem;
+  width: 100%;
   border-collapse: collapse;
-  background: #ffffff;
-  border: 1px solid #e3eef7;
-  table-layout: fixed;
+  table-layout: fixed;          /* ← baru */
 }
  
 .materi-table th {
@@ -6060,6 +6057,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 .rekap-materi-table {
   width: 100%;
   min-width: 760px;
+  table-layout: fixed;
   border: 1px solid #e2ebf1;
   border-collapse: separate;
   border-spacing: 0;
@@ -6074,6 +6072,9 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   border-bottom: 1px solid #e9eef2;
   text-align: left;
   vertical-align: middle;
+  overflow: hidden;             
+  text-overflow: ellipsis;      
+  white-space: nowrap; 
 }
 
 .rekap-materi-table th {
@@ -6093,6 +6094,10 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   width: 60px;
   text-align: center;
 }
+
+.rekap-materi-table th:nth-child(2) { width: 140px; }
+.rekap-materi-table th:nth-child(3) { width: 18%; }
+.rekap-materi-table th:nth-child(5) { width: 22%; }
 
 .rekap-materi-name {
   color: #666d73;

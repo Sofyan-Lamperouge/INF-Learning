@@ -1,39 +1,35 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const SEMESTER_COLORS = {
-  1: 'semester-1',
-  2: 'semester-2',
-  3: 'semester-3',
-  4: 'semester-4',
-  5: 'semester-5',
-  6: 'semester-6',
-  7: 'semester-7',
-  8: 'semester-8',
+  1: "semester-1",
+  2: "semester-2",
+  3: "semester-3",
+  4: "semester-4",
+  5: "semester-5",
+  6: "semester-6",
+  7: "semester-7",
+  8: "semester-8",
 };
 
 function getFileName(fileUrl, fallbackType) {
-  if (!fileUrl) return '';
+  if (!fileUrl) return "";
 
   try {
     const pathname = new URL(fileUrl, window.location.origin).pathname;
-    const encodedName = pathname.split('/').filter(Boolean).pop() || '';
+    const encodedName = pathname.split("/").filter(Boolean).pop() || "";
     const storedName = decodeURIComponent(encodedName);
 
     // Hapus awalan UUID yang ditambahkan backend agar nama file tetap unik.
-    return storedName.replace(/^[a-f0-9]{32}_/i, '') || storedName;
+    return storedName.replace(/^[a-f0-9]{32}_/i, "") || storedName;
   } catch {
-    return fallbackType
-      ? `File ${fallbackType.toUpperCase()}`
-      : 'File materi';
+    return fallbackType ? `File ${fallbackType.toUpperCase()}` : "File materi";
   }
 }
 
 function formatSemester(semester) {
   const value = Number(semester);
 
-  return Number.isInteger(value) && value > 0
-    ? `Semester ${value}`
-    : '—';
+  return Number.isInteger(value) && value > 0 ? `Semester ${value}` : "—";
 }
 
 export default function RekapMateri({ materiList = [] }) {
@@ -51,9 +47,7 @@ export default function RekapMateri({ materiList = [] }) {
 
       {materiList.length === 0 ? (
         <div className="rekap-empty">
-          <p className="rekap-empty-text">
-            Belum ada materi yang ditambahkan
-          </p>
+          <p className="rekap-empty-text">Belum ada materi yang ditambahkan</p>
 
           <Link to="/dashboard/materi/upload" className="btn-tambah">
             + Tambahkan materi
@@ -84,22 +78,26 @@ export default function RekapMateri({ materiList = [] }) {
                     <td data-label="Semester">
                       <span
                         className={`rekap-semester-badge ${
-                          SEMESTER_COLORS[semester] || 'semester-default'
+                          SEMESTER_COLORS[semester] || "semester-default"
                         }`}
                       >
                         {formatSemester(item.semester)}
                       </span>
                     </td>
 
-                    <td data-label="Mata Kuliah">
-                      {item.mata_kuliah || '—'}
+                    <td
+                      data-label="Mata Kuliah"
+                      title={item.mata_kuliah || undefined}
+                    >
+                      {item.mata_kuliah || "—"}
                     </td>
 
                     <td
                       data-label="Nama Materi"
                       className="rekap-materi-name"
+                      title={item.judul || undefined}
                     >
-                      {item.judul || '—'}
+                      {item.judul || "—"}
                     </td>
 
                     <td data-label="File">
