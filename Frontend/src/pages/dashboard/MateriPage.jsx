@@ -295,12 +295,6 @@ export default function MateriPage() {
               </tr>
             </thead>
             <tbody>
-              <td style={{ color: "#6b7280" }} title={materi.mata_kuliah}>
-                {materi.mata_kuliah}
-              </td>
-              <td style={{ color: "#4b5563" }} title={materi.judul}>
-                {materi.judul}
-              </td>
               {materiList.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="materi-empty-state">
@@ -320,8 +314,12 @@ export default function MateriPage() {
                         Semester {materi.semester}
                       </span>
                     </td>
-                    <td className="materi-cell-matkul">{materi.mata_kuliah}</td>
-                    <td className="materi-cell-judul">{materi.judul}</td>
+                    <td className="materi-cell-matkul" title={materi.mata_kuliah}>
+                      {materi.mata_kuliah}
+                    </td>
+                    <td className="materi-cell-judul" title={materi.judul}>
+                      {materi.judul}
+                    </td>
                     <td className="materi-cell-file">
                       <a
                         href={materi.url}
