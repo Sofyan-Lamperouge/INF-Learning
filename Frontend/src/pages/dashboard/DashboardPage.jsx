@@ -32,6 +32,8 @@ export default function DashboardPage() {
     totalMateri: 0,
     totalKuis: 0,
     totalMahasiswa: 0,
+    materiHariIni: 0, 
+    mahasiswaHariIni: 0, 
   });
   const [materiList, setMateriList] = useState([]);
   const [kuisList] = useState([]); // belum ada datanya dari backend
@@ -53,6 +55,8 @@ export default function DashboardPage() {
           totalMateri: data.total_materi,
           totalKuis: data.total_kuis ?? 0, // kuis ditunda: backend tidak mengirim total_kuis
           totalMahasiswa: data.total_mahasiswa,
+          materiHariIni: data.materi_hari_ini ?? 0, // BARU
+          mahasiswaHariIni: data.mahasiswa_hari_ini ?? 0, // BARU
         });
         setMateriList(data.materi_terbaru);
         setMahasiswaList(data.mahasiswa_terbaru);
@@ -71,7 +75,7 @@ export default function DashboardPage() {
   }, []);
 
   function handleUpload() {
-    navigate("/dashboard/materi");
+    navigate("/dashboard/materi/upload");
   }
 
   if (loading) {

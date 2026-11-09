@@ -23,7 +23,7 @@ export default function Sidebar() {
   // Pindahkan handleLogout ke ATAS if(loading) agar tidak melanggar aturan React Hooks
   function handleLogout() {
     logout();
-    navigate("./pages/LandingPage", { replace: true });
+    navigate("/login", { replace: true });
   }
 
   // 3. Pengecekan loading diletakkan setelah semua fungsi dideklarasikan

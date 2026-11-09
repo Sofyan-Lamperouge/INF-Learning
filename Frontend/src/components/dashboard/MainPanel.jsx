@@ -71,9 +71,11 @@ function MahasiswaIcon() {
 export default function MainPanel({ user, stats, onUpload }) {
   const nama = user?.namaLengkap || "Admin";
 
-  const totalMateri = stats?.totalMateri  ?? 0;
+  const totalMateri = stats?.totalMateri ?? 0;
   const totalKuis = stats?.totalKuis ?? 0;
   const totalMahasiswa = stats?.totalMahasiswa ?? 0;
+  const materiHariIni = stats?.materiHariIni ?? 0;
+  const mahasiswaHariIni = stats?.mahasiswaHariIni ?? 0;
 
   return (
     <div className="main-panel">
@@ -125,10 +127,10 @@ export default function MainPanel({ user, stats, onUpload }) {
       {/* === ROW BAWAH: 3 Kartu Statistik === */}
       <div className="main-panel-stats">
         <StatCard
-          icon={<MateriIcon/>}
+          icon={<MateriIcon />}
           title="Total Materi "
           value={String(totalMateri).padStart(2, "0")}
-          subtitle="(+) 0 Materi ditambahkan hari ini"
+          subtitle={`(+) ${materiHariIni} Materi ditambahkan hari ini`}
         />
 
         <StatCard
@@ -142,7 +144,7 @@ export default function MainPanel({ user, stats, onUpload }) {
           icon={<MahasiswaIcon />}
           title="Total Mahasiswa"
           value={String(totalMahasiswa).padStart(2, "0")}
-          subtitle="(+) 0 Mahasiswa bergabung hari ini"
+          subtitle={`(+) ${mahasiswaHariIni} Mahasiswa bergabung hari ini`}
         />
       </div>
     </div>

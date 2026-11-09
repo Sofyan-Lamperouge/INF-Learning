@@ -55,7 +55,7 @@ export default function RekapMateri({ materiList = [] }) {
             Belum ada materi yang ditambahkan
           </p>
 
-          <Link to="/dashboard/materi" className="btn-tambah">
+          <Link to="/dashboard/materi/upload" className="btn-tambah">
             + Tambahkan materi
           </Link>
         </div>
