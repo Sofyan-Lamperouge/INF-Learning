@@ -277,11 +277,11 @@ export default function MateriPage() {
             <thead>
               <tr>
                 <th width="6%">No</th>
-                <th width="15%">Semester</th>
-                <th width="21%">Mata Kuliah</th>
+                <th width="14%">Semester</th>
+                <th width="17%">Mata Kuliah</th>
                 <th width="26%">Nama Materi</th>
-                <th width="20%">File</th>
-                <th width="12%">Aksi</th>
+                <th width="24%">File</th>
+                <th width="13%">Aksi</th>
               </tr>
             </thead>
             <tbody>

@@ -5212,6 +5212,22 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   vertical-align: middle;
   /* sengaja TANPA nowrap / ellipsis / overflow hidden */
 }
+/* code baruan */
+.materi-table th:first-child,
+.materi-table td:first-child {
+  text-align: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.materi-table th:last-child {
+  text-align: center;
+}
+
+.materi-table td:last-child {
+  padding-left: 0.5rem;
+  padding-right: 1rem;      
+}
 
 .materi-table tbody tr:last-child td {
   border-bottom: none;
@@ -5252,7 +5268,17 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 .materi-actions {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  justify-content: center;  /* ikon sejajar di bawah tulisan "Aksi" */
+  gap: 0.5rem;              /* sebelumnya ~0.9rem + padding tombol */
+}
+
+.materi-actions button {
+  padding: 0.25rem;         /* buang padding lebar bawaan tombol */
+  margin: 0;
+  line-height: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
 .materi-actions button:hover {
