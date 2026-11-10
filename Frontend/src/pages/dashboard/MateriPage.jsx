@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
@@ -8,7 +7,7 @@ import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
 import DeleteMateriModal from "../../components/dashboard/DeleteMateriModal.jsx";
 import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 // Backend menyimpan file dengan nama acak (uuid), jadi nama asli tidak tersedia.
 // Untuk tampilan, nama file dibuat dari judul materi + ekstensi, mis. "pengantar_algoritma.pdf".
@@ -273,146 +272,149 @@ export default function MateriPage() {
         {/* === 3. TABEL DATA MATERI === */}
         <div className="materi-table-card">
           <div className="materi-table-wrap">
-          <table className="materi-table">
-            <thead>
-              <tr>
-                <th width="6%">No</th>
-                <th width="14%">Semester</th>
-                <th width="17%">Mata Kuliah</th>
-                <th width="26%">Nama Materi</th>
-                <th width="24%">File</th>
-                <th width="13%">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materiList.length === 0 ? (
+            <table className="materi-table">
+              <thead>
                 <tr>
-                  <td colSpan="6" className="materi-empty-state">
-                    {error
-                      ? "Data materi gagal dimuat. Periksa koneksi ke backend."
-                      : "Belum ada materi yang diunggah."}
-                  </td>
+                  <th width="6%">No</th>
+                  <th width="14%">Semester</th>
+                  <th width="17%">Mata Kuliah</th>
+                  <th width="26%">Nama Materi</th>
+                  <th width="24%">File</th>
+                  <th width="13%">Aksi</th>
                 </tr>
-              ) : (
-                materiList.map((materi, index) => (
-                  <tr key={materi.id}>
-                    <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
-                    <td>
-                      <span
-                        className={`badge-semester ${getSemesterBadge(materi.semester)}`}
-                      >
-                        Semester {materi.semester}
-                      </span>
-                    </td>
-                    <td className="materi-cell-matkul">
-                      <div className="materi-clamp" title={materi.mata_kuliah}>
-                        {materi.mata_kuliah}
-                      </div>
-                    </td>
-                    <td className="materi-cell-judul">
-                      <div className="materi-clamp" title={materi.judul}>
-                        {materi.judul}
-                      </div>
-                    </td>
-                    <td className="materi-cell-file">
-                      <div className="materi-clamp">
-                        <a
-                          href={materi.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          title={namaFileTampil(materi)}
-                        >
-                          {namaFileTampil(materi)}
-                        </a>
-                      </div>
-                    </td>
-                    <td>
-                      {/*  3. Tombol Edit & Hapus dengan SVG */}
-                      <div className="materi-actions">
-                        <button
-                          type="button"
-                          onClick={() => setEditingMateri(materi)}
-                          aria-label={`Edit materi ${materi.judul}`}
-                          style={{
-                            background: "transparent",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <svg
-                            width="26"
-                            height="24"
-                            viewBox="0 0 30 26"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M20.9531 17.5183L22.6198 15.8933C22.8802 15.6394 23.3333 15.8171 23.3333 16.1827V23.5663C23.3333 24.912 22.2135 26.0038 20.8333 26.0038H2.5C1.11979 26.0038 0 24.912 0 23.5663V5.69131C0 4.34561 1.11979 3.25381 2.5 3.25381H16.7448C17.1146 3.25381 17.3021 3.69053 17.0417 3.94951L15.375 5.57451C15.2969 5.65068 15.1927 5.69131 15.0781 5.69131H2.5V23.5663H20.8333V17.8026C20.8333 17.696 20.875 17.5944 20.9531 17.5183ZM29.1094 7.27061L15.4323 20.6058L10.724 21.1136C9.35937 21.2608 8.19792 20.1386 8.34896 18.798L8.86979 14.2073L22.5469 0.872168C23.7396 -0.290723 25.6667 -0.290723 26.8542 0.872168L29.1042 3.06592C30.2969 4.22881 30.2969 6.11279 29.1094 7.27061ZM23.9635 8.83975L20.9375 5.88936L11.2604 15.3296L10.8802 18.6456L14.2812 18.2749L23.9635 8.83975ZM27.3385 4.79248L25.0885 2.59873C24.875 2.39053 24.526 2.39053 24.3177 2.59873L22.7083 4.16787L25.7344 7.11826L27.3438 5.54912C27.5521 5.33584 27.5521 5.00068 27.3385 4.79248Z"
-                              fill="#55B5EF"
-                            />
-                          </svg>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeleteError("");
-                            setDeletingMateri(materi);
-                          }}
-                          aria-label={`Hapus materi ${materi.judul}`}
-                          style={{
-                            background: "transparent",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
-                            display: "flex",
-                          }}
-                        >
-                          <svg
-                            width="28"
-                            height="28"
-                            viewBox="0 0 50 50"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M16.5625 16.5625L17.7344 35.3125C17.79 36.3959 18.5781 37.1875 19.6094 37.1875H30.3906C31.426 37.1875 32.1994 36.3959 32.2656 35.3125L33.4375 16.5625"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              stroke="#DC2626"
-                            />
-                            <path
-                              d="M14.6875 16.5625H35.3125Z"
-                              fill="#DC2626"
-                            />
-                            <path
-                              d="M14.6875 16.5625H35.3125"
-                              strokeWidth="3"
-                              strokeMiterlimit="10"
-                              strokeLinecap="round"
-                              stroke="#DC2626"
-                            />
-                            <path
-                              d="M21.25 16.5625V14.2188C21.2495 14.0339 21.2855 13.8508 21.3559 13.68C21.4264 13.5091 21.53 13.3539 21.6607 13.2232C21.7914 13.0925 21.9466 12.9889 22.1175 12.9184C22.2883 12.848 22.4714 12.812 22.6562 12.8125H27.3438C27.5286 12.812 27.7117 12.848 27.8825 12.9184C28.0534 12.9889 28.2086 13.0925 28.3393 13.2232C28.47 13.3539 28.5736 13.5091 28.6441 13.68C28.7145 13.8508 28.7505 14.0339 28.75 14.2188V16.5625M25 20.3125V33.4375M20.7812 20.3125L21.25 33.4375M29.2188 20.3125L28.75 33.4375"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              stroke="#DC2626"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+              </thead>
+              <tbody>
+                {materiList.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="materi-empty-state">
+                      {error
+                        ? "Data materi gagal dimuat. Periksa koneksi ke backend."
+                        : "Belum ada materi yang diunggah."}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  materiList.map((materi, index) => (
+                    <tr key={materi.id}>
+                      <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
+                      <td>
+                        <span
+                          className={`badge-semester ${getSemesterBadge(materi.semester)}`}
+                        >
+                          Semester {materi.semester}
+                        </span>
+                      </td>
+                      <td className="materi-cell-matkul">
+                        <div
+                          className="materi-clamp"
+                          title={materi.mata_kuliah}
+                        >
+                          {materi.mata_kuliah}
+                        </div>
+                      </td>
+                      <td className="materi-cell-judul">
+                        <div className="materi-clamp" title={materi.judul}>
+                          {materi.judul}
+                        </div>
+                      </td>
+                      <td className="materi-cell-file">
+                        <div className="materi-clamp">
+                          <a
+                            href={materi.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={namaFileTampil(materi)}
+                          >
+                            {namaFileTampil(materi)}
+                          </a>
+                        </div>
+                      </td>
+                      <td>
+                        {/*  3. Tombol Edit & Hapus dengan SVG */}
+                        <div className="materi-actions">
+                          <button
+                            type="button"
+                            onClick={() => setEditingMateri(materi)}
+                            aria-label={`Edit materi ${materi.judul}`}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              padding: 0,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <svg
+                              width="26"
+                              height="24"
+                              viewBox="0 0 30 26"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M20.9531 17.5183L22.6198 15.8933C22.8802 15.6394 23.3333 15.8171 23.3333 16.1827V23.5663C23.3333 24.912 22.2135 26.0038 20.8333 26.0038H2.5C1.11979 26.0038 0 24.912 0 23.5663V5.69131C0 4.34561 1.11979 3.25381 2.5 3.25381H16.7448C17.1146 3.25381 17.3021 3.69053 17.0417 3.94951L15.375 5.57451C15.2969 5.65068 15.1927 5.69131 15.0781 5.69131H2.5V23.5663H20.8333V17.8026C20.8333 17.696 20.875 17.5944 20.9531 17.5183ZM29.1094 7.27061L15.4323 20.6058L10.724 21.1136C9.35937 21.2608 8.19792 20.1386 8.34896 18.798L8.86979 14.2073L22.5469 0.872168C23.7396 -0.290723 25.6667 -0.290723 26.8542 0.872168L29.1042 3.06592C30.2969 4.22881 30.2969 6.11279 29.1094 7.27061ZM23.9635 8.83975L20.9375 5.88936L11.2604 15.3296L10.8802 18.6456L14.2812 18.2749L23.9635 8.83975ZM27.3385 4.79248L25.0885 2.59873C24.875 2.39053 24.526 2.39053 24.3177 2.59873L22.7083 4.16787L25.7344 7.11826L27.3438 5.54912C27.5521 5.33584 27.5521 5.00068 27.3385 4.79248Z"
+                                fill="#55B5EF"
+                              />
+                            </svg>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeleteError("");
+                              setDeletingMateri(materi);
+                            }}
+                            aria-label={`Hapus materi ${materi.judul}`}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              padding: 0,
+                              cursor: "pointer",
+                              display: "flex",
+                            }}
+                          >
+                            <svg
+                              width="28"
+                              height="28"
+                              viewBox="0 0 50 50"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M16.5625 16.5625L17.7344 35.3125C17.79 36.3959 18.5781 37.1875 19.6094 37.1875H30.3906C31.426 37.1875 32.1994 36.3959 32.2656 35.3125L33.4375 16.5625"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                stroke="#DC2626"
+                              />
+                              <path
+                                d="M14.6875 16.5625H35.3125Z"
+                                fill="#DC2626"
+                              />
+                              <path
+                                d="M14.6875 16.5625H35.3125"
+                                strokeWidth="3"
+                                strokeMiterlimit="10"
+                                strokeLinecap="round"
+                                stroke="#DC2626"
+                              />
+                              <path
+                                d="M21.25 16.5625V14.2188C21.2495 14.0339 21.2855 13.8508 21.3559 13.68C21.4264 13.5091 21.53 13.3539 21.6607 13.2232C21.7914 13.0925 21.9466 12.9889 22.1175 12.9184C22.2883 12.848 22.4714 12.812 22.6562 12.8125H27.3438C27.5286 12.812 27.7117 12.848 27.8825 12.9184C28.0534 12.9889 28.2086 13.0925 28.3393 13.2232C28.47 13.3539 28.5736 13.5091 28.6441 13.68C28.7145 13.8508 28.7505 14.0339 28.75 14.2188V16.5625M25 20.3125V33.4375M20.7812 20.3125L21.25 33.4375M29.2188 20.3125L28.75 33.4375"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                stroke="#DC2626"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
 
           {/* === 4. FOOTER PAGINASI === */}
@@ -437,7 +439,17 @@ export default function MateriPage() {
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
               </button>
-              <button className="btn-page active">{page}</button>
+              {Array.from({ length: meta.totalPages }, (_, i) => i + 1).map(
+                (n) => (
+                  <button
+                    key={n}
+                    className={`btn-page ${n === page ? "active" : ""}`}
+                    onClick={() => setPage(n)}
+                  >
+                    {n}
+                  </button>
+                ),
+              )}
               <button
                 className="btn-page"
                 disabled={page >= meta.totalPages}
@@ -476,6 +488,7 @@ export default function MateriPage() {
           error={deleteError}
           onCancel={() => {
             if (!deleting) setDeletingMateri(null);
+            if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
           }}
           onConfirm={handleDelete}
         />

@@ -130,21 +130,21 @@ export default function MainPanel({ user, stats, onUpload }) {
           icon={<MateriIcon />}
           title="Total Materi "
           value={String(totalMateri).padStart(2, "0")}
-          subtitle={`(+) ${materiHariIni} Materi ditambahkan hari ini`}
+          subtitle={`[+] ${materiHariIni} Materi ditambahkan hari ini`}
         />
 
         <StatCard
           icon={<KuisIcon />}
           title="Total Kuis"
           value={String(totalKuis).padStart(2, "0")}
-          subtitle="(+) 0 Kuis ditambahkan hari ini"
+          subtitle="[+] 0 Kuis ditambahkan hari ini"
         />
 
         <StatCard
           icon={<MahasiswaIcon />}
           title="Total Mahasiswa"
           value={String(totalMahasiswa).padStart(2, "0")}
-          subtitle={`(+) ${mahasiswaHariIni} Mahasiswa bergabung hari ini`}
+          subtitle={`[+] ${mahasiswaHariIni} Mahasiswa bergabung hari ini`}
         />
       </div>
     </div>
