@@ -4,6 +4,7 @@
   GET    /materi/kategori/semester     kategori semester 1-8 + jumlah materi
   GET    /materi/kategori/mata-kuliah  kategori mata kuliah pada satu semester
   GET    /materi/{id}                  detail
+  GET    /materi/{id}/unduh            unduh file materi (butuh token)
   POST   /materi                       upload materi (admin)
   PUT    /materi/{id}/edit             edit via form + ganti file opsional (admin), dipakai frontend
   PUT    /materi/{id}                  edit via JSON tanpa ganti file (admin)
@@ -13,6 +14,7 @@ Mahasiswa hanya melihat materi berstatus "terbit".
 """
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_role
@@ -111,6 +113,31 @@ def detail_materi(
     if user.peran == "mahasiswa":
         materi_service.tandai_status_belajar(db, [materi], user.id)
     return materi
+
+
+# ------------------------------------------------------------
+# GET /materi/{id}/unduh
+# Butuh header Authorization, jadi FE mengambilnya dengan fetch() lalu menyimpan blob-nya
+# (tag <a href> biasa tidak bisa mengirim token).
+# ------------------------------------------------------------
+@router.get(
+    "/{materi_id}/unduh",
+    response_class=FileResponse,
+    summary="Unduh file materi",
+    description=(
+        "Mengirim file dengan header `Content-Disposition: attachment` dan nama file dari "
+        "judul materi. Mahasiswa hanya bisa mengunduh materi berstatus terbit."
+    ),
+)
+def unduh_materi(
+    materi_id: int,
+    db: Session = Depends(get_db),
+    user: Pengguna = Depends(get_current_user),
+):
+    lokasi, nama, media_type = materi_service.siapkan_unduhan(
+        db, materi_id, hanya_terbit=user.peran != "admin"
+    )
+    return FileResponse(lokasi, media_type=media_type, filename=nama)
 
 
 # ------------------------------------------------------------

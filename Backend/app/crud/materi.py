@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -115,3 +117,13 @@ def update(db: Session, materi: Materi, **fields) -> Materi:
 def delete(db: Session, materi: Materi) -> None:
     db.delete(materi)
     db.commit()
+
+
+def hitung_dibuat_antara(db: Session, awal: datetime, akhir: datetime) -> int:
+    """Jumlah materi (semua status) yang dibuat pada awal <= dibuat_pada < akhir."""
+    return (
+        db.query(func.count(Materi.id))
+        .filter(Materi.dibuat_pada >= awal, Materi.dibuat_pada < akhir)
+        .scalar()
+        or 0
+    )

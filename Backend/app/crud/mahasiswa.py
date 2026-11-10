@@ -1,5 +1,7 @@
 """Query tabel pengguna khusus peran mahasiswa."""
 
+from datetime import datetime
+
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -101,4 +103,18 @@ def _baru(data: dict) -> Pengguna:
         angkatan=data.get("angkatan"),
         status="belum_aktif",
         kata_sandi=None,
+    )
+
+
+def hitung_dibuat_antara(db: Session, awal: datetime, akhir: datetime) -> int:
+    """Jumlah mahasiswa yang dibuat pada awal <= dibuat_pada < akhir."""
+    return (
+        db.query(func.count(Pengguna.id))
+        .filter(
+            Pengguna.peran == "mahasiswa",
+            Pengguna.dibuat_pada >= awal,
+            Pengguna.dibuat_pada < akhir,
+        )
+        .scalar()
+        or 0
     )

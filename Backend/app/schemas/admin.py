@@ -32,5 +32,8 @@ class MahasiswaRingkas(BaseModel):
 class DashboardStatsResponse(BaseModel):
     total_mahasiswa: int
     total_materi: int
+    # Jumlah yang ditambahkan hari ini (hari kalender WIB)
+    mahasiswa_hari_ini: int
+    materi_hari_ini: int
     materi_terbaru: list[MateriRingkas]
     mahasiswa_terbaru: list[MahasiswaRingkas]
