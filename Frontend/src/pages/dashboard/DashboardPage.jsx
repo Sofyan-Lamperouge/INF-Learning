@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
         setStats({
           totalMateri: data.total_materi,
-          totalKuis: data.total_kuis ?? 0, // kuis ditunda: backend tidak mengirim total_kuis
+          totalKuis: data.total_kuis ?? 0, 
           totalMahasiswa: data.total_mahasiswa,
           materiHariIni: data.materi_hari_ini ?? 0, // BARU
           mahasiswaHariIni: data.mahasiswa_hari_ini ?? 0, // BARU
