@@ -1,1 +1,3 @@
 $kind: collection
+variables:
+  read_materi_url: ""

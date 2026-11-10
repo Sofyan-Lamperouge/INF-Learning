@@ -1,0 +1,31 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/kategori/mata-kuliah?semester=5"
+  method: GET
+  queryParams:
+    semester: "5"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 09 Nov 2026 10:03:57 GMT
+    server: railway-hikari
+    x-railway-request-id: HzATQAlmSwaOMvZxCYBc-A
+    content-length: "86"
+    x-hikari-trace: lax1.sx7j
+    x-railway-edge: lax1
+  body:
+    type: json
+    content: |-
+      {
+        "semester": 5,
+        "items": [
+          {
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "total_materi": 1
+          }
+        ]
+      }
+order: 1000

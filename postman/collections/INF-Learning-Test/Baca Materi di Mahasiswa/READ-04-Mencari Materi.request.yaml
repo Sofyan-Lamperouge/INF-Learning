@@ -1,4 +1,105 @@
 $kind: http-request
-url: ""
+url: "{{base_url}}/materi?q=Pengambilan&page=1&limit=20"
 method: GET
+queryParams:
+  q: Pengambilan
+  page: "1"
+  limit: "20"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const json = pm.response.json();\r
+
+      \r
+
+      const kataKunci = \"Pengambilan\".toLowerCase();\r
+
+      \r
+
+      pm.test(\"Status code harus 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki struktur pagination\", function () {\r
+
+      \    pm.expect(json.items).to.be.an(\"array\");\r
+
+      \    pm.expect(json.total).to.be.a(\"number\");\r
+
+      \    pm.expect(json.page).to.be.a(\"number\");\r
+
+      \    pm.expect(json.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(json.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Hasil pencarian sesuai kata kunci\", function () {\r
+
+      \    json.items.forEach(function (materi) {\r
+
+      \        const judul = materi.judul.toLowerCase();\r
+
+      \        const mataKuliah = materi.mata_kuliah.toLowerCase();\r
+
+      \r
+
+      \        pm.expect(\r
+
+      \            judul.includes(kataKunci) ||\r
+
+      \            mataKuliah.includes(kataKunci)\r
+
+      \        ).to.be.true;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semua hasil pencarian berstatus terbit\", function () {\r
+
+      \    json.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah item tidak melebihi limit\", function () {\r
+
+      \    pm.expect(json.items.length).to.be.at.most(json.limit);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pagination sesuai jumlah data\", function () {\r
+
+      \    const expectedPages = json.total === 0\r
+
+      \        ? 0\r
+
+      \        : Math.ceil(json.total / json.limit);\r
+
+      \r
+
+      \    pm.expect(json.total_pages).to.eql(expectedPages);\r
+
+      });"
+    language: text/javascript
+examples: .resources/READ-04-Mencari Materi.resources/examples
 order: 4000

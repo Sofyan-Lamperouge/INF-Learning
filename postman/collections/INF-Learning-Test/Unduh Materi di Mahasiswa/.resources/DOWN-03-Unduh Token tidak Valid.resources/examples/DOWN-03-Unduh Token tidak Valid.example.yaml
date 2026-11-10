@@ -1,0 +1,24 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/28/unduh"
+  method: GET
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Tue, 10 Nov 2026 09:51:31 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: E3WuSs2QRpu6Q0TnYqVb7A
+    content-length: "53"
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak valid atau sudah kedaluwarsa"
+      }
+order: 1000

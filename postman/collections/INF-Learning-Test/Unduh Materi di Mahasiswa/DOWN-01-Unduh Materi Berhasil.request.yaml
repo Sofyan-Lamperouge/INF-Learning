@@ -1,0 +1,76 @@
+$kind: http-request
+url: "{{base_url}}/materi/28/unduh"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Content-Type file tersedia\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.response.headers.get(\"Content-Type\")\r
+
+      \    ).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Content-Disposition menggunakan attachment\", function () {\r
+
+      \    const disposition =\r
+
+      \        pm.response.headers.get(\"Content-Disposition\");\r
+
+      \r
+
+      \    pm.expect(disposition).to.exist;\r
+
+      \    pm.expect(disposition.toLowerCase()).to.include(\"attachment\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nama file unduhan tersedia\", function () {\r
+
+      \    const disposition =\r
+
+      \        pm.response.headers.get(\"Content-Disposition\");\r
+
+      \r
+
+      \    pm.expect(disposition).to.match(/filename/i);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Ukuran file tidak kosong jika tersedia\", function () {\r
+
+      \    const contentLength =\r
+
+      \        pm.response.headers.get(\"Content-Length\");\r
+
+      \r
+
+      \    if (contentLength !== null) {\r
+
+      \        pm.expect(Number(contentLength)).to.be.greaterThan(0);\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 1000

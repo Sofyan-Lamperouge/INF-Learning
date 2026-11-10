@@ -1,0 +1,97 @@
+$kind: http-request
+url: "{{base_url}}/materi/kategori/semester"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Status code harus 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki items berbentuk array\", function () {\r
+
+      \    pm.expect(json.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Setiap kategori memiliki struktur yang benar\", function () {\r
+
+      \    json.items.forEach(function (item) {\r
+
+      \        pm.expect(item.semester).to.be.a(\"number\");\r
+
+      \        pm.expect(item.total_materi).to.be.a(\"number\");\r
+
+      \        pm.expect(item.total_mata_kuliah).to.be.a(\"number\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semester berada pada rentang 1 sampai 8\", function () {\r
+
+      \    json.items.forEach(function (item) {\r
+
+      \        pm.expect(item.semester).to.be.within(1, 8);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah materi dan mata kuliah tidak negatif\", function () {\r
+
+      \    json.items.forEach(function (item) {\r
+
+      \        pm.expect(item.total_materi).to.be.at.least(0);\r
+
+      \        pm.expect(item.total_mata_kuliah).to.be.at.least(0);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tidak ada semester duplikat\", function () {\r
+
+      \    const semesters = json.items.map(item => item.semester);\r
+
+      \r
+
+      \    pm.expect(new Set(semesters).size).to.eql(semesters.length);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Kategori semester terurut menaik\", function () {\r
+
+      \    const semesters = json.items.map(item => item.semester);\r
+
+      \    const sorted = [...semesters].sort((a, b) => a - b);\r
+
+      \r
+
+      \    pm.expect(semesters).to.eql(sorted);\r
+
+      });"
+    language: text/javascript
+examples: .resources/READ-05-Melihat Kategori Semester.resources/examples
+order: 6000

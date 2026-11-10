@@ -1,0 +1,55 @@
+$kind: http-request
+url: "{{base_url}}/materi/28/unduh"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: ""
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code harus 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Backend mengembalikan pesan autentikasi\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \    pm.expect(response.detail).to.be.a(\"string\");\r
+
+      \    pm.expect(response.detail.length).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"File tidak dikirim oleh backend\", function () {\r
+
+      \    pm.expect(pm.response.headers.get(\"Content-Disposition\")).to.be.oneOf([\r
+
+      \        null,\r
+
+      \        undefined\r
+
+      \    ]);\r
+
+      });"
+    language: text/javascript
+examples: .resources/DOWN-02-Unduh Tanpa Token.resources/examples
+order: 2000

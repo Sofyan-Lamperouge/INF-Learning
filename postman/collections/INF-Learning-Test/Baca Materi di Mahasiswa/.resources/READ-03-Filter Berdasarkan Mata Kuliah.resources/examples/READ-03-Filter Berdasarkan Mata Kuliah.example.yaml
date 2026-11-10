@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi?mata_kuliah=Sistem%20Pendukung%20Keputusan&page=1&limit=20"
+  method: GET
+  queryParams:
+    mata_kuliah: Sistem%20Pendukung%20Keputusan
+    page: "1"
+    limit: "20"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 09 Nov 2026 09:57:50 GMT
+    server: railway-hikari
+    x-railway-request-id: jHPkAy3LTwKRHTwWYqVb7A
+    content-encoding: gzip
+    x-hikari-trace: lax1.ez9k
+    x-railway-edge: lax1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 28,
+            "judul": "Pengambilan Keputusan",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/b2165fbb4e0748fba8bd6dfb1fcb418a.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-09T09:54:25",
+            "diubah_pada": "2026-11-09T09:54:25",
+            "status_belajar": "belum"
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000
