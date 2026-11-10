@@ -30,7 +30,7 @@ import {
   toFormValues,
 } from '../../utils/mahasiswaStatus.js';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 const ANGKATAN_OPTIONS = getAngkatanOptions(null, 16);
 
 // Sesuai Figma: ikon hapus abu-abu (nonaktif/tidak bisa diklik) pada mahasiswa Aktif,
