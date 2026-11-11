@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { updateMateri } from "../../services/materiService.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx"];
+const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx", "xlsx"]; 
 
 function getCurrentFileName(url = "") {
   if (!url) return "File tidak tersedia";
@@ -251,7 +251,7 @@ export default function EditMateriModal({
                 </div>
                 <label className="edit-materi-change-file">
                   Ganti File
-                  <input type="file" accept=".pdf,.docx,.pptx" onChange={handleFileChange} disabled={saving} />
+                  <input type="file" accept=".pdf,.docx,.pptx, .xlsx" onChange={handleFileChange} disabled={saving} />
                 </label>
               </div>
               <p className="edit-materi-file-hint">Format: PDF, DOCX, PPTX | Maks. 10 MB</p>

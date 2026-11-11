@@ -14,33 +14,46 @@ export default function TabelMahasiswa({ mahasiswaList = [] }) {
       <div className="rekap-divider"></div>
 
       <div className="rekap-body">
-        <table className="tabel-mahasiswa">
-          <thead>
-            <tr>
-              <th>NIM</th>
-              <th>Nama</th>
-              <th>Angkatan</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {mahasiswaList.length === 0 ? (
+        <div className="rekap-table-box">
+          <table className="tabel-mahasiswa">
+            <thead>
               <tr>
-                <td colSpan="3" className="tabel-kosong">
-                  Belum ada data mahasiswa.
-                </td>
+                <th>NIM</th>
+                <th>Nama</th>
+                <th>Angkatan</th>
               </tr>
-            ) : (
-              mahasiswaList.map((mhs) => (
-                <tr key={mhs.id}>
-                  <td>{mhs.nomor_induk}</td>
-                  <td>{mhs.nama}</td>
-                  <td>{mhs.angkatan ?? '-'}</td>
+            </thead>
+
+            <tbody>
+              {mahasiswaList.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className="tabel-kosong">
+                    Belum ada data mahasiswa.
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                mahasiswaList.map((mhs) => (
+                  <tr key={mhs.id}>
+                    <td>{mhs.nomor_induk}</td>
+                    <td title={mhs.nama}>{mhs.nama}</td>
+                    <td>
+                      {mhs.angkatan ? (
+                        <span
+                          className="badge-angkatan"
+                          data-angkatan={mhs.angkatan}
+                        >
+                          {mhs.angkatan}
+                        </span>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

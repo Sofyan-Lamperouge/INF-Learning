@@ -84,7 +84,7 @@ export default function MainPanel({ user, stats, onUpload }) {
         <div className="main-panel-welcome">
           <h2 className="main-panel-title">Selamat Datang, {nama}!</h2>
           <p className="main-panel-subtitle">
-            Ringkasan materi, kuis, dan mahasiswa yang terbaru diambahkan atau
+            Ringkasan materi, kuis, dan mahasiswa yang terbaru ditambahkan atau
             diperbarui
           </p>
         </div>
@@ -128,23 +128,29 @@ export default function MainPanel({ user, stats, onUpload }) {
       <div className="main-panel-stats">
         <StatCard
           icon={<MateriIcon />}
-          title="Total Materi "
-          value={String(totalMateri).padStart(2, "0")}
-          subtitle={`[+] ${materiHariIni} Materi ditambahkan hari ini`}
+          title="Total Materi"
+          value={totalMateri}
+          badge="[+0]"
+          badgeTone="blue"
+          subtitle="Materi ditambahkan hari ini"
         />
 
         <StatCard
           icon={<KuisIcon />}
           title="Total Kuis"
-          value={String(totalKuis).padStart(2, "0")}
-          subtitle="[+] 0 Kuis ditambahkan hari ini"
+          value={totalKuis}
+          badge="[+0]"
+          badgeTone="blue"
+          subtitle="Kuis ditambahkan hari ini"
         />
 
         <StatCard
           icon={<MahasiswaIcon />}
           title="Total Mahasiswa"
-          value={String(totalMahasiswa).padStart(2, "0")}
-          subtitle={`[+] ${mahasiswaHariIni} Mahasiswa bergabung hari ini`}
+          value={totalMahasiswa}
+          badge="[+0]"
+          badgeTone="green"
+          subtitle="Mahasiswa aktivasi akun hari ini"
         />
       </div>
     </div>

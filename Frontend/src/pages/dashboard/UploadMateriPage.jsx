@@ -232,7 +232,7 @@ export default function UploadMateriPage() {
               </div>
             </section>
             {error && (
-              <p role="alert" className="confirm-alert">
+              <p role="alert" className="confirm-alert confirm-alert-error">
                 {error}
               </p>
             )}
