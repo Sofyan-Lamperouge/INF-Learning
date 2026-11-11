@@ -1,0 +1,23 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/999999/unduh"
+  method: GET
+response:
+  statusCode: 404
+  statusText: ""
+  headers:
+    :status: "404"
+    content-type: application/json
+    date: Tue, 10 Nov 2026 09:54:21 GMT
+    server: railway-hikari
+    x-railway-request-id: MYgViWjgQvmacqTUnpoFkQ
+    content-length: "35"
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Materi tidak ditemukan"
+      }
+order: 1000

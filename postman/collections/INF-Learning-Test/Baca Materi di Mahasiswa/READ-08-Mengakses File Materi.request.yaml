@@ -1,0 +1,44 @@
+$kind: http-request
+url: https://inf-learning-production.up.railway.app/uploads/b2165fbb4e0748fba8bd6dfb1fcb418a.pdf
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"File berhasil diakses (200 OK)\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Content-Type menunjukkan file PDF\", function () {\r
+
+      \    const contentType = pm.response.headers.get(\"Content-Type\");\r
+
+      \r
+
+      \    pm.expect(contentType).to.include(\"application/pdf\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Ukuran file tidak kosong jika Content-Length tersedia\", function () {\r
+
+      \    const contentLength = pm.response.headers.get(\"Content-Length\");\r
+
+      \r
+
+      \    if (contentLength !== null) {\r
+
+      \        pm.expect(Number(contentLength)).to.be.greaterThan(0);\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 9000

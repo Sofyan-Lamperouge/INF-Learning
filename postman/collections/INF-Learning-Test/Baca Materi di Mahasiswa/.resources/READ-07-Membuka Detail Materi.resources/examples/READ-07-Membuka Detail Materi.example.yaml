@@ -1,0 +1,35 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/materi/28"
+  method: GET
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 09 Nov 2026 10:06:04 GMT
+    server: railway-hikari
+    x-railway-request-id: 8bQ9o-kxTA-QfpVU-_9nXA
+    content-encoding: gzip
+    x-hikari-trace: lax1.v9kt
+    x-railway-edge: lax1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "id": 28,
+        "judul": "Pengambilan Keputusan",
+        "deskripsi": null,
+        "mata_kuliah": "Sistem Pendukung Keputusan",
+        "semester": 5,
+        "jenis": "pdf",
+        "url": "https://inf-learning-production.up.railway.app/uploads/b2165fbb4e0748fba8bd6dfb1fcb418a.pdf",
+        "dibuat_oleh": 1,
+        "status": "terbit",
+        "dibuat_pada": "2026-11-09T09:54:25",
+        "diubah_pada": "2026-11-09T09:54:25",
+        "status_belajar": "belum"
+      }
+order: 1000

@@ -1,4 +1,100 @@
 $kind: http-request
-url: ""
+url: "{{base_url}}/materi?page=1&limit=20"
 method: GET
+queryParams:
+  page: "1"
+  limit: "20"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Status code harus 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response memiliki struktur pagination\", function () {\r
+
+      \    pm.expect(json).to.have.property(\"items\");\r
+
+      \    pm.expect(json).to.have.property(\"total\");\r
+
+      \    pm.expect(json).to.have.property(\"page\");\r
+
+      \    pm.expect(json).to.have.property(\"limit\");\r
+
+      \    pm.expect(json).to.have.property(\"total_pages\");\r
+
+      \r
+
+      \    pm.expect(json.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Informasi pagination memiliki tipe data benar\", function () {\r
+
+      \    pm.expect(json.total).to.be.a(\"number\");\r
+
+      \    pm.expect(json.page).to.be.a(\"number\");\r
+
+      \    pm.expect(json.limit).to.be.a(\"number\");\r
+
+      \    pm.expect(json.total_pages).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Semua materi yang ditampilkan berstatus terbit\", function () {\r
+
+      \    json.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Setiap materi memiliki informasi wajib\", function () {\r
+
+      \    json.items.forEach(function (materi) {\r
+
+      \        pm.expect(materi.id).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.judul).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.mata_kuliah).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.semester).to.be.a(\"number\");\r
+
+      \        pm.expect(materi.jenis).to.be.a(\"string\");\r
+
+      \        pm.expect(materi.url).to.be.a(\"string\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Jumlah data tidak melebihi limit\", function () {\r
+
+      \    pm.expect(json.items.length).to.be.at.most(json.limit);\r
+
+      });"
+    language: text/javascript
+examples: .resources/READ-01-Melihat Daftar Materi.resources/examples
 order: 1000

@@ -1,0 +1,117 @@
+$kind: http-request
+url: "{{base_url}}/materi/28"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Status code harus 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ID materi sesuai request\", function () {\r
+
+      \    pm.expect(json.id).to.eql(28);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Informasi utama materi tersedia\", function () {\r
+
+      \    pm.expect(json.judul).to.be.a(\"string\");\r
+
+      \    pm.expect(json.mata_kuliah).to.be.a(\"string\");\r
+
+      \    pm.expect(json.semester).to.be.a(\"number\");\r
+
+      \    pm.expect(json.jenis).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Deskripsi boleh null atau string\", function () {\r
+
+      \    pm.expect(\r
+
+      \        json.deskripsi === null ||\r
+
+      \        typeof json.deskripsi === \"string\"\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"URL materi valid\", function () {\r
+
+      \    pm.expect(json.url).to.match(/^https?:\\/\\/.+/);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Materi berstatus terbit\", function () {\r
+
+      \    pm.expect(json.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Status belajar memiliki nilai yang valid\", function () {\r
+
+      \    pm.expect([\r
+
+      \        \"belum\",\r
+
+      \        \"dilihat\",\r
+
+      \        \"selesai\"\r
+
+      \    ]).to.include(json.status_belajar);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tanggal pembuatan valid\", function () {\r
+
+      \    pm.expect(Date.parse(json.dibuat_pada)).to.not.be.NaN;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tanggal perubahan valid atau null\", function () {\r
+
+      \    pm.expect(\r
+
+      \        json.diubah_pada === null ||\r
+
+      \        !Number.isNaN(Date.parse(json.diubah_pada))\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // Simpan URL untuk READ-09\r
+
+      pm.collectionVariables.set(\"read_materi_url\", json.url);"
+    language: text/javascript
+examples: .resources/READ-07-Membuka Detail Materi.resources/examples
+order: 8000
