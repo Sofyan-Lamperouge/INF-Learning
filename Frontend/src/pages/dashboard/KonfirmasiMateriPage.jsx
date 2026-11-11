@@ -95,6 +95,11 @@ export default function KonfirmasiMateriPage() {
                   />
                 </svg>
               </div>
+              {error && (
+                <p role="alert" className="confirm-alert confirm-alert-error">
+                  {error}
+                </p>
+              )}
               <div className="materi-title">
                 <h2>Upload Materi</h2>
                 <p>Periksa informasi sebelum mengirim materi ke server.</p>
@@ -158,7 +163,7 @@ export default function KonfirmasiMateriPage() {
                 </div>
               </div>
               <div className="confirm-alert">
-                Setelah disimpan, data dan file materi akan dikirim ke backend
+                Setelah disimpan, data dan file materi akan tersimpan
                 dan tersedia di halaman Materi.
               </div>
               {error && (

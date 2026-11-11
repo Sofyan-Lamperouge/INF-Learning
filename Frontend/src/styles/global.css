@@ -3071,11 +3071,11 @@ body > .alert-success {
    ============================================================ */
 
 .main-panel {
-  background: linear-gradient(135deg, #7ec8f5 0%, #5cb8e8 100%);
-  border-radius: 20px;
-  padding: 1.75rem;
+  background: linear-gradient(180deg, #8bd4ff 0%, #55b5ef 100%);
+  border-radius: 14px;
+  padding: 1.5rem;
   color: #ffffff;
-  box-shadow: 0 8px 24px rgba(92, 184, 232, 0.25);
+  box-shadow: 0 4px 12px rgba(85, 181, 239, 0.18);
 }
 
 /* === Row atas: Welcome + Tombol Upload === */
@@ -3084,7 +3084,7 @@ body > .alert-success {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .main-panel-welcome {
@@ -3093,22 +3093,24 @@ body > .alert-success {
 }
 
 .main-panel-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.25rem;
   line-height: 1.2;
 }
 
 .main-panel-subtitle {
+  max-width: 28rem;                    /* membungkus jadi dua baris */
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.92);
   margin: 0;
   line-height: 1.5;
 }
 
 /* === Tombol Upload === */
 .btn-upload {
+  font-family: poppins !important;
   background: #ffffff;
   color: #1e6f9e;
   border: none;
@@ -3148,10 +3150,10 @@ body > .alert-success {
 /* === Kartu Statistik === */
 .stat-card {
   display: flex;
-  align-items: flex-start;
+  align-items: Center;
   gap: 0.85rem;
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 1rem 1.15rem;
   color: #1a1a1a;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -3168,11 +3170,11 @@ body > .alert-success {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 10px;
   background: linear-gradient(135deg, #eaf5fc 0%, #d6ecfa 100%);
-  color: #2f9fe0;
+  color: #1e6f9e;
   flex-shrink: 0;
 }
 
@@ -3184,24 +3186,28 @@ body > .alert-success {
 }
 
 .stat-card-title {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #6b7280;
+  color: #111827;
 }
 
 .stat-card-value {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: #1e6f9e;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
 .stat-card-subtitle {
   font-size: 0.65rem;
-  color: #9ca3af;
+  color: #111827;
   line-height: 1.4;
 }
+
+.stat-card-badge { font-weight: 500; }
+.stat-card-badge-blue  { color: #55b5ef; }
+.stat-card-badge-green { color: #16a34a; }
 
 
 /* ============================================================
@@ -3612,6 +3618,13 @@ div.dashboard-bottom-grid .tabel-mahasiswa {
   border-collapse: collapse;
 }
 
+div.dashboard-bottom-grid .tabel-mahasiswa .tabel-kosong {
+  height: calc(var(--u) * 120);
+  text-align: center;
+  font-style: italic;
+  color: #9ca3af;
+}
+
 div.dashboard-bottom-grid .tabel-mahasiswa thead th:nth-child(1) {
   width: 21.69%;
 }
@@ -3662,9 +3675,14 @@ div.dashboard-bottom-grid .tabel-mahasiswa tbody tr:hover {
   background: #f5fcff;
 }
 
-/* Badge angkatan: 60x15, radius 18, #FFCC00, teks putih Inter 500 12/15.
+/* ======================================================================
+   BADGE ANGKATAN — 60x15, radius 18, #FFCC00, teks putih Inter 500 12/15
+
+   Badge angkatan: 60x15, radius 18, #FFCC00, teks putih Inter 500 12/15.
    Warna per angkatan: tambahkan aturan seperti di bawah (opsional)
-   .badge-angkatan[data-angkatan='2023'] { background: #34c759; } */
+   .badge-angkatan[data-angkatan='2023'] { background: #34c759; } 
+   ====================================================================== */
+
 div.dashboard-bottom-grid .badge-angkatan {
   display: inline-flex;
   align-items: center;
@@ -3679,6 +3697,9 @@ div.dashboard-bottom-grid .badge-angkatan {
   color: #ffffff;
   vertical-align: middle;
 }
+
+div.dashboard-bottom-grid .badge-angkatan[data-angkatan='2025'] { background: #34c759; }
+div.dashboard-bottom-grid .badge-angkatan[data-angkatan='2026'] { background: #55b5ef; }
 
 /* ---------- Daftar kuis (kalau nanti ada data) ---------- */
 div.dashboard-bottom-grid .rekap-list {
@@ -5354,14 +5375,15 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   transition: all 0.2s;
 }
  
-.btn-page:hover:not(:disabled) {
-  background: #f3f8fc;
+.btn-page:hover:not(:disabled):not(.active) {   /* ← tambahkan :not(.active) */
+  background: #f3f4f6;
 }
  
 .btn-page.active {
   background: #55b5ef;
   color: #ffffff;
   border-color: #55b5ef;
+  cursor: default;                              /* ← baru: kursor tidak berubah jadi tangan */
 }
  
 .btn-page:disabled {
@@ -5895,6 +5917,12 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   margin-top: 1.5rem;
   font-size: 0.85rem;
   line-height: 1.5;
+}
+
+.confirm-alert.confirm-alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
 }
 
 /* ============================================================

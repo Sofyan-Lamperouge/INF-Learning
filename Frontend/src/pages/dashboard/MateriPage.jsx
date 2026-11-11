@@ -85,6 +85,9 @@ export default function MateriPage() {
     try {
       await deleteMateri(deletingMateri.id);
       setDeletingMateri(null);
+      // Jika yang dihapus adalah materi terakhir di halaman > 1, mundur satu halaman.
+      // Dilakukan hanya setelah penghapusan berhasil (bukan saat menekan Batal).
+      if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
       setReloadKey((k) => k + 1);
     } catch (err) {
       setDeleteError(err.message || "Materi gagal dihapus. Silakan coba lagi.");
@@ -427,6 +430,7 @@ export default function MateriPage() {
                 className="btn-page"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
+                aria-label="Halaman sebelumnya"
               >
                 <svg
                   width="16"
@@ -439,21 +443,17 @@ export default function MateriPage() {
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
               </button>
-              {Array.from({ length: meta.totalPages }, (_, i) => i + 1).map(
-                (n) => (
-                  <button
-                    key={n}
-                    className={`btn-page ${n === page ? "active" : ""}`}
-                    onClick={() => setPage(n)}
-                  >
-                    {n}
-                  </button>
-                ),
-              )}
+
+              {/* Hanya satu nomor: halaman yang sedang dibuka */}
+              <button className="btn-page active" aria-current="page">
+                {page}
+              </button>
+
               <button
                 className="btn-page"
                 disabled={page >= meta.totalPages}
                 onClick={() => setPage((p) => p + 1)}
+                aria-label="Halaman berikutnya"
               >
                 <svg
                   width="16"
@@ -488,7 +488,6 @@ export default function MateriPage() {
           error={deleteError}
           onCancel={() => {
             if (!deleting) setDeletingMateri(null);
-            if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
           }}
           onConfirm={handleDelete}
         />

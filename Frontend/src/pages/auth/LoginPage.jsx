@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { login } from '../../services/authService.js';
-import { ApiError } from '../../services/api.js';
-import { useAuth } from '../../hooks/useAuth.js';
-import InputField from '../../components/common/InputField.jsx';
-import PasswordField from '../../components/common/PasswordField.jsx';
-import ErrorMessage from '../../components/common/ErrorMessage.jsx';
-import SuccessMessage from '../../components/common/SuccessMessage.jsx';
-import LoginSkeleton from '../../components/skeletons/LoginSkeleton.jsx';
-import { validateNimLogin } from '../../utils/validators.js';
+import { login } from "../../services/authService.js";
+import { ApiError } from "../../services/api.js";
+import { useAuth } from "../../hooks/useAuth.js";
+import InputField from "../../components/common/InputField.jsx";
+import PasswordField from "../../components/common/PasswordField.jsx";
+import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import SuccessMessage from "../../components/common/SuccessMessage.jsx";
+import LoginSkeleton from "../../components/skeletons/LoginSkeleton.jsx";
+import { validateNimLogin } from "../../utils/validators.js";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { loginSuccess } = useAuth();
 
-  const [form, setForm] = useState({ nim: '', password: '' });
-  const [errors, setErrors] = useState({ nim: '', password: '' });
-  const [serverError, setServerError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [form, setForm] = useState({ nim: "", password: "" });
+  const [errors, setErrors] = useState({ nim: "", password: "" });
+  const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [booting, setBooting] = useState(true);
 
@@ -31,21 +31,21 @@ export default function LoginPage() {
     const { name, value } = event.target;
 
     setForm((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: '' }));
-    setServerError('');
-    setSuccess('');
+    setErrors((current) => ({ ...current, [name]: "" }));
+    setServerError("");
+    setSuccess("");
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setServerError('');
-    setSuccess('');
+    setServerError("");
+    setSuccess("");
 
     const nim = form.nim.trim();
 
     const nextErrors = {
       nim: validateNimLogin(nim),
-      password: form.password ? '' : 'Password wajib diisi.',
+      password: form.password ? "" : "Password wajib diisi.",
     };
 
     setErrors(nextErrors);
@@ -62,29 +62,43 @@ export default function LoginPage() {
 
       setSuccess(
         <>
-          <strong>Login Berhasil!</strong> Selamat datang kembali. Kamu akan
-          {' '}diarahkan ke halaman utama.
+          <strong>Login Berhasil!</strong> Selamat datang kembali. Kamu akan{" "}
+          diarahkan ke halaman utama.
         </>,
       );
 
       loginSuccess(result.token, result.role, result.user);
 
       setTimeout(() => {
-        navigate(
-          result.role === 'admin' ? '/dashboard' : '/beranda',
-          { replace: true },
-        );
+        navigate(result.role === "admin" ? "/dashboard" : "/beranda", {
+          replace: true,
+        });
       }, 1200);
     } catch (error) {
       const message =
         error instanceof ApiError
           ? error.message
-          : String(error?.message || '');
+          : String(error?.message || "");
 
       const status =
-        error?.status ??
-        error?.statusCode ??
-        error?.response?.status;
+        error?.status ?? error?.statusCode ?? error?.response?.status;
+
+      // NIM tidak ada di data admin
+      if (status === 404) {
+        setErrors((current) => ({ ...current, nim: "NIM Tidak Terdaftar!" }));
+        setServerError("");
+        return;
+      }
+
+      // NIM sudah diinput admin, tapi pemiliknya belum registrasi
+      if (status === 409) {
+        setErrors((current) => ({
+          ...current,
+          nim: "NIM Belum Teregistrasi!",
+        }));
+        setServerError("");
+        return;
+      }
 
       const passwordDitolak =
         status === 401 ||
@@ -96,14 +110,14 @@ export default function LoginPage() {
       if (passwordDitolak) {
         setErrors((current) => ({
           ...current,
-          password: 'Password Salah!',
+          password: "Password Salah!",
         }));
-        setServerError('');
+        setServerError("");
       } else {
         setServerError(
           error instanceof ApiError
-            ? message || 'Terjadi kesalahan saat login.'
-            : 'Gagal terhubung ke server, periksa koneksi Anda.',
+            ? message || "Terjadi kesalahan saat login."
+            : "Gagal terhubung ke server, periksa koneksi Anda.",
         );
       }
     } finally {
@@ -170,14 +184,13 @@ export default function LoginPage() {
                   type="submit"
                   disabled={loading}
                 >
-                  {loading ? 'Memproses...' : 'Masuk'}
+                  {loading ? "Memproses..." : "Masuk"}
                 </button>
               </form>
             </div>
 
             <p className="auth-footer">
-              Belum punya akun? {' '}
-              <Link to="/register">Buat di sini</Link>
+              Belum punya akun? <Link to="/register">Buat di sini</Link>
             </p>
           </div>
         </section>
