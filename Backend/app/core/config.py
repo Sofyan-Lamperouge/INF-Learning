@@ -27,9 +27,12 @@ class Settings(BaseSettings):
 
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
-    # Belum dipakai: refresh token belum diimplementasikan.
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    # Sesi login berakhir otomatis jika tidak ada aktivitas (request ke API) selama
+    # SESI_IDLE_MENIT menit. Setiap request yang berhasil memperpanjang sesi.
+    SESI_IDLE_MENIT: int = 20
+    # Batas umur mutlak sesi (jam), tidak bisa diperpanjang oleh aktivitas. Pengguna yang
+    # terus aktif tetap diminta login ulang setelah batas ini.
+    SESI_MAKS_JAM: int = 12
 
     model_config = SettingsConfigDict(
         env_file=".env",

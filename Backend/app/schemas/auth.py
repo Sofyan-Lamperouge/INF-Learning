@@ -67,5 +67,6 @@ class PenggunaRingkas(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    # Lama tidak-aktif (detik) sebelum sesi berakhir. Diperpanjang oleh setiap request.
     expires_in: int
     pengguna: PenggunaRingkas
