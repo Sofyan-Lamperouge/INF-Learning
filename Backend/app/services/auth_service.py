@@ -68,22 +68,33 @@ def login(
 ) -> LoginResponse:
     pengguna = crud_pengguna.get_by_nomor_induk(db, data.nomor_induk)
 
-    # Pesan sengaja sama untuk NIM tidak ada, belum punya kata sandi, dan kata sandi salah
-    # agar NIM yang terdaftar tidak bisa ditebak.
-    if (
-        not pengguna
-        or not pengguna.kata_sandi
-        or not verifikasi_kata_sandi(data.kata_sandi, pengguna.kata_sandi)
-    ):
+    # 1. NIM tidak ada di data admin -> 404
+    if not pengguna:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="NIM tidak terdaftar",
+        )
+
+    # 2. NIM ada (diinput admin) tapi belum registrasi / belum punya kata sandi -> 409
+    if not pengguna.kata_sandi:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="NIM belum teregistrasi",
+        )
+
+    # 3. Kata sandi salah -> 401
+    if not verifikasi_kata_sandi(data.kata_sandi, pengguna.kata_sandi):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="NIM atau kata sandi salah",
         )
 
+    # 4. Status bukan aktif (mis. dinonaktifkan admin) -> 403
+    # Dicek setelah kata sandi, jadi status akun tidak bocor ke orang yang salah sandi.
     if pengguna.status != "aktif":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Akun Anda belum aktif. Silakan registrasi terlebih dahulu.",
+            detail="Akun Anda nonaktif. Silakan hubungi admin.",
         )
 
     # Satu login = satu sesi di tabel sesi_login. kedaluwarsa_pada di sini berarti "batas
