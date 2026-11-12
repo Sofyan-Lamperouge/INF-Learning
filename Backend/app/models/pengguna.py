@@ -16,6 +16,8 @@ class Pengguna(Base):
     nama: Mapped[str] = mapped_column(String(100), nullable=False)
     kata_sandi: Mapped[str | None] = mapped_column(String(255), nullable=True)
     angkatan: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # URL foto profil (file di UPLOAD_DIR, dilayani lewat /uploads). Kosong = belum ada foto.
+    foto_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="belum_aktif", nullable=False)
     dibuat_pada: Mapped[datetime] = mapped_column(DateTime, default=sekarang_utc)
     diubah_pada: Mapped[datetime] = mapped_column(

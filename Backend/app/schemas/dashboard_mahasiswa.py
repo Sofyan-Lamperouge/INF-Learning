@@ -12,6 +12,7 @@ class ProfilMahasiswa(BaseModel):
     nama: str
     nomor_induk: str
     angkatan: int | None
+    foto_url: str | None = None
 
 
 class StatistikBelajar(BaseModel):

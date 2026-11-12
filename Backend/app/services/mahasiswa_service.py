@@ -8,6 +8,7 @@ from app.crud import mahasiswa as crud_mhs
 from app.crud import pengguna as crud_pengguna
 from app.models.pengguna import Pengguna
 from app.schemas.mahasiswa import MahasiswaCreateRequest, MahasiswaUpdateRequest
+from app.services import file_service
 
 # Field yang boleh dikosongkan (diset NULL) bila dikirim sebagai null
 BOLEH_KOSONG = {"angkatan"}
@@ -112,4 +113,7 @@ def reset_akun(db: Session, id: int) -> Pengguna:
 
 
 def hapus_mahasiswa(db: Session, id: int) -> None:
-    crud_mhs.delete(db, get_mahasiswa(db, id))
+    mhs = get_mahasiswa(db, id)
+    foto_url = mhs.foto_url
+    crud_mhs.delete(db, mhs)
+    file_service.hapus_file_dari_url(foto_url)  # setelah baris terhapus, supaya tidak ada file yatim

@@ -63,6 +63,7 @@ class MahasiswaResponse(BaseModel):
     nama: str
     angkatan: int | None
     status: str
+    foto_url: str | None = None
     dibuat_pada: datetime
 
     model_config = {"from_attributes": True}

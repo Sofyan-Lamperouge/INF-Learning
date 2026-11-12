@@ -60,6 +60,7 @@ class PenggunaRingkas(BaseModel):
     nomor_induk: str
     nama: str
     status: str
+    foto_url: str | None = None
 
     model_config = {"from_attributes": True}
 
