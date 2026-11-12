@@ -10,6 +10,8 @@ import {
   getMe,
 } from '../services/authService.js';
 
+import { sesi } from '../utils/storage.js';
+
 
 export const AuthContext =
   createContext(null);
@@ -20,14 +22,14 @@ export function AuthProvider({
 }) {
   const [token, setToken] =
     useState(() =>
-      localStorage.getItem(
+      sesi.getItem(
         'token'
       )
     );
 
   const [role, setRole] =
     useState(() =>
-      localStorage.getItem(
+      sesi.getItem(
         'role'
       )
     );
@@ -41,11 +43,11 @@ export function AuthProvider({
 
   const logout =
     useCallback(() => {
-      localStorage.removeItem(
+      sesi.removeItem(
         'token'
       );
 
-      localStorage.removeItem(
+      sesi.removeItem(
         'role'
       );
 
@@ -88,7 +90,7 @@ export function AuthProvider({
         );
 
 
-        localStorage.setItem(
+        sesi.setItem(
           'role',
           currentUser.peran
         );
@@ -127,12 +129,12 @@ export function AuthProvider({
         newUser = null
       ) => {
 
-        localStorage.setItem(
+        sesi.setItem(
           'token',
           newToken
         );
 
-        localStorage.setItem(
+        sesi.setItem(
           'role',
           newRole
         );

@@ -7,6 +7,7 @@
 //     jadi cukup satu kolom password di form.
 
 import { request } from './api.js';
+import { sesi } from '../utils/storage.js';
 
 import {
   mockGetMe,
@@ -74,7 +75,7 @@ export async function register({
    ============================================================ */
 export async function getMe() {
   if (USE_MOCK) {
-    return mockGetMe(localStorage.getItem('token'));
+    return mockGetMe(sesi.getItem('token'));
   }
 
   return request('/auth/me');

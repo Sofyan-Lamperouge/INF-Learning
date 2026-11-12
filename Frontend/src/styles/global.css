@@ -8467,7 +8467,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .sd-container {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--u) * 30);
+  gap: calc(var(--u) * 20);
   max-width: calc(var(--u) * 1380);
   margin: 0 auto;
 }
@@ -8475,7 +8475,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .sd-content {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--u) * 30);
+  gap: calc(var(--u) * 20);
   min-width: 0;
 }
 
@@ -8691,11 +8691,11 @@ button[aria-label^="Hapus materi"]:focus-visible {
   stroke-width: 2.2;
 }
 
-/* Judul kartu: Poppins 700 24/36 */
+/* Judul kartu: Poppins 600 24/36 */
 .sd-card-title {
   margin: 0;
   font-size: calc(var(--u) * 24);
-  font-weight: 700;
+  font-weight: 600;
   line-height: calc(var(--u) * 36);
   color: #404040;
 }
@@ -8722,19 +8722,19 @@ button[aria-label^="Hapus materi"]:focus-visible {
   margin-top: calc(var(--u) * 21);
 }
 
-/* Baris: atas 875 | 474, bawah 675 | 674, jarak 30 */
+/* Baris: atas 884 | 475, bawah 1 : 1, jarak 20 */
 .sd-row {
   display: grid;
   align-items: stretch;
-  gap: calc(var(--u) * 30);
+  gap: calc(var(--u) * 20);
 }
 
 .sd-row--atas {
-  grid-template-columns: 875fr 474fr;
+  grid-template-columns: 884fr 475fr;
 }
 
 .sd-row--bawah {
-  grid-template-columns: 675fr 674fr;
+  grid-template-columns: 1fr 1fr;
 }
 
 .sd-row > .sd-card {
@@ -8751,46 +8751,46 @@ button[aria-label^="Hapus materi"]:focus-visible {
 }
 
 /* ============================================================
-   BANNER SELAMAT DATANG — tinggi 260
+   BANNER SELAMAT DATANG — kartu luar 280 (padding 10) + panel dalam 260
    ============================================================ */
 .sd-welcome {
-  display: flex;
-  align-items: center;
-  min-height: calc(var(--u) * 260);
-  padding: 0 calc(var(--u) * 30);
-  overflow: hidden;
+  padding: calc(var(--u) * 10);
 }
 
-.sd-welcome-blob {
+.sd-welcome-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: calc(var(--u) * 260);
+  padding-left: calc(var(--u) * 59);
+  overflow: hidden;
+  background: #f7fbfe;
+  border-radius: calc(var(--u) * 20);
+}
+
+.sd-welcome .sd-welcome-cloud {
   position: absolute;
-  right: calc(var(--u) * 9);
-  bottom: calc(var(--u) * 10);
-  width: calc(var(--u) * 443);
-  height: calc(var(--u) * 239);
+  top: calc(var(--u) * 14);
+  right: 0;
+  width: calc(var(--u) * 366);
+  height: calc(var(--u) * 192);
   pointer-events: none;
 }
 
-.sd-welcome-illustration {
-  position: relative;
+.sd-welcome .sd-welcome-maskot {
   flex: none;
-  width: calc(var(--u) * 266);
-  height: calc(var(--u) * 186);
-}
-
-.sd-welcome-art {
-  display: block;
-  width: 100%;
-  height: 100%;
+  width: calc(var(--u) * 255);
+  height: calc(var(--u) * 193);
 }
 
 .sd-welcome-divider {
   position: relative;
   flex: none;
-  width: calc(var(--u) * 6);
-  height: calc(var(--u) * 128);
-  margin: 0 calc(var(--u) * 37) 0 calc(var(--u) * 56);
+  width: calc(var(--u) * 11);
+  height: calc(var(--u) * 189);
+  margin: 0 calc(var(--u) * 60) 0 calc(var(--u) * 62);
   border-radius: 999px;
-  background: #e6edf3;
+  background: #e8eef3;
 }
 
 .sd-welcome-text {
@@ -8798,28 +8798,36 @@ button[aria-label^="Hapus materi"]:focus-visible {
   min-width: 0;
 }
 
-.sd-welcome-hello {
-  margin: 0;
-  font-size: calc(var(--u) * 25.5);
+/* Badge: tinggi 40, padding 15, Poppins 600 20, bg #CDEEFF */
+.sd-welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  height: calc(var(--u) * 40);
+  padding: 0 calc(var(--u) * 15);
+  background: #cdeeff;
+  border-radius: 999px;
+  font-size: calc(var(--u) * 20);
   font-weight: 600;
-  line-height: calc(var(--u) * 38);
-  color: #404040;
+  line-height: calc(var(--u) * 30);
+  color: #3aa8e0;
 }
 
+/* Nama: Poppins 700 64/96 */
 .sd-welcome-name {
-  margin: calc(var(--u) * 4) 0 0;
-  font-size: calc(var(--u) * 36);
+  margin: calc(var(--u) * 3) 0 0;
+  font-size: calc(var(--u) * 64);
   font-weight: 700;
-  line-height: calc(var(--u) * 54);
+  line-height: calc(var(--u) * 96);
   color: #404040;
 }
 
+/* Deskripsi: Poppins 500 20/30, 2 baris */
 .sd-welcome-desc {
-  max-width: calc(var(--u) * 380);
-  margin: calc(var(--u) * 6) 0 0;
-  font-size: calc(var(--u) * 16);
+  max-width: calc(var(--u) * 480);
+  margin: calc(var(--u) * 7) 0 0;
+  font-size: calc(var(--u) * 20);
   font-weight: 500;
-  line-height: calc(var(--u) * 24);
+  line-height: calc(var(--u) * 30);
   color: #808080;
 }
 
@@ -9093,22 +9101,159 @@ button[aria-label^="Hapus materi"]:focus-visible {
 }
 
 /* ============================================================
-   KUIS TERAKHIR DIKERJAKAN — kotak isi dikosongkan dulu
+   KOTAK ISI + KONDISI KOSONG (maskot, judul, keterangan)
+   Kotak: 639 x 344, border #E9F0F5, radius 28
    ============================================================ */
-.sd-card--kuis {
+.sd-card--kuis,
+.sd-card--materi {
   display: flex;
   flex-direction: column;
 }
 
-.sd-card--kuis .sd-card-body {
+.sd-card--kuis .sd-card-body,
+.sd-card--materi .sd-card-body {
   display: flex;
   flex: 1;
   flex-direction: column;
 }
 
+.sd-empty-box {
+  display: flex;
+  flex: 1;
+  min-height: calc(var(--u) * 344);
+  border-radius: calc(var(--u) * 28);
+  box-shadow: var(--sd-shadow);
+}
+
+.sd-empty-box--lanjutkan {
+  flex: none;
+  height: calc(var(--u) * 196);
+  min-height: 0;
+  border-radius: calc(var(--u) * 24);
+  box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 6) #e4f3fc;
+}
+
+.sd-empty-state {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Kotak gambar (ukuran tetap) */
+.sd-art {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+.sd-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sd-art--lanjutkan {
+  width: calc(var(--u) * 167);
+  height: calc(var(--u) * 149);
+}
+
+.sd-art--materi {
+  width: calc(var(--u) * 163);
+  height: calc(var(--u) * 142);
+  margin-bottom: calc(var(--u) * 26);
+}
+
+.sd-art--kuis {
+  width: calc(var(--u) * 167);
+  height: calc(var(--u) * 152);
+  margin-bottom: calc(var(--u) * 19);
+}
+
+.sd-empty-title {
+  margin: 0;
+  font-size: calc(var(--u) * 20);
+  font-weight: 700;
+  line-height: calc(var(--u) * 30);
+  color: #404040;
+}
+
+.sd-empty-desc {
+  margin: 0;
+  font-size: calc(var(--u) * 14);
+  font-weight: 500;
+  line-height: calc(var(--u) * 21);
+  color: #404040;
+}
+
+/* Vertikal: maskot di atas, teks rata tengah (sedikit ke kiri sesuai desain) */
+.sd-empty-state--vertical {
+  flex-direction: column;
+  padding-top: calc(var(--u) * 20);
+}
+
+.sd-empty-state--vertical .sd-empty-text {
+  position: relative;
+  left: calc(var(--u) * -10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sd-empty-desc--kuis {
+  max-width: calc(var(--u) * 310);
+}
+
+/* Horizontal (Lanjutkan Belajar): maskot kiri, teks kanan */
+.sd-empty-state--horizontal {
+  justify-content: flex-start;
+  gap: calc(var(--u) * 48);
+  padding-left: calc(var(--u) * 125);
+}
+
+.sd-empty-state--horizontal .sd-empty-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sd-empty-state--horizontal .sd-empty-desc {
+  max-width: calc(var(--u) * 320);
+}
+
+/* Tombol "Mulai Belajar": 162 x 36, outline #8BD4FF, isi #E1F3FD */
+.sd-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 9);
+  height: calc(var(--u) * 36);
+  margin-top: calc(var(--u) * 20);
+  padding: 0 calc(var(--u) * 14) 0 calc(var(--u) * 16);
+  background: #e1f3fd;
+  border: 1px solid #8bd4ff;
+  border-radius: 999px;
+  font-size: calc(var(--u) * 16);
+  font-weight: 500;
+  color: #3aa8e0;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.sd-btn-outline:hover {
+  background: #cdeeff;
+}
+
+.sd-btn-outline svg {
+  width: calc(var(--u) * 20);
+  height: calc(var(--u) * 20);
+}
+
+/* Halaman /kuis (penampung) */
 .sd-kuis-box {
   flex: 1;
-  min-height: calc(var(--u) * 346);
+  min-height: calc(var(--u) * 344);
   background: #ffffff;
   border: 1px solid #e9f0f5;
   border-radius: calc(var(--u) * 28);
@@ -9147,19 +9292,6 @@ button[aria-label^="Hapus materi"]:focus-visible {
   .sd-loading {
     animation: none;
   }
-}
-
-.sd-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(var(--u) * 16);
-  color: #808080;
-  text-align: center;
-}
-
-.sd-empty--list {
-  min-height: calc(var(--u) * 346);
 }
 
 .sd-alert {
@@ -9209,20 +9341,41 @@ button[aria-label^="Hapus materi"]:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .sd-welcome {
+  .sd-welcome-panel {
     flex-wrap: wrap;
     gap: 20px;
+    height: auto;
     padding: 24px;
   }
 
   .sd-welcome-divider,
-  .sd-welcome-blob {
+  .sd-welcome .sd-welcome-cloud {
     display: none;
   }
 
-  .sd-welcome-illustration {
+  .sd-welcome .sd-welcome-maskot {
     width: 100%;
-    max-width: 266px;
+    max-width: 255px;
+  }
+
+  .sd-welcome-name {
+    font-size: 44px;
+    line-height: 60px;
+  }
+
+  .sd-empty-box--lanjutkan {
+    height: auto;
+  }
+
+  .sd-empty-state--horizontal {
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .sd-empty-state--horizontal .sd-empty-text {
+    align-items: center;
   }
 
   .sd-lanjutkan {
@@ -9247,8 +9400,12 @@ button[aria-label^="Hapus materi"]:focus-visible {
 
 @media (max-width: 600px) {
   .sd-welcome-name {
-    font-size: 28px;
-    line-height: 40px;
+    font-size: 36px;
+    line-height: 48px;
+  }
+
+  .sd-welcome-badge {
+    font-size: 16px;
   }
 
   .sd-card-title {

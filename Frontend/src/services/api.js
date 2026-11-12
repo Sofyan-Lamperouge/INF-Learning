@@ -1,12 +1,13 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+import { sesi } from "../utils/storage.js";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const REQUEST_TIMEOUT_MS = 15_000;
 
-const PUBLIC_PATHS = ['/auth/login', '/auth/registrasi'];
+const PUBLIC_PATHS = ["/auth/login", "/auth/registrasi"];
 
 export class ApiError extends Error {
   constructor(message, status = 0, details = null) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = status;
     this.details = details;
   }
@@ -14,11 +15,11 @@ export class ApiError extends Error {
 
 export async function request(path, options = {}) {
   const isPublic = PUBLIC_PATHS.includes(path);
-  const token = isPublic ? null : localStorage.getItem('token');
+  const token = isPublic ? null : sesi.getItem("token");
 
   const headers = {
-    ...(typeof options.body === 'string'
-      ? { 'Content-Type': 'application/json' }
+    ...(typeof options.body === "string"
+      ? { "Content-Type": "application/json" }
       : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
@@ -34,7 +35,7 @@ export async function request(path, options = {}) {
   if (externalSignal?.aborted) {
     controller.abort();
   } else {
-    externalSignal?.addEventListener('abort', abortFromExternalSignal);
+    externalSignal?.addEventListener("abort", abortFromExternalSignal);
   }
 
   const timeoutId = window.setTimeout(() => {
@@ -53,28 +54,28 @@ export async function request(path, options = {}) {
   } catch (error) {
     if (timedOut) {
       throw new ApiError(
-        'Koneksi terlalu lambat. Periksa jaringan Anda, lalu coba lagi.',
+        "Koneksi terlalu lambat. Periksa jaringan Anda, lalu coba lagi.",
         0,
         error,
       );
     }
 
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
       throw new ApiError(
-        'Koneksi internet terputus. Periksa jaringan Anda, lalu coba lagi.',
+        "Koneksi internet terputus. Periksa jaringan Anda, lalu coba lagi.",
         0,
         error,
       );
     }
 
     throw new ApiError(
-      'Gagal terhubung ke server. Periksa koneksi jaringan Anda dan pastikan backend tersedia.',
+      "Gagal terhubung ke server. Periksa koneksi jaringan Anda dan pastikan backend tersedia.",
       0,
       error,
     );
   } finally {
     window.clearTimeout(timeoutId);
-    externalSignal?.removeEventListener('abort', abortFromExternalSignal);
+    externalSignal?.removeEventListener("abort", abortFromExternalSignal);
   }
 
   let data = null;
@@ -86,8 +87,8 @@ export async function request(path, options = {}) {
   }
 
   if (response.status === 401 && !isPublic) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
+    sesi.removeItem("token");
+    sesi.removeItem("role");
   }
 
   if (!response.ok) {
@@ -95,8 +96,8 @@ export async function request(path, options = {}) {
 
     if (Array.isArray(data?.detail)) {
       message = data.detail
-        .map((item) => (item.msg || '').replace(/^Value error,\s*/, ''))
-        .join(', ');
+        .map((item) => (item.msg || "").replace(/^Value error,\s*/, ""))
+        .join(", ");
     } else if (data?.detail) {
       message = data.detail;
     } else if (data?.message) {
@@ -110,7 +111,7 @@ export async function request(path, options = {}) {
   // Response sukses lainnya harus mengembalikan JSON.
   if (response.status !== 204 && data === null) {
     throw new ApiError(
-      'Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.',
+      "Server tidak mengembalikan JSON. Periksa VITE_API_BASE_URL.",
       response.status,
     );
   }
@@ -125,35 +126,35 @@ export const api = {
 
   post(path, body) {
     return request(path, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body),
     });
   },
 
   postFormData(path, body) {
     return request(path, {
-      method: 'POST',
+      method: "POST",
       body,
     });
   },
 
   put(path, body) {
     return request(path, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(body),
     });
   },
 
   putFormData(path, body) {
     return request(path, {
-      method: 'PUT',
+      method: "PUT",
       body,
     });
   },
 
   delete(path) {
     return request(path, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 };

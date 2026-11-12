@@ -1,9 +1,12 @@
 // src/components/student/dashboard/MateriTerakhirCard.jsx
-// Kartu "Materi Terakhir Dibaca". Data: dashboard.materi_terbaru (maks. 3 ditampilkan).
+// Kartu "Materi Terakhir Dibaca". `items` = materi yang sudah dibuka/diselesaikan
+// (maks. 3 ditampilkan). Kosong -> maskot tidur + "Belum ada materi yang dibaca".
 
 import { Link } from 'react-router-dom';
+import EmptyState from './EmptyState.jsx';
 import ProgressBar from './ProgressBar.jsx';
 import SectionCard from './SectionCard.jsx';
+import { ASET } from './assets.js';
 import { persenBelajar, warnaSemester } from './helpers.js';
 import { catatProgres } from '../../../services/dashboardMahasiswaService.js';
 import { BookIcon, DocumentIcon } from '../StudentIcons.jsx';
@@ -27,8 +30,14 @@ export default function MateriTerakhirCard({ items = [], loading = false }) {
     );
   } else if (items.length === 0) {
     isi = (
-      <div className="sd-inner sd-empty sd-empty--list">
-        Belum ada materi yang tersedia.
+      <div className="sd-inner sd-empty-box">
+        <EmptyState
+          layout="vertical"
+          art={ASET.maskotMateri}
+          artClass="sd-art--materi"
+          title="Belum ada materi yang dibaca"
+          desc="Materi yang terakhir kamu baca akan muncul di sini."
+        />
       </div>
     );
   } else {

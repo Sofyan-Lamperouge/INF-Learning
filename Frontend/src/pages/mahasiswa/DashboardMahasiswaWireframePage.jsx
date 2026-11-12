@@ -40,6 +40,11 @@ export default function DashboardMahasiswaPage() {
     };
   }, []);
 
+  // "Terakhir dibaca" = materi yang sudah dibuka/diselesaikan (status bukan "belum").
+  const materiDibaca = (data?.materi_terbaru || []).filter(
+    (materi) => materi.status_belajar !== 'belum',
+  );
+
   return (
     <StudentLayout>
       {error && (
@@ -59,11 +64,8 @@ export default function DashboardMahasiswaPage() {
       </div>
 
       <div className="sd-row sd-row--bawah">
-        <MateriTerakhirCard
-          items={data?.materi_terbaru || []}
-          loading={loading}
-        />
-        <KuisTerakhirCard />
+        <MateriTerakhirCard items={materiDibaca} loading={loading} />
+        <KuisTerakhirCard items={[]} />
       </div>
     </StudentLayout>
   );

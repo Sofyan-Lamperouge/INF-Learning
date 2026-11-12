@@ -1,8 +1,14 @@
 // src/components/student/dashboard/LanjutkanBelajarCard.jsx
 // Kartu "Lanjutkan Belajar". Data: dashboard.lanjutkan_belajar (atau null).
+//   - memuat  -> kotak shimmer
+//   - kosong  -> maskot + "Belum ada materi yang dipelajari" + tombol Mulai Belajar
+//   - ada     -> thumbnail, judul, mata kuliah, progres, tombol Lanjutkan
 
+import { Link } from 'react-router-dom';
+import EmptyState from './EmptyState.jsx';
 import ProgressBar from './ProgressBar.jsx';
 import SectionCard from './SectionCard.jsx';
+import { ASET } from './assets.js';
 import { persenBelajar } from './helpers.js';
 import { catatProgres } from '../../../services/dashboardMahasiswaService.js';
 import { ArrowRightIcon, DocumentIcon, PlayIcon } from '../StudentIcons.jsx';
@@ -19,8 +25,20 @@ export default function LanjutkanBelajarCard({ materi = null, loading = false })
     isi = <div className="sd-inner sd-lanjutkan sd-loading" aria-hidden="true" />;
   } else if (!materi) {
     isi = (
-      <div className="sd-inner sd-lanjutkan sd-empty">
-        Belum ada materi yang dipelajari.
+      <div className="sd-inner sd-empty-box sd-empty-box--lanjutkan">
+        <EmptyState
+          layout="horizontal"
+          art={ASET.maskotLanjutkan}
+          artClass="sd-art--lanjutkan"
+          title="Belum ada materi yang dipelajari"
+          desc="Mulai pelajari materi untuk melihat progres belajarmu di sini."
+          action={
+            <Link to="/materi" className="sd-btn-outline">
+              Mulai Belajar
+              <ArrowRightIcon />
+            </Link>
+          }
+        />
       </div>
     );
   } else {

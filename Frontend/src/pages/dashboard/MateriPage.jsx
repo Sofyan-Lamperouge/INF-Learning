@@ -7,7 +7,7 @@ import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
 import DeleteMateriModal from "../../components/dashboard/DeleteMateriModal.jsx";
 import { getMateriList, deleteMateri } from "../../services/materiService.js";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 // Backend menyimpan file dengan nama acak (uuid), jadi nama asli tidak tersedia.
 // Untuk tampilan, nama file dibuat dari judul materi + ekstensi, mis. "pengantar_algoritma.pdf".
