@@ -1,5 +1,6 @@
 """Hash kata sandi (bcrypt) dan pembuatan/pembacaan JWT access token."""
 
+import secrets
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -25,10 +26,17 @@ def verifikasi_kata_sandi(kata_sandi: str, hash_tersimpan: str) -> bool:
 
 
 # --- JWT ---
+def buat_jti() -> str:
+    """Pengenal acak untuk satu sesi login (disimpan di sesi_login dan di dalam JWT)."""
+    return secrets.token_urlsafe(32)
+
+
 def buat_access_token(data: dict) -> str:
     """Bikin JWT access token. `data` minimal berisi `sub` (user id)."""
     to_encode = data.copy()
-    expired = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    # exp = batas umur mutlak sesi. Batas tidak-aktif (idle) dicek terpisah lewat tabel
+    # sesi_login pada setiap request (lihat core/dependencies.py).
+    expired = datetime.now(timezone.utc) + timedelta(hours=settings.SESI_MAKS_JAM)
     to_encode.update({"exp": expired})
     return jwt.encode(
         to_encode,
