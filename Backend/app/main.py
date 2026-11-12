@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
-from app.api.v1 import admin, auth, dashboard_mahasiswa, mahasiswa, materi
+from app.api.v1 import admin, auth, dashboard_mahasiswa, mahasiswa, materi, profil
 from app.core.config import settings
 from app.db.session import engine
 
@@ -23,6 +23,7 @@ ROUTERS = (
     materi.router,
     admin.router,
     dashboard_mahasiswa.router,
+    profil.router,
     mahasiswa.router,
 )
 
