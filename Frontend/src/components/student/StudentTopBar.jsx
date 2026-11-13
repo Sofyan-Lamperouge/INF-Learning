@@ -1,15 +1,16 @@
 // src/components/student/StudentTopBar.jsx
 // Top bar mahasiswa: logo | menu (Beranda, Materi, Kuis) | kartu pengguna.
 
-import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth.js';
-import { ChevronDownIcon, LogoutIcon } from './StudentIcons.jsx';
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.js";
+import { ChevronDownIcon, LogoutIcon, ProfileIcon } from "./StudentIcons.jsx";
+
 
 const NAV_ITEMS = [
-  { to: '/beranda', label: 'Beranda' },
-  { to: '/materi', label: 'Materi' },
-  { to: '/kuis', label: 'Kuis' },
+  { to: "/beranda", label: "Beranda" },
+  { to: "/materi", label: "Materi" },
+  { to: "/kuis", label: "Kuis" },
 ];
 
 export default function StudentTopBar() {
@@ -26,23 +27,23 @@ export default function StudentTopBar() {
       }
     }
     function handleKeyDown(event) {
-      if (event.key === 'Escape') setMenuOpen(false);
+      if (event.key === "Escape") setMenuOpen(false);
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
   function handleLogout() {
     logout();
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   }
 
-  const nama = user?.nama || 'Mahasiswa';
+  const nama = user?.nama || "Mahasiswa";
   const inisial = nama.trim().charAt(0).toUpperCase();
 
   return (
@@ -57,7 +58,7 @@ export default function StudentTopBar() {
             key={item.to}
             to={item.to}
             end
-            className={({ isActive }) => (isActive ? 'active' : undefined)}
+            className={({ isActive }) => (isActive ? "active" : undefined)}
           >
             {item.label}
           </NavLink>
@@ -72,7 +73,9 @@ export default function StudentTopBar() {
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          <span className="sd-avatar" aria-hidden="true">{inisial}</span>
+          <span className="sd-avatar" aria-hidden="true">
+            {user?.foto ? <img src={user.foto} alt="" /> : inisial}
+          </span>
 
           <span className="sd-user-info">
             <span className="sd-user-name">{nama}</span>
@@ -80,7 +83,7 @@ export default function StudentTopBar() {
           </span>
 
           <ChevronDownIcon
-            className={`sd-user-chevron${menuOpen ? ' is-open' : ''}`}
+            className={`sd-user-chevron${menuOpen ? " is-open" : ""}`}
           />
         </button>
 
@@ -90,6 +93,19 @@ export default function StudentTopBar() {
               type="button"
               role="menuitem"
               className="sd-user-menu-item"
+              onClick={() => {
+                setMenuOpen(false);
+                // TODO: navigate('/profil') kalau halaman profil sudah dibuat
+              }}
+            >
+              <ProfileIcon />
+              Profil
+            </button>
+
+            <button
+              type="button"
+              role="menuitem"
+              className="sd-user-menu-item sd-user-menu-item--danger"
               onClick={handleLogout}
             >
               <LogoutIcon />

@@ -66,7 +66,7 @@ export default function MahasiswaPage() {
   const [deletedName, setDeletedName] = useState('');
   const [busy, setBusy] = useState(false);
   const [modalError, setModalError] = useState('');
-  const [tip, setTip] = useState(null); // DOMRect ikon hapus yang di-hover
+  const [tip, setTip] = useState(null); 
 
   // Debounce pencarian agar tidak request ke backend untuk setiap ketikan.
   useEffect(() => {

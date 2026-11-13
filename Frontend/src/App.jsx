@@ -4,7 +4,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import RegisterPage from "./pages/auth/RegisterPage.jsx";
-import MateriListPage from "./pages/materi/MateriListPage.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 
 // === DASHBOARD PAGES ===
@@ -14,7 +13,9 @@ import KuisPage from "./pages/dashboard/KuisPage.jsx";
 import MahasiswaPage from "./pages/dashboard/MahasiswaPage.jsx";
 import UploadMateriPage from "./pages/dashboard/UploadMateriPage.jsx";
 import KonfirmasiMateriPage from "./pages/dashboard/KonfirmasiMateriPage.jsx"; //
-import DashboardMahasiswaWireframePage from "./pages/mahasiswa/DashboardMahasiswaWireframePage.jsx";
+import DashboardMahasiswaWireframePage from "./pages/mahasiswa/DashboardMahasiswaPage.jsx";
+import MateriMahasiswaPage from "./pages/mahasiswa/MateriMahasiswaPage.jsx";
+import KuisMahasiswaPage from "./pages/mahasiswa/KuisMahasiswaPage.jsx";
 
 export default function App() {
   return (
@@ -31,7 +32,7 @@ export default function App() {
         path="/materi"
         element={
           <ProtectedRoute>
-            <MateriListPage />
+            <MateriMahasiswaPage />
           </ProtectedRoute>
         }
       />
@@ -110,6 +111,15 @@ export default function App() {
         element={
           <ProtectedRoute>
             <DashboardMahasiswaWireframePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kuis"
+        element={
+          <ProtectedRoute>
+            <KuisMahasiswaPage />
           </ProtectedRoute>
         }
       />

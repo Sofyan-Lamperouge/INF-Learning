@@ -16,6 +16,9 @@ export default function LandingPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
   if (loading) {
     return <LandingSkeleton />;
   }
@@ -45,11 +48,22 @@ export default function LandingPage() {
               INF<span>orm</span>
             </Link>
 
-            <nav className="landing-nav-links">
-              <a href="#beranda">Beranda</a>
-              <a href="#fitur">Fitur</a>
-              <a href="#tentang">Tentang</a>
-              <a href="#faq">FAQ</a>
+            <nav
+              id="landing-menu"
+              className={`landing-nav-links ${menuOpen ? "is-open" : ""}`}
+            >
+              <a href="#beranda" onClick={closeMenu}>
+                Beranda
+              </a>
+              <a href="#fitur" onClick={closeMenu}>
+                Fitur
+              </a>
+              <a href="#tentang" onClick={closeMenu}>
+                Tentang
+              </a>
+              <a href="#faq" onClick={closeMenu}>
+                FAQ
+              </a>
             </nav>
 
             <div className="landing-nav-actions">
@@ -59,6 +73,31 @@ export default function LandingPage() {
               <Link to="/register" className="btn-register-solid">
                 Register
               </Link>
+
+              <button
+                type="button"
+                className="landing-menu-toggle"
+                aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
+                aria-expanded={menuOpen}
+                aria-controls="landing-menu"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                >
+                  {menuOpen ? (
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  ) : (
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                  )}
+                </svg>
+              </button>
             </div>
           </div>
         </header>
