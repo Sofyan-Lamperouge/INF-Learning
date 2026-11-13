@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     # Batas ukuran file upload (MB). Disamakan dengan batas di frontend.
     MAX_UPLOAD_MB: int = 10
+    # Batas ukuran foto profil (MB).
+    MAX_FOTO_MB: int = 2
 
     # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
     DATABASE_URL: str = Field(validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL"))

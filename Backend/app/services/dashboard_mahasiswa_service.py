@@ -42,7 +42,11 @@ def get_dashboard(db: Session, mhs: Pengguna) -> DashboardMahasiswaResponse:
 
     return DashboardMahasiswaResponse(
         profil=ProfilMahasiswa(
-            id=mhs.id, nama=mhs.nama, nomor_induk=mhs.nomor_induk, angkatan=mhs.angkatan
+            id=mhs.id,
+            nama=mhs.nama,
+            nomor_induk=mhs.nomor_induk,
+            angkatan=mhs.angkatan,
+            foto_url=mhs.foto_url,
         ),
         statistik=StatistikBelajar(
             total_materi=total_materi,

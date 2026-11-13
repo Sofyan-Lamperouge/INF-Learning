@@ -59,6 +59,50 @@ def simpan_upload(file: UploadFile) -> tuple[str, str]:
     return ext.lstrip("."), url
 
 
+def deteksi_format_foto(data: bytes) -> str | None:
+    """Kenali format gambar dari isi file (magic bytes), bukan dari nama/ekstensi/Content-Type.
+
+    Hanya JPG, PNG, dan WEBP. SVG sengaja tidak diizinkan karena bisa memuat script.
+    """
+    if data.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
+def simpan_foto(file: UploadFile) -> str:
+    """Validasi dan simpan foto profil ke UPLOAD_DIR. Return URL-nya.
+
+    Nama file dibuat acak dan ekstensinya diambil dari isi file, jadi nama asli dari
+    klien tidak pernah dipakai.
+    """
+    batas = settings.MAX_FOTO_MB * 1024 * 1024
+    data = file.file.read(batas + 1)  # +1 byte untuk mendeteksi file yang kelebihan ukuran
+
+    if not data:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File kosong")
+    if len(data) > batas:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Ukuran foto maksimal {settings.MAX_FOTO_MB} MB",
+        )
+    format_foto = deteksi_format_foto(data)
+    if format_foto is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Format foto tidak diizinkan. Gunakan JPG, PNG, atau WEBP",
+        )
+
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    nama = f"foto-{uuid.uuid4().hex}.{format_foto}"
+    with open(os.path.join(settings.UPLOAD_DIR, nama), "wb") as out:
+        out.write(data)
+    return f"{settings.PUBLIC_BASE_URL.rstrip('/')}/uploads/{nama}"
+
+
 def lokasi_file_dari_url(url: str | None) -> str | None:
     """Lokasi file di disk untuk sebuah URL upload, atau None bila bukan file milik server ini.
 
