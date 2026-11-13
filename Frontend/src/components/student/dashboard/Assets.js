@@ -4,7 +4,7 @@
 // Taruh file hasil ekspor Figma di: Frontend/public/assets/dashboard-mahasiswa/
 // Kalau nama/format file berbeda (mis. .svg), cukup ubah di sini.
 
-const FOLDER = '/assets/dashboard-mahasiswa';
+const FOLDER = '/assets';
 
 export const ASET = {
   maskotSambutan: `${FOLDER}/maskot-sambutan.png`,
