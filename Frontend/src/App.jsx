@@ -16,6 +16,7 @@ import KonfirmasiMateriPage from "./pages/dashboard/KonfirmasiMateriPage.jsx"; /
 import DashboardMahasiswaWireframePage from "./pages/mahasiswa/DashboardMahasiswaPage.jsx";
 import MateriMahasiswaPage from "./pages/mahasiswa/MateriMahasiswaPage.jsx";
 import KuisMahasiswaPage from "./pages/mahasiswa/KuisMahasiswaPage.jsx";
+import EmptyState from './Emptystate.jsx';
 
 export default function App() {
   return (

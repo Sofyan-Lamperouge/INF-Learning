@@ -4,9 +4,9 @@
 // Di desain, tampilan "ada isi" masih berupa kotak kosong -> TODO.
 
 import { Link } from 'react-router-dom';
-import EmptyState from './EmptyState.jsx';
+import EmptyState from './Emptystate.jsx';
 import SectionCard from './SectionCard.jsx';
-import { ASET } from './assets.js';
+import { ASET } from './Assets.js';
 import { CheckBoxIcon } from '../StudentIcons.jsx';
 
 export default function KuisTerakhirCard({ items = [] }) {
