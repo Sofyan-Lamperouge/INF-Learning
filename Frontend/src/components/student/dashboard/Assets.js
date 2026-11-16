@@ -1,4 +1,4 @@
-// src/components/student/dashboard/assets.js
+// src/components/student/dashboard/Assets.js
 //
 // Lokasi gambar maskot & hiasan dashboard mahasiswa.
 // Taruh file hasil ekspor Figma di: Frontend/public/assets/dashboard-mahasiswa/

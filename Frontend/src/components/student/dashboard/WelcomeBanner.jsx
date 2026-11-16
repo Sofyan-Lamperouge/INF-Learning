@@ -3,7 +3,7 @@
 // badge "Selamat datang kembali", nama besar, dan hiasan awan di kanan.
 
 import Art from './Art.jsx';
-import { ASET } from './assets.js';
+import { ASET } from './Assets.js';
 import { namaDepan } from './helpers.js';
 
 export default function WelcomeBanner({ nama }) {

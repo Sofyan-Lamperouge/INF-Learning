@@ -3,10 +3,10 @@
 // (maks. 3 ditampilkan). Kosong -> maskot tidur + "Belum ada materi yang dibaca".
 
 import { Link } from 'react-router-dom';
-import EmptyState from './EmptyState.jsx';
+import EmptyState from './Emptystate.jsx';
 import ProgressBar from './ProgressBar.jsx';
 import SectionCard from './SectionCard.jsx';
-import { ASET } from './assets.js';
+import { ASET } from './Assets.js';
 import { persenBelajar, warnaSemester } from './helpers.js';
 import { catatProgres } from '../../../services/dashboardMahasiswaService.js';
 import { BookIcon, DocumentIcon } from '../StudentIcons.jsx';

@@ -5,10 +5,10 @@
 //   - ada     -> thumbnail, judul, mata kuliah, progres, tombol Lanjutkan
 
 import { Link } from 'react-router-dom';
-import EmptyState from './EmptyState.jsx';
+import EmptyState from './Emptystate.jsx';
 import ProgressBar from './ProgressBar.jsx';
 import SectionCard from './SectionCard.jsx';
-import { ASET } from './assets.js';
+import { ASET } from './Assets.js';
 import { persenBelajar } from './helpers.js';
 import { catatProgres } from '../../../services/dashboardMahasiswaService.js';
 import { ArrowRightIcon, DocumentIcon, PlayIcon } from '../StudentIcons.jsx';
