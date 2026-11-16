@@ -1,0 +1,33 @@
+$kind: http-example
+name: PROF-02-Mengganti Foto Profil yang Sudah Ada.
+request:
+  url: "{{base_url}}/profil/foto"
+  method: PUT
+  body:
+    type: formdata
+    content:
+      - type: file
+        key: file
+        src:
+          - /C:/Users/MyBook Hype AMD/OneDrive/Documents/Pictures/Saved Pictures/WhatsApp Image 2026-03-29 at 12.26.55 AM.jpeg
+        description: ""
+        disabled: false
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 06:14:15 GMT
+    server: railway-hikari
+    x-railway-request-id: Xwgg2AfBSCuE9oxvxtoGcA
+    content-length: "111"
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "foto_url": "https://inf-learning-production.up.railway.app/uploads/foto-b97647f0a0204e12b11e07477596a42d.jpg"
+      }
+order: 1000

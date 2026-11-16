@@ -1,0 +1,72 @@
+$kind: http-request
+name: PROF-09-Mengambil Profil Mahasiswa yang Sedang Login
+url: "{{base_url}}/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Data identitas mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"id\");\r
+
+      \    pm.expect(response).to.have.property(\"peran\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response).to.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.have.property(\"status\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Role pengguna adalah mahasiswa\", function () {\r
+
+      \    pm.expect(response.peran).to.equal(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nama dan NIM tidak kosong\", function () {\r
+
+      \    pm.expect(response.nama).to.be.a(\"string\").and.not.empty;\r
+
+      \    pm.expect(response.nomor_induk).to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Field foto_url tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"foto_url\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/PROF-09-Mengambil Profil Mahasiswa yang Sedang Login-1.resources/examples
+order: 9000

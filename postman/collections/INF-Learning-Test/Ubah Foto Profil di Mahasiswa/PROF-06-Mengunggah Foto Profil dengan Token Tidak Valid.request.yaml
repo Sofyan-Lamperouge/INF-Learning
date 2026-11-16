@@ -1,0 +1,66 @@
+$kind: http-request
+url: "{{base_url}}/profil/foto"
+method: PUT
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src:
+        - /C:/Users/MyBook Hype AMD/OneDrive/Documents/Pictures/Saved Pictures/Image 2026-03-29 at 12.26.55 AM.jpeg
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_expired}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Backend menolak token tidak valid\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \r
+
+      \    pm.expect(response.detail).to.equal(\r
+
+      \        \"Token tidak valid atau sudah kedaluwarsa\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Header autentikasi tersedia\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.response.headers.get(\"WWW-Authenticate\")\r
+
+      \    ).to.include(\"Bearer\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/PROF-06-Mengunggah Foto Profil dengan Token Tidak Valid.resources/examples
+order: 6000

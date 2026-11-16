@@ -1,0 +1,81 @@
+$kind: http-request
+name: PROF-02-Mengganti Foto Profil yang Sudah Ada.
+url: "{{base_url}}/profil/foto"
+method: PUT
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src:
+        - /C:/Users/MyBook Hype AMD/OneDrive/Documents/Pictures/Saved Pictures/WhatsApp Image 2026-03-29 at 12.26.55 AM.jpeg
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Field foto_url tersedia dan tidak kosong\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"foto_url\");\r
+
+      \    pm.expect(response.foto_url).to.be.a(\"string\");\r
+
+      \    pm.expect(response.foto_url.length).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"URL foto baru memiliki format yang benar\", function () {\r
+
+      \    pm.expect(response.foto_url).to.include(\"/uploads/foto-\");\r
+
+      \    pm.expect(response.foto_url).to.match(/\\.(jpg|png|webp)$/i);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"URL foto baru berbeda dari foto sebelumnya\", function () {\r
+
+      \    const fotoLama = pm.collectionVariables.get(\"foto_url\");\r
+
+      \r
+
+      \    pm.expect(fotoLama).to.exist;\r
+
+      \    pm.expect(response.foto_url).to.not.equal(fotoLama);\r
+
+      });\r
+
+      \r
+
+      // Perbarui variabel untuk pengujian selanjutnya\r
+
+      pm.collectionVariables.set(\"foto_url\", response.foto_url);"
+    language: text/javascript
+examples: .resources/PROF-02-Mengganti Foto Profil yang Sudah Ada-.resources/examples
+order: 2000

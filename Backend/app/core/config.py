@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Batas ukuran foto profil (MB).
     MAX_FOTO_MB: int = 2
 
+    # Nomor WhatsApp admin untuk tombol "Hubungi Admin" mahasiswa. Boleh ditulis
+    # 0812-3456-7890, +62 812 3456 7890, atau 6281234567890. Kosong = fitur dinonaktifkan.
+    WHATSAPP_ADMIN_NOMOR: str = ""
+
     # Terima DATABASE_URL atau MYSQL_URL (mana saja yang ada)
     DATABASE_URL: str = Field(validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL"))
 

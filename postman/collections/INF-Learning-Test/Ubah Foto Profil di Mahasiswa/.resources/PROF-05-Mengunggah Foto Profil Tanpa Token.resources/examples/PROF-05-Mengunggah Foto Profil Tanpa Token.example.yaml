@@ -1,0 +1,33 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/profil/foto"
+  method: PUT
+  body:
+    type: formdata
+    content:
+      - type: file
+        key: file
+        src:
+          - /C:/Users/MyBook Hype AMD/OneDrive/Documents/Pictures/Saved Pictures/Image 2026-03-29 at 12.26.55 AM.jpeg
+        description: ""
+        disabled: false
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 06:42:46 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: koIfEyCfTRWfEZ68WUN5dQ
+    content-length: "28"
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak ada"
+      }
+order: 1000

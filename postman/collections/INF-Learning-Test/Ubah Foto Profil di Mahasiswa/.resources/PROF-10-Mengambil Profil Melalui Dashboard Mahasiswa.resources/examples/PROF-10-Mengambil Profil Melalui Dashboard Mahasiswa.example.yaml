@@ -1,0 +1,103 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/mahasiswa/dashboard"
+  method: GET
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 07:01:42 GMT
+    server: railway-hikari
+    x-railway-request-id: KYkhdaRlS1m__KYon6XIxQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "profil": {
+          "id": 13,
+          "nama": "KURUMI TOKISAKI",
+          "nomor_induk": "2488010099",
+          "angkatan": 2024,
+          "foto_url": null
+        },
+        "statistik": {
+          "total_materi": 13,
+          "materi_dilihat": 0,
+          "materi_selesai": 0,
+          "persen_selesai": 0
+        },
+        "lanjutkan_belajar": null,
+        "materi_terbaru": [
+          {
+            "id": 66,
+            "judul": "07. Load Balancing",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/9e696a290ed547fea405eb94d31e62f4.pdf",
+            "dibuat_pada": "2026-11-13T12:17:58",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 65,
+            "judul": "06. Prinsip Desain Sistem Terdistribusi",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/082e99adc5c64ecb9963defadf68e010.pdf",
+            "dibuat_pada": "2026-11-13T12:17:23",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 64,
+            "judul": "05. Teorema CAP",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/ab8e9519442f42cc8c2ce56e6b6bb8f8.pdf",
+            "dibuat_pada": "2026-11-13T12:16:46",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 63,
+            "judul": "04. Fault Tolerance",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/b9388c0b6e974f27a4509c643e1f37df.pdf",
+            "dibuat_pada": "2026-11-13T12:15:50",
+            "status_belajar": "belum"
+          },
+          {
+            "id": 62,
+            "judul": "03. Teknik Komunikasi dalam Sistem Terdistribusi",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/d5d650d1fa134f0485b599e2c99a8157.pdf",
+            "dibuat_pada": "2026-11-13T12:15:11",
+            "status_belajar": "belum"
+          }
+        ],
+        "progres_mata_kuliah": [
+          {
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "total": 6,
+            "selesai": 0,
+            "persen": 0
+          },
+          {
+            "mata_kuliah": "Sistem Terdistribusi",
+            "total": 7,
+            "selesai": 0,
+            "persen": 0
+          }
+        ]
+      }
+order: 1000

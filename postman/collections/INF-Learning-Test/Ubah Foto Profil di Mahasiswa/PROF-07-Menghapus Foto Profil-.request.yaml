@@ -1,0 +1,46 @@
+$kind: http-request
+name: PROF-07-Menghapus Foto Profil.
+url: "{{base_url}}/profil/foto"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Field foto_url tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"foto_url\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"foto_url bernilai null setelah dihapus\", function () {\r
+
+      \    pm.expect(response.foto_url).to.be.null;\r
+
+      });"
+    language: text/javascript
+examples: .resources/PROF-07-Menghapus Foto Profil-.resources/examples
+order: 7000

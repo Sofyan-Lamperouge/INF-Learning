@@ -1,0 +1,61 @@
+$kind: http-request
+name: PROF-04-Mengunggah Foto Melebihi Batas Ukuran.
+url: "{{base_url}}/profil/foto"
+method: PUT
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src:
+        - /C:/Users/MyBook Hype AMD/Downloads/dummy-5MB.jpg
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 413 Request Entity Too Large\", function () {\r
+
+      \    pm.response.to.have.status(413);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Backend menolak foto yang terlalu besar\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \    pm.expect(response.detail).to.include(\"Ukuran foto maksimal 2 MB\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Foto profil lama tidak berubah\", function () {\r
+
+      \    const response = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(response.detail).to.exist;\r
+
+      });"
+    language: text/javascript
+examples: .resources/PROF-04-Mengunggah Foto Melebihi Batas Ukuran-.resources/examples
+order: 4000
