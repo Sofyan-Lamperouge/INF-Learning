@@ -9,28 +9,28 @@
 //
 // Pilihan disimpan di URL (query string) sehingga tombol Back browser & refresh tetap benar.
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import StudentLayout from '../../components/student/StudentLayout.jsx';
-import SemesterGrid from '../../components/student/materi/SemesterGrid.jsx';
-import MataKuliahGrid from '../../components/student/materi/MataKuliahGrid.jsx';
-import MateriTable from '../../components/student/materi/MateriTable.jsx';
-import { ArrowLeftIcon } from '../../components/student/materi/MateriIcons.jsx';
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import StudentLayout from "../../components/student/StudentLayout.jsx";
+import SemesterGrid from "../../components/student/materi/SemesterGrid.jsx";
+import MataKuliahGrid from "../../components/student/materi/MataKuliahGrid.jsx";
+import MateriTable from "../../components/student/materi/MateriTable.jsx";
+import { ArrowLeftIcon } from "../../components/student/materi/MateriIcons.jsx";
 import {
   getKategoriSemester,
   getKategoriMataKuliah,
   getMateriMataKuliah,
-} from '../../services/materiMahasiswaService.js';
-import { catatProgres } from '../../services/dashboardMahasiswaService.js';
+} from "../../services/materiMahasiswaService.js";
 
 export default function MateriMahasiswaPage() {
   const [params, setParams] = useSearchParams();
-  const semesterParam = Number(params.get('semester'));
+  const navigate = useNavigate();
+  const semesterParam = Number(params.get("semester"));
   const semester =
     Number.isInteger(semesterParam) && semesterParam >= 1 && semesterParam <= 8
       ? semesterParam
       : null;
-  const mataKuliah = params.get('mk') || '';
+  const mataKuliah = params.get("mk") || "";
 
   const [semesterList, setSemesterList] = useState([]);
   const [mkList, setMkList] = useState([]);
@@ -39,7 +39,7 @@ export default function MateriMahasiswaPage() {
   const [loadingSemester, setLoadingSemester] = useState(true);
   const [loadingMk, setLoadingMk] = useState(false);
   const [loadingMateri, setLoadingMateri] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // 1) Daftar semester (sekali)
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function MateriMahasiswaPage() {
     let active = true;
 
     setLoadingMk(true);
-    setError('');
+    setError("");
     getKategoriMataKuliah(semester)
       .then((data) => active && setMkList(data.items || []))
       .catch((err) => active && setError(err.message))
@@ -92,7 +92,7 @@ export default function MateriMahasiswaPage() {
     let active = true;
 
     setLoadingMateri(true);
-    setError('');
+    setError("");
     getMateriMataKuliah(semester, mataKuliah)
       .then((data) => active && setMateriList(data.items || []))
       .catch((err) => active && setError(err.message))
@@ -117,19 +117,7 @@ export default function MateriMahasiswaPage() {
 
   // 4) Buka file + catat progres (hanya jika belum pernah dilihat)
   function handleLihat(materi) {
-    window.open(materi.url, '_blank', 'noopener,noreferrer');
-
-    if (materi.status_belajar === 'belum') {
-      catatProgres(materi.id, 'dilihat')
-        .then(() =>
-          setMateriList((daftar) =>
-            daftar.map((m) =>
-              m.id === materi.id ? { ...m, status_belajar: 'dilihat' } : m,
-            ),
-          ),
-        )
-        .catch(() => {}); // gagal mencatat progres tidak boleh menghalangi membuka file
-    }
+    navigate(`/materi/${materi.id}`);
   }
 
   const modeDetail = Boolean(mataKuliah);
@@ -145,7 +133,7 @@ export default function MateriMahasiswaPage() {
       <SemesterGrid
         items={semesterList}
         aktif={semester}
-        tampilkan={modeDetail ? 'materi' : 'mata_kuliah'}
+        tampilkan={modeDetail ? "materi" : "mata_kuliah"}
         loading={loadingSemester}
         onPilih={pilihSemester}
       />
@@ -165,7 +153,7 @@ export default function MateriMahasiswaPage() {
           <h2 className="sm-panel-title">
             {modeDetail
               ? `${mataKuliah} - Semester ${semester}`
-              : `Mata Kuliah - Semester ${semester ?? ''}`}
+              : `Mata Kuliah - Semester ${semester ?? ""}`}
           </h2>
         </header>
 
