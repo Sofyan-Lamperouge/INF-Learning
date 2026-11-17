@@ -163,8 +163,8 @@ export default function KonfirmasiMateriPage() {
                 </div>
               </div>
               <div className="confirm-alert">
-                Setelah disimpan, data dan file materi akan tersimpan
-                dan tersedia di halaman Materi.
+                Setelah disimpan, data dan file materi akan tersimpan dan
+                tersedia di halaman Materi.
               </div>
               {error && (
                 <p role="alert" className="confirm-alert">
@@ -203,14 +203,22 @@ export default function KonfirmasiMateriPage() {
         >
           <div className="modal-content">
             <div className="modal-success-icon" aria-hidden="true">
-              ✓
+              <svg viewBox="0 0 100 100" fill="none">
+                <path
+                  d="m33 50 12 11 22-21"
+                  stroke="currentColor"
+                  strokeWidth="6.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
             <h2 id="upload-success-title" className="modal-title">
               Materi Berhasil Diunggah!
             </h2>
             <p className="modal-desc">
               Materi “{savedMateri.judul || form.judul}” telah tersimpan di
-              backend.
+              halaman materi.
             </p>
             <button
               type="button"

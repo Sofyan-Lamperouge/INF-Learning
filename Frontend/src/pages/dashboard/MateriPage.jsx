@@ -33,6 +33,7 @@ export default function MateriPage() {
   const [deletingMateri, setDeletingMateri] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const [search, setSearch] = useState("");
   const [semester, setSemester] = useState("");
@@ -84,9 +85,8 @@ export default function MateriPage() {
     setDeleteError("");
     try {
       await deleteMateri(deletingMateri.id);
-      setDeletingMateri(null);
-      // Jika yang dihapus adalah materi terakhir di halaman > 1, mundur satu halaman.
-      // Dilakukan hanya setelah penghapusan berhasil (bukan saat menekan Batal).
+      setDeleteSuccess(true);
+
       if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
       setReloadKey((k) => k + 1);
     } catch (err) {
@@ -486,10 +486,15 @@ export default function MateriPage() {
           materi={deletingMateri}
           deleting={deleting}
           error={deleteError}
+          success={deleteSuccess}
           onCancel={() => {
             if (!deleting) setDeletingMateri(null);
           }}
           onConfirm={handleDelete}
+          onDone={() => {
+            setDeletingMateri(null);
+            setDeleteSuccess(false);
+          }}
         />
       )}
     </DashboardLayout>

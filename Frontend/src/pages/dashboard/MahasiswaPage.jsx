@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import DashboardLayout from '../../components/dashboard/DashboardLayout.jsx';
-import MahasiswaConfirmModal from '../../components/mahasiswa/MahasiswaConfirmModal.jsx';
-import MahasiswaDeleteModal from '../../components/mahasiswa/MahasiswaDeleteModal.jsx';
-import MahasiswaFormModal from '../../components/mahasiswa/MahasiswaFormModal.jsx';
+import { useEffect, useState } from "react";
+import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
+import MahasiswaConfirmModal from "../../components/mahasiswa/MahasiswaConfirmModal.jsx";
+import MahasiswaDeleteModal from "../../components/mahasiswa/MahasiswaDeleteModal.jsx";
+import MahasiswaFormModal from "../../components/mahasiswa/MahasiswaFormModal.jsx";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -11,15 +11,15 @@ import {
   SearchIcon,
   TrashIcon,
   UsersIcon,
-} from '../../components/mahasiswa/MahasiswaIcons.jsx';
-import MahasiswaSuccessModal from '../../components/mahasiswa/MahasiswaSuccessModal.jsx';
-import MahasiswaTooltip from '../../components/mahasiswa/MahasiswaTooltip.jsx';
+} from "../../components/mahasiswa/MahasiswaIcons.jsx";
+import MahasiswaSuccessModal from "../../components/mahasiswa/MahasiswaSuccessModal.jsx";
+import MahasiswaTooltip from "../../components/mahasiswa/MahasiswaTooltip.jsx";
 import {
   createMahasiswa,
   deleteMahasiswa,
   getMahasiswaList,
   updateMahasiswa,
-} from '../../services/mahasiswaService.js';
+} from "../../services/mahasiswaService.js";
 import {
   getAngkatanOptions,
   getAngkatanTone,
@@ -28,7 +28,7 @@ import {
   isAktif,
   STATUS_FILTER_OPTIONS,
   toFormValues,
-} from '../../utils/mahasiswaStatus.js';
+} from "../../utils/mahasiswaStatus.js";
 
 const PAGE_SIZE = 5;
 const ANGKATAN_OPTIONS = getAngkatanOptions(null, 16);
@@ -37,7 +37,12 @@ const ANGKATAN_OPTIONS = getAngkatanOptions(null, 16);
 // dan merah pada mahasiswa Non-aktif. Ubah ke false jika semua mahasiswa boleh dihapus.
 const HANYA_NONAKTIF_BISA_DIHAPUS = true;
 
-const EMPTY_FORM = { nomor_induk: '', nama: '', angkatan: '', status: 'nonaktif' };
+const EMPTY_FORM = {
+  nomor_induk: "",
+  nama: "",
+  angkatan: "",
+  status: "nonaktif",
+};
 
 function canDelete(mahasiswa) {
   return !HANYA_NONAKTIF_BISA_DIHAPUS || !isAktif(mahasiswa.status);
@@ -49,12 +54,12 @@ export default function MahasiswaPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
-  const [angkatan, setAngkatan] = useState('');
-  const [status, setStatus] = useState('');
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [angkatan, setAngkatan] = useState("");
+  const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -63,10 +68,11 @@ export default function MahasiswaPage() {
   const [editing, setEditing] = useState(null);
   const [draft, setDraft] = useState(EMPTY_FORM);
   const [target, setTarget] = useState(null);
-  const [deletedName, setDeletedName] = useState('');
+  const [deletedName, setDeletedName] = useState("");
+  const [updatedName, setUpdatedName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [modalError, setModalError] = useState('');
-  const [tip, setTip] = useState(null); 
+  const [modalError, setModalError] = useState("");
+  const [tip, setTip] = useState(null);
 
   // Debounce pencarian agar tidak request ke backend untuk setiap ketikan.
   useEffect(() => {
@@ -84,7 +90,7 @@ export default function MahasiswaPage() {
 
     async function loadMahasiswa() {
       setLoading(true);
-      setError('');
+      setError("");
 
       try {
         const result = await getMahasiswaList({
@@ -103,8 +109,8 @@ export default function MahasiswaPage() {
       } catch (loadError) {
         if (active) {
           setError(
-            loadError.message
-            || 'Data mahasiswa gagal dimuat. Periksa koneksi ke backend.',
+            loadError.message ||
+              "Data mahasiswa gagal dimuat. Periksa koneksi ke backend.",
           );
           setItems([]);
           setTotal(0);
@@ -126,11 +132,11 @@ export default function MahasiswaPage() {
   useEffect(() => {
     if (!tip) return undefined;
     const hide = () => setTip(null);
-    window.addEventListener('scroll', hide, true);
-    window.addEventListener('resize', hide);
+    window.addEventListener("scroll", hide, true);
+    window.addEventListener("resize", hide);
     return () => {
-      window.removeEventListener('scroll', hide, true);
-      window.removeEventListener('resize', hide);
+      window.removeEventListener("scroll", hide, true);
+      window.removeEventListener("resize", hide);
     };
   }, [tip]);
 
@@ -141,35 +147,35 @@ export default function MahasiswaPage() {
     setModal(null);
     setEditing(null);
     setTarget(null);
-    setModalError('');
+    setModalError("");
   }
 
   function openCreateModal() {
     setEditing(null);
     setDraft(EMPTY_FORM);
-    setModalError('');
-    setModal('form');
+    setModalError("");
+    setModal("form");
   }
 
   function openEditModal(mahasiswa) {
     setEditing(mahasiswa);
     setDraft(toFormValues(mahasiswa));
-    setModalError('');
-    setModal('form');
+    setModalError("");
+    setModal("form");
   }
 
   function openDeleteModal(mahasiswa) {
     if (!canDelete(mahasiswa)) return;
     setTarget(mahasiswa);
-    setModalError('');
-    setModal('delete');
+    setModalError("");
+    setModal("delete");
   }
 
   // Submit form (tambah / edit) -> selalu ke pop up konfirmasi dulu.
   function handleFormSubmit(values) {
     setDraft(values);
-    setModalError('');
-    setModal('confirm');
+    setModalError("");
+    setModal("confirm");
   }
 
   async function handleUpdateConfirm() {
@@ -180,14 +186,18 @@ export default function MahasiswaPage() {
     if (draft.status !== original.status) payload.status = draft.status;
 
     setBusy(true);
-    setModalError('');
+    setModalError("");
 
     try {
       await updateMahasiswa(editing.id, payload);
-      setModal('updated');
+      setUpdatedName(draft.nama);
+      setModal("updated");
       reload();
     } catch (saveError) {
-      setModalError(saveError.message || 'Data mahasiswa gagal disimpan. Silakan coba lagi.');
+      setModalError(
+        saveError.message ||
+          "Data mahasiswa gagal disimpan. Silakan coba lagi.",
+      );
     } finally {
       setBusy(false);
     }
@@ -195,7 +205,7 @@ export default function MahasiswaPage() {
 
   async function handleCreateConfirm() {
     setBusy(true);
-    setModalError('');
+    setModalError("");
 
     try {
       await createMahasiswa({
@@ -203,11 +213,14 @@ export default function MahasiswaPage() {
         nama: draft.nama,
         angkatan: Number(draft.angkatan),
       });
-      setModal('added');
+      setModal("added");
       setPage(1);
       reload();
     } catch (saveError) {
-      setModalError(saveError.message || 'Data mahasiswa gagal disimpan. Silakan coba lagi.');
+      setModalError(
+        saveError.message ||
+          "Data mahasiswa gagal disimpan. Silakan coba lagi.",
+      );
     } finally {
       setBusy(false);
     }
@@ -217,18 +230,20 @@ export default function MahasiswaPage() {
     if (!target || busy) return;
 
     setBusy(true);
-    setModalError('');
+    setModalError("");
 
     try {
       await deleteMahasiswa(target.id);
       setDeletedName(target.nama);
-      setModal('deleted');
+      setModal("deleted");
       setTarget(null);
       // Jika yang dihapus adalah item terakhir di halaman > 1, mundur satu halaman.
       if (items.length === 1 && page > 1) setPage((current) => current - 1);
       reload();
     } catch (deleteError) {
-      setModalError(deleteError.message || 'Mahasiswa gagal dihapus. Silakan coba lagi.');
+      setModalError(
+        deleteError.message || "Mahasiswa gagal dihapus. Silakan coba lagi.",
+      );
     } finally {
       setBusy(false);
     }
@@ -240,10 +255,10 @@ export default function MahasiswaPage() {
   }
 
   function resetFilters() {
-    setSearchInput('');
-    setSearch('');
-    setAngkatan('');
-    setStatus('');
+    setSearchInput("");
+    setSearch("");
+    setAngkatan("");
+    setStatus("");
     setPage(1);
   }
 
@@ -279,18 +294,28 @@ export default function MahasiswaPage() {
         <tr>
           <td colSpan="6" className="mahasiswa-table-message">
             <div className="mahasiswa-empty">
-              <span className="mahasiswa-empty-icon"><SearchIcon /></span>
+              <span className="mahasiswa-empty-icon">
+                <SearchIcon />
+              </span>
               {hasFilter ? (
                 <>
                   <p>Tidak ada mahasiswa yang cocok dengan pencarian.</p>
-                  <button type="button" className="mahasiswa-empty-button" onClick={resetFilters}>
+                  <button
+                    type="button"
+                    className="mahasiswa-empty-button"
+                    onClick={resetFilters}
+                  >
                     Reset filter
                   </button>
                 </>
               ) : (
                 <>
                   <p>Belum ada mahasiswa yang ditambahkan</p>
-                  <button type="button" className="mahasiswa-empty-button" onClick={openCreateModal}>
+                  <button
+                    type="button"
+                    className="mahasiswa-empty-button"
+                    onClick={openCreateModal}
+                  >
                     <PlusIcon />
                     Tambahkan Mahasiswa
                   </button>
@@ -309,18 +334,26 @@ export default function MahasiswaPage() {
         <tr key={mahasiswa.id}>
           <td className="col-no">{(page - 1) * PAGE_SIZE + index + 1}</td>
           <td className="col-status">
-            <span className={`mahasiswa-status mahasiswa-status--${getStatusKey(mahasiswa.status)}`}>
+            <span
+              className={`mahasiswa-status mahasiswa-status--${getStatusKey(mahasiswa.status)}`}
+            >
               {getStatusLabel(mahasiswa.status)}
             </span>
           </td>
           <td className="col-nim">{mahasiswa.nomor_induk}</td>
-          <td className="mahasiswa-name" title={mahasiswa.nama}>{mahasiswa.nama}</td>
+          <td className="mahasiswa-name" title={mahasiswa.nama}>
+            {mahasiswa.nama}
+          </td>
           <td className="col-angkatan">
             {mahasiswa.angkatan ? (
-              <span className={`mahasiswa-year mahasiswa-year--tone-${getAngkatanTone(mahasiswa.angkatan)}`}>
+              <span
+                className={`mahasiswa-year mahasiswa-year--tone-${getAngkatanTone(mahasiswa.angkatan)}`}
+              >
                 {mahasiswa.angkatan}
               </span>
-            ) : '—'}
+            ) : (
+              "—"
+            )}
           </td>
           <td className="col-aksi">
             <div className="mahasiswa-row-actions">
@@ -333,14 +366,26 @@ export default function MahasiswaPage() {
                 <EditIcon />
               </button>
               <button
-                className={`mahasiswa-action mahasiswa-action--delete${deletable ? '' : ' is-disabled'}`}
+                className={`mahasiswa-action mahasiswa-action--delete${deletable ? "" : " is-disabled"}`}
                 type="button"
                 aria-label={`Hapus ${mahasiswa.nama}`}
                 aria-disabled={!deletable}
-                aria-describedby={!deletable && tip ? 'mahasiswa-tooltip' : undefined}
+                aria-describedby={
+                  !deletable && tip ? "mahasiswa-tooltip" : undefined
+                }
                 onClick={() => openDeleteModal(mahasiswa)}
-                onMouseEnter={deletable ? undefined : (event) => setTip(event.currentTarget.getBoundingClientRect())}
-                onFocus={deletable ? undefined : (event) => setTip(event.currentTarget.getBoundingClientRect())}
+                onMouseEnter={
+                  deletable
+                    ? undefined
+                    : (event) =>
+                        setTip(event.currentTarget.getBoundingClientRect())
+                }
+                onFocus={
+                  deletable
+                    ? undefined
+                    : (event) =>
+                        setTip(event.currentTarget.getBoundingClientRect())
+                }
                 onMouseLeave={deletable ? undefined : () => setTip(null)}
                 onBlur={deletable ? undefined : () => setTip(null)}
               >
@@ -368,7 +413,11 @@ export default function MahasiswaPage() {
             </div>
           </div>
 
-          <button className="mahasiswa-add-button" type="button" onClick={openCreateModal}>
+          <button
+            className="mahasiswa-add-button"
+            type="button"
+            onClick={openCreateModal}
+          >
             <PlusIcon />
             Tambah mahasiswa
           </button>
@@ -381,11 +430,15 @@ export default function MahasiswaPage() {
               <select
                 className="mahasiswa-select"
                 value={angkatan}
-                onChange={(event) => changeFilter(setAngkatan, event.target.value)}
+                onChange={(event) =>
+                  changeFilter(setAngkatan, event.target.value)
+                }
               >
                 <option value="">Semua Angkatan</option>
                 {ANGKATAN_OPTIONS.map((year) => (
-                  <option key={year} value={year}>{year}</option>
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
                 ))}
               </select>
             </label>
@@ -395,17 +448,23 @@ export default function MahasiswaPage() {
               <select
                 className="mahasiswa-select"
                 value={status}
-                onChange={(event) => changeFilter(setStatus, event.target.value)}
+                onChange={(event) =>
+                  changeFilter(setStatus, event.target.value)
+                }
               >
                 <option value="">Semua Status</option>
                 {STATUS_FILTER_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </label>
 
             <label className="mahasiswa-search">
-              <span className="mahasiswa-search-icon"><SearchIcon /></span>
+              <span className="mahasiswa-search-icon">
+                <SearchIcon />
+              </span>
               <span className="visually-hidden">Cari mahasiswa</span>
               <input
                 type="search"
@@ -417,19 +476,31 @@ export default function MahasiswaPage() {
           </div>
 
           {error && (
-            <div className="mahasiswa-error" role="alert">{error}</div>
+            <div className="mahasiswa-error" role="alert">
+              {error}
+            </div>
           )}
 
           <div className="mahasiswa-table-wrap">
             <table className="mahasiswa-table">
               <thead>
                 <tr>
-                  <th scope="col" className="col-no">No</th>
-                  <th scope="col" className="col-status">Status</th>
-                  <th scope="col" className="col-nim">NIM</th>
+                  <th scope="col" className="col-no">
+                    No
+                  </th>
+                  <th scope="col" className="col-status">
+                    Status
+                  </th>
+                  <th scope="col" className="col-nim">
+                    NIM
+                  </th>
                   <th scope="col">Nama</th>
-                  <th scope="col" className="col-angkatan">Angkatan</th>
-                  <th scope="col" className="col-aksi">Aksi</th>
+                  <th scope="col" className="col-angkatan">
+                    Angkatan
+                  </th>
+                  <th scope="col" className="col-aksi">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody>{renderBody()}</tbody>
@@ -438,7 +509,9 @@ export default function MahasiswaPage() {
         </div>
 
         <footer className="mahasiswa-footer">
-          <p>Menampilkan {items.length} dari {total} mahasiswa</p>
+          <p>
+            Menampilkan {items.length} dari {total} mahasiswa
+          </p>
 
           <nav className="mahasiswa-pagination" aria-label="Paginasi mahasiswa">
             <button
@@ -454,7 +527,9 @@ export default function MahasiswaPage() {
               type="button"
               aria-label="Halaman berikutnya"
               disabled={page >= totalPages || loading}
-              onClick={() => setPage((current) => Math.min(current + 1, totalPages))}
+              onClick={() =>
+                setPage((current) => Math.min(current + 1, totalPages))
+              }
             >
               <ChevronRightIcon />
             </button>
@@ -462,45 +537,56 @@ export default function MahasiswaPage() {
         </footer>
       </section>
 
-      {modal === 'form' && (
+      {modal === "form" && (
         <MahasiswaFormModal
-          key={editing ? `edit-${editing.id}` : 'create'}
-          mode={editing ? 'edit' : 'create'}
+          key={editing ? `edit-${editing.id}` : "create"}
+          mode={editing ? "edit" : "create"}
           initialValues={draft}
           original={editing ? toFormValues(editing) : null}
-          statusLocked={editing?.status === 'belum_aktif'}
+          statusLocked={editing?.status === "belum_aktif"}
           error={modalError}
           onSubmit={handleFormSubmit}
           onClose={closeModal}
         />
       )}
 
-      {modal === 'confirm' && (
+      {modal === "confirm" && (
         <MahasiswaConfirmModal
-          mode={editing ? 'edit' : 'create'}
+          mode={editing ? "edit" : "create"}
           values={draft}
           original={editing ? toFormValues(editing) : null}
           busy={busy}
           error={modalError}
-          onBack={() => { setModalError(''); setModal('form'); }}
+          onBack={() => {
+            setModalError("");
+            setModal("form");
+          }}
           onConfirm={editing ? handleUpdateConfirm : handleCreateConfirm}
           onClose={closeModal}
         />
       )}
 
-      {modal === 'added' && (
-        <MahasiswaSuccessModal title="Mahasiswa Berhasil Ditambahkan!" onClose={closeModal}>
+      {modal === "added" && (
+        <MahasiswaSuccessModal
+          title="Mahasiswa Berhasil Ditambahkan!"
+          onClose={closeModal}
+        >
           Data mahasiswa telah disimpan ke dalam sistem!
         </MahasiswaSuccessModal>
       )}
 
-      {modal === 'updated' && (
-        <MahasiswaSuccessModal title="Data Berhasil Diperbarui!" onClose={closeModal}>
-          Perubahan data mahasiswa telah disimpan ke dalam sistem!
+      {modal === "updated" && (
+        <MahasiswaSuccessModal
+          title="Mahasiswa Berhasil Diperbarui!"
+          withButton={false}
+          autoCloseMs={2200}
+          onClose={closeModal}
+        >
+          Data <strong>&ldquo;{updatedName}&rdquo;</strong> telah diperbarui!
         </MahasiswaSuccessModal>
       )}
 
-      {modal === 'delete' && target && (
+      {modal === "delete" && target && (
         <MahasiswaDeleteModal
           mahasiswa={target}
           busy={busy}
@@ -510,14 +596,15 @@ export default function MahasiswaPage() {
         />
       )}
 
-      {modal === 'deleted' && (
+      {modal === "deleted" && (
         <MahasiswaSuccessModal
           title="Mahasiswa Berhasil Dihapus!"
           withButton={false}
           autoCloseMs={2200}
           onClose={closeModal}
         >
-          Data <strong>&ldquo;{deletedName}&rdquo;</strong> telah dihapus dari sistem!
+          Data <strong>&ldquo;{deletedName}&rdquo;</strong> telah dihapus dari
+          sistem!
         </MahasiswaSuccessModal>
       )}
       {tip && (

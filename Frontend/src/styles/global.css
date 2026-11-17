@@ -6041,14 +6041,19 @@ div.dashboard-bottom-grid .btn-tambah:hover {
 
 /* Ikon Centang */
 .modal-success-icon {
-  width: 100px;
-  height: 100px;
-  background: #d1fae5; /* Hijau sangat muda */
+  width: 150px;
+  height: 150px;
+  background: #dcfce7;   /* hijau muda sama dengan popup edit/hapus */
+  color: #15803d;        /* warna centang */
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   margin: 0 auto 1.5rem;
+}
+
+.modal-success-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* Judul Modal */
@@ -8583,6 +8588,10 @@ button[aria-label^="Hapus materi"]:focus-visible {
   text-decoration: none;
 }
 
+.sd-logo:hover {
+  text-decoration: none;
+}
+
 .sd-logo span {
   color: #8bd4ff;
 }
@@ -8623,6 +8632,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .sd-nav a.active::after,
 .sd-nav a:hover::after {
   transform: scaleX(1);
+  
 }
 
 /* Kartu pengguna: 290 x 81, border #E9F0F5, radius 24 */
@@ -8872,10 +8882,10 @@ button[aria-label^="Hapus materi"]:focus-visible {
 
 .sd-welcome .sd-welcome-cloud {
   position: absolute;
-  top: calc(var(--u) * 14);
+  top: calc(var(--u) * 4);
   right: 0;
-  width: calc(var(--u) * 366);
-  height: calc(var(--u) * 192);
+  width: calc(var(--u) * 315);
+  height: calc(var(--u) * 200);
   pointer-events: none;
 }
 
@@ -9067,6 +9077,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 
 .sd-btn-lanjutkan:hover {
   background: #3aa8e0;
+  text-decoration: none;
 }
 
 .sd-btn-lanjutkan svg {
@@ -9100,6 +9111,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 
 .sd-aksi-item:hover {
   transform: translateY(calc(var(--u) * -2));
+  text-decoration: none;
 }
 
 .sd-aksi-icon {
@@ -9124,6 +9136,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
   font-weight: 500;
   line-height: calc(var(--u) * 30);
   color: #404040;
+  text-decoration: none;
 }
 
 .sd-aksi-chevron {
@@ -9151,10 +9164,12 @@ button[aria-label^="Hapus materi"]:focus-visible {
   padding: 0 calc(var(--u) * 20) 0 calc(var(--u) * 9);
   box-shadow: var(--sd-shadow);
   transition: transform 0.2s ease;
+  text-decoration: none;
 }
 
 .sd-list-item:hover {
   transform: translateY(calc(var(--u) * -2));
+  text-decoration: none;
 }
 
 .sd-list-info {
@@ -9345,6 +9360,7 @@ button[aria-label^="Hapus materi"]:focus-visible {
 
 .sd-btn-outline:hover {
   background: #cdeeff;
+  text-decoration: none;
 }
 
 .sd-btn-outline svg {
@@ -9453,6 +9469,10 @@ button[aria-label^="Hapus materi"]:focus-visible {
   .sd-welcome-divider,
   .sd-welcome .sd-welcome-cloud {
     display: none;
+  }
+
+  .sd-welcome .sd-welcome-cloud img {
+  object-position: right center;   /* rapat ke kanan */
   }
 
   .sd-welcome .sd-welcome-maskot {
