@@ -40,7 +40,7 @@ export default function StudentTopBar() {
 
   function handleLogout() {
     logout();
-    navigate("/", { replace: true });
+    navigate("/login", { replace: true });
   }
 
   const nama = user?.nama || "Mahasiswa";

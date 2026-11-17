@@ -16,6 +16,7 @@ import KonfirmasiMateriPage from "./pages/dashboard/KonfirmasiMateriPage.jsx"; /
 import DashboardMahasiswaWireframePage from "./pages/mahasiswa/DashboardMahasiswaPage.jsx";
 import MateriMahasiswaPage from "./pages/mahasiswa/MateriMahasiswaPage.jsx";
 import KuisMahasiswaPage from "./pages/mahasiswa/KuisMahasiswaPage.jsx";
+import BacaMateriPage from "./pages/mahasiswa/BacaMateriPage.jsx";
 
 export default function App() {
   return (
@@ -33,6 +34,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <MateriMahasiswaPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/materi/:id"
+        element={
+          <ProtectedRoute>
+            <BacaMateriPage />
           </ProtectedRoute>
         }
       />

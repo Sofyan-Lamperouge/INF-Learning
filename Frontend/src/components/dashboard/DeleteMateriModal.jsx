@@ -33,11 +33,7 @@ export default function DeleteMateriModal({
 
   return (
     <div
-      className="hapus-materi-overlay"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !deleting && !success) onCancel();
-      }}
-    >
+      className="hapus-materi-overlay">
       {success ? (
         <section
           className="edit-materi-result edit-materi-result--success"
