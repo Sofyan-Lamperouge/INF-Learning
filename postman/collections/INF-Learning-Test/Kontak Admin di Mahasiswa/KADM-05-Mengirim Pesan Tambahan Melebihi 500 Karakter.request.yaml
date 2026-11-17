@@ -1,0 +1,84 @@
+$kind: http-request
+url: "{{base_url}}/kontak-admin/whatsapp?pesan={{pesan_panjang}}"
+method: GET
+queryParams:
+  pesan: "{{pesan_panjang}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: beforeRequest
+    code: "const pesanPanjang = \"A\".repeat(501);\r
+
+      \r
+
+      pm.collectionVariables.set(\"pesan_panjang\", pesanPanjang);"
+    language: text/javascript
+  - type: afterResponse
+    code: "pm.test(\"Status code 422 Unprocessable Entity\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Backend menolak pesan melebihi 500 karakter\", function () {\r
+
+      \    pm.expect(response.detail).to.be.an(\"array\");\r
+
+      \r
+
+      \    const errorPesan = response.detail.some(function (item) {\r
+
+      \        return item.loc &&\r
+
+      \            item.loc.includes(\"query\") &&\r
+
+      \            item.loc.includes(\"pesan\") &&\r
+
+      \            item.type === \"string_too_long\";\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(errorPesan).to.equal(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Detail error menunjukkan batas maksimal 500 karakter\", function () {\r
+
+      \    const errorPesan = response.detail.find(function (item) {\r
+
+      \        return item.loc &&\r
+
+      \            item.loc.includes(\"pesan\");\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(errorPesan).to.exist;\r
+
+      \    pm.expect(errorPesan.msg).to.include(\"500\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/KADM-05-Mengirim Pesan Tambahan Melebihi 500 Karakter.resources/examples
+order: 5000

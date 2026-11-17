@@ -1,0 +1,65 @@
+$kind: http-request
+url: "{{base_url}}/kontak-admin/whatsapp?topik=keuangan"
+method: GET
+queryParams:
+  topik: keuangan
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 422 Unprocessable Entity\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Backend mengembalikan detail validasi\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \    pm.expect(response.detail).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Validasi menunjukkan kesalahan pada parameter topik\", function () {\r
+
+      \    const detail = response.detail;\r
+
+      \r
+
+      \    const errorTopik = detail.some(function (item) {\r
+
+      \        return item.loc &&\r
+
+      \            item.loc.includes(\"query\") &&\r
+
+      \            item.loc.includes(\"topik\");\r
+
+      \    });\r
+
+      \r
+
+      \    pm.expect(errorTopik).to.equal(true);\r
+
+      });"
+    language: text/javascript
+examples: .resources/KADM-04-Menggunakan Topik yang Tidak Valid.resources/examples
+order: 4000

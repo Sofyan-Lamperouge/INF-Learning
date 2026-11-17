@@ -1,0 +1,57 @@
+$kind: http-request
+url: "{{base_url}}/kontak-admin/whatsapp"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_expired}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Pesan error sesuai validasi backend\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \r
+
+      \    pm.expect(response.detail).to.equal(\r
+
+      \        \"Token tidak valid atau sudah kedaluwarsa\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Header autentikasi Bearer tersedia\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.response.headers.get(\"WWW-Authenticate\")\r
+
+      \    ).to.equal(\"Bearer\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/KADM-03-Mengakses Kontak Admin dengan Token Tidak Valid.resources/examples
+order: 3000

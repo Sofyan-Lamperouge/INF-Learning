@@ -1,0 +1,110 @@
+$kind: http-request
+url: "{{base_url}}/kontak-admin/whatsapp?topik=akun&pesan=Saya%20mengalami%20masalah%20saat%20login"
+method: GET
+queryParams:
+  topik: akun
+  pesan: Saya%20mengalami%20masalah%20saat%20login
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Field response tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"nomor\");\r
+
+      \    pm.expect(response).to.have.property(\"nomor_tampil\");\r
+
+      \    pm.expect(response).to.have.property(\"pesan\");\r
+
+      \    pm.expect(response).to.have.property(\"tautan\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor WhatsApp valid\", function () {\r
+
+      \    pm.expect(response.nomor).to.match(/^[0-9]{10,15}$/);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Format nomor tampilan tersedia\", function () {\r
+
+      \    pm.expect(response.nomor_tampil).to.be.a(\"string\");\r
+
+      \    pm.expect(response.nomor_tampil).to.include(\"+\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pesan otomatis memuat topik akun\", function () {\r
+
+      \    pm.expect(response.pesan).to.include(\r
+
+      \        \"Topik: Masalah akun atau login\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Pesan tambahan mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response.pesan).to.include(\r
+
+      \        \"Saya mengalami masalah saat login\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Tautan WhatsApp memiliki format yang benar\", function () {\r
+
+      \    pm.expect(response.tautan).to.include(\"https://wa.me/\");\r
+
+      \    pm.expect(response.tautan).to.include(\"?text=\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Nomor pada tautan sesuai response\", function () {\r
+
+      \    pm.expect(response.tautan).to.include(\r
+
+      \        \"https://wa.me/\" + response.nomor\r
+
+      \    );\r
+
+      });"
+    language: text/javascript
+examples: .resources/KADM-01-Kontak Admin Valid.resources/examples
+order: 1000

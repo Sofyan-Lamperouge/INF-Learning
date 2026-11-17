@@ -1,0 +1,24 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/kontak-admin/whatsapp"
+  method: GET
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Tue, 17 Nov 2026 08:55:23 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: 0UXqtd45Tcuc4P4w-_9nXA
+    content-length: "53"
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak valid atau sudah kedaluwarsa"
+      }
+order: 1000
