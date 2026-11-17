@@ -1,0 +1,85 @@
+$kind: http-request
+url: "{{base_url}}/mahasiswa/dashboard"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Data profil mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"profil\");\r
+
+      \r
+
+      \    pm.expect(response.profil).to.have.property(\"id\");\r
+
+      \    pm.expect(response.profil).to.have.property(\"nama\");\r
+
+      \    pm.expect(response.profil).to.have.property(\"nomor_induk\");\r
+
+      \    pm.expect(response.profil).to.have.property(\"angkatan\");\r
+
+      \    pm.expect(response.profil).to.have.property(\"foto_url\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data profil tidak kosong\", function () {\r
+
+      \    pm.expect(response.profil.nama).to.be.a(\"string\").and.not.empty;\r
+
+      \    pm.expect(response.profil.nomor_induk).to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Statistik belajar tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"statistik\");\r
+
+      \    pm.expect(response.statistik).to.have.property(\"total_materi\");\r
+
+      \    pm.expect(response.statistik).to.have.property(\"materi_dilihat\");\r
+
+      \    pm.expect(response.statistik).to.have.property(\"materi_selesai\");\r
+
+      \    pm.expect(response.statistik).to.have.property(\"persen_selesai\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data materi berbentuk array\", function () {\r
+
+      \    pm.expect(response.materi_terbaru).to.be.an(\"array\");\r
+
+      \    pm.expect(response.progres_mata_kuliah).to.be.an(\"array\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/PROF-10-Mengambil Profil Melalui Dashboard Mahasiswa.resources/examples
+order: 10000

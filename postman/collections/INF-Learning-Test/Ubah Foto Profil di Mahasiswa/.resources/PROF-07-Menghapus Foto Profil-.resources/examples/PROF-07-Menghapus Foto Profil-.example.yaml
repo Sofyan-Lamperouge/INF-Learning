@@ -1,0 +1,24 @@
+$kind: http-example
+name: PROF-07-Menghapus Foto Profil.
+request:
+  url: "{{base_url}}/profil/foto"
+  method: DELETE
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 06:48:15 GMT
+    server: railway-hikari
+    x-railway-request-id: kX0Tq1yARUG-cEsClt7tkg
+    content-length: "17"
+    x-hikari-trace: sin1.462z
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "foto_url": null
+      }
+order: 1000

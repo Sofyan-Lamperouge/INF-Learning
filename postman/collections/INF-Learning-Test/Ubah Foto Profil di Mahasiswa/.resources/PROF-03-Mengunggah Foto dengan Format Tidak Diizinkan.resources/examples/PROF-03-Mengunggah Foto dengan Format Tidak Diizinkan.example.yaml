@@ -1,0 +1,32 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/profil/foto"
+  method: PUT
+  body:
+    type: formdata
+    content:
+      - type: file
+        key: file
+        src:
+          - /D:/SEMESTER 5/Cloud Computing/Materi 2-3 - Mekanisme CLoud Computing.pdf
+        description: ""
+        disabled: false
+response:
+  statusCode: 400
+  statusText: ""
+  headers:
+    :status: "400"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 06:23:39 GMT
+    server: railway-hikari
+    x-railway-request-id: hFStskb3TQanaB07jq4OvQ
+    content-length: "69"
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Format foto tidak diizinkan. Gunakan JPG, PNG, atau WEBP"
+      }
+order: 1000

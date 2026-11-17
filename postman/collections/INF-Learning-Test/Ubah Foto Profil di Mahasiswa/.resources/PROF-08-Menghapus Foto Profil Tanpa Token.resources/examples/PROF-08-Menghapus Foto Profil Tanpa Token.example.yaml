@@ -1,0 +1,24 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/profil/foto"
+  method: DELETE
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Mon, 16 Nov 2026 06:53:41 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: BC5vF9ZmSPC5RAZGY53eZw
+    content-length: "28"
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak ada"
+      }
+order: 1000
