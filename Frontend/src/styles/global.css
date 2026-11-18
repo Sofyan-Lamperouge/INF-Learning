@@ -10339,3 +10339,300 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .bm-toast-teks span { font-size: max(13px, calc(var(--u) * 16)); color: #858585; overflow-wrap: anywhere; }
 .bm-toast-tutup { flex: none; align-self: flex-start; width: 28px; height: 28px; padding: 4px; border: 0; background: none; color: #858585; cursor: pointer; }
 .bm-toast-tutup:hover { color: #404040; }
+
+/* ============================================================
+   HALAMAN PROFIL MAHASISWA — tempel di AKHIR global.css
+   Kelas berawalan pf-. Memakai --u, --sd-shadow, --sd-radius dari .sd-layout.
+   Blok [T1]-[T2] untuk top bar (avatar foto + item menu "Profil Mahasiswa").
+   ============================================================ */
+
+/* [1] KARTU HALAMAN (putih besar): tautan kembali + judul */
+.pf-wrap {
+  padding: calc(var(--u) * 22) calc(var(--u) * 20) calc(var(--u) * 30) calc(var(--u) * 30);
+  background: #fff;
+  border-radius: var(--sd-radius);
+  box-shadow: var(--sd-shadow);
+  min-width: 0;
+}
+.pf-kembali {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+  font-size: max(15px, calc(var(--u) * 20));
+  font-weight: 600;
+  line-height: calc(var(--u) * 30);
+  color: #6b6b6b;
+  text-decoration: none;
+}
+.pf-kembali svg { width: calc(var(--u) * 24); height: calc(var(--u) * 24); min-width: 18px; }
+.pf-kembali:hover { color: #55b5ef; }
+.pf-judul { margin-top: calc(var(--u) * 21); }
+.pf-judul h1 { margin: 0; font-size: max(20px, calc(var(--u) * 23.5)); font-weight: 600; line-height: 1.5; color: #404040; }
+.pf-judul p { margin: calc(var(--u) * 6) 0 0; font-size: max(13px, calc(var(--u) * 16)); line-height: 1.5; color: #858585; }
+
+/* [2] KARTU PROFIL: foto | garis | informasi */
+.pf-card {
+  display: flex;
+  align-items: center;
+  margin-top: calc(var(--u) * 17);
+  min-height: calc(var(--u) * 397);
+  padding: calc(var(--u) * 50) calc(var(--u) * 30) calc(var(--u) * 54) calc(var(--u) * 100);
+  border: 1px solid #e6eef4;
+  border-radius: calc(var(--u) * 38);
+  background: #fff;
+  transition: background 0.3s;
+}
+
+/* [3] FOTO + TOMBOL KAMERA */
+.pf-foto { position: relative; flex: none; width: calc(var(--u) * 293); height: calc(var(--u) * 293); }
+.pf-avatar {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #55b5ef;
+  color: #fff;
+  font-size: calc(var(--u) * 110);
+  font-weight: 600;
+}
+.pf-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pf-kamera {
+  position: absolute;
+  right: calc(var(--u) * 8);
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 90);
+  height: calc(var(--u) * 90);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #55b5ef;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.pf-kamera svg { width: 52%; height: 52%; }
+.pf-kamera:hover { background: #3ea4e3; transform: scale(1.05); }
+.pf-kamera:focus-visible { outline: 3px solid #1f7fc0; outline-offset: 3px; }
+
+/* [4] GARIS PEMISAH VERTIKAL */
+.pf-garis {
+  flex: none;
+  align-self: center;
+  width: calc(var(--u) * 2);
+  height: calc(var(--u) * 218);
+  margin: 0 calc(var(--u) * 108) 0 calc(var(--u) * 99);
+  background: #e4eef6;
+}
+
+/* [5] INFORMASI MAHASISWA (judul + tiga baris) */
+.pf-info { flex: 1; min-width: 0; align-self: center; }
+.pf-info h2 { margin: 0; font-size: max(18px, calc(var(--u) * 23.5)); font-weight: 600; line-height: calc(var(--u) * 36); color: #404040; }
+.pf-info dl { margin: 0; }
+.pf-baris {
+  display: grid;
+  grid-template-columns: calc(var(--u) * 211) minmax(0, 1fr);
+  height: calc(var(--u) * 60);
+  min-height: 44px;
+}
+.pf-baris dt,
+.pf-baris dd {
+  margin: 0;
+  align-self: end;
+  padding-bottom: calc(var(--u) * 2);
+  line-height: calc(var(--u) * 30);
+  min-height: 24px;
+  overflow-wrap: anywhere;
+}
+.pf-baris dt { font-size: max(14px, calc(var(--u) * 20)); font-weight: 500; color: #858585; }
+.pf-baris dd {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid #e6eef4;
+  font-size: max(14px, calc(var(--u) * 19.5));
+  font-weight: 600;
+  color: #404040;
+}
+.pf-galat { margin: calc(var(--u) * 12) 0 0; font-size: max(13px, calc(var(--u) * 15)); color: #dc2626; }
+
+/* [6] KEADAAN MEMUAT DATA: kartu biru bergradasi, NIM & angkatan masih kosong */
+.pf-card.memuat {
+  border-color: transparent;
+  background: linear-gradient(100deg, #85d0ff 0%, #b3e5ff 45%, #cdeeff 100%);
+  background-size: 200% 100%;
+  animation: pf-kilau 1.8s ease-in-out infinite alternate;
+}
+.pf-card.memuat .pf-kamera { box-shadow: 0 0 0 calc(var(--u) * 3) #fff; }
+.pf-card.memuat .pf-garis { background: rgba(255, 255, 255, 0.65); }
+.pf-card.memuat .pf-baris dd { border-bottom-color: rgba(255, 255, 255, 0.6); }
+@keyframes pf-kilau { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+@media (prefers-reduced-motion: reduce) { .pf-card.memuat { animation: none; } }
+
+/* [7] LATAR GELAP-BURAM MODAL */
+.pf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: 16px;
+  background: rgba(222, 231, 238, 0.6);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  overflow-y: auto;
+}
+
+/* [8] MODAL "UBAH FOTO PROFIL": kepala, pratinjau, file, tombol */
+.pf-modal {
+  position: relative;
+  width: min(calc(var(--u) * 707), 100%);
+  justify-self: center;
+  padding: 0 calc(var(--u) * 41) calc(var(--u) * 39);
+  background: #fff;
+  border: 2px solid #d3dce4;
+  border-radius: calc(var(--u) * 28);
+  box-shadow: 0 calc(var(--u) * 10) calc(var(--u) * 30) rgba(30, 80, 120, 0.12);
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+}
+.pf-modal-kepala h2 { margin: 0; padding-top: calc(var(--u) * 33); font-size: max(18px, calc(var(--u) * 24)); font-weight: 700; line-height: calc(var(--u) * 32); color: #404040; }
+.pf-modal-tutup {
+  position: absolute;
+  top: calc(var(--u) * 22);
+  right: calc(var(--u) * 22);
+  display: grid;
+  place-items: center;
+  width: max(36px, calc(var(--u) * 32));
+  height: max(36px, calc(var(--u) * 32));
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #404040;
+  cursor: pointer;
+}
+.pf-modal-tutup svg { width: 100%; height: 100%; padding: 20%; box-sizing: border-box; }
+.pf-modal-tutup:hover { color: #55b5ef; }
+.pf-modal-preview { display: flex; justify-content: center; margin-top: calc(var(--u) * 71); }
+.pf-modal-preview img { width: calc(var(--u) * 293); height: calc(var(--u) * 293); border-radius: 50%; object-fit: cover; }
+
+/* Bagian tengah (tinggi tetap, supaya modal tidak melompat saat berganti keadaan) */
+.pf-modal-tengah { position: relative; height: calc(var(--u) * 190); }
+.pf-modal-file { position: absolute; top: calc(var(--u) * 38); left: 0; right: 0; display: flex; align-items: center; gap: calc(var(--u) * 20); }
+.pf-modal-file-ikon { flex: none; display: grid; place-items: center; width: calc(var(--u) * 70); height: calc(var(--u) * 70); min-width: 44px; min-height: 44px; border-radius: calc(var(--u) * 12); background: #e9eff5; color: #858585; }
+.pf-modal-file-ikon svg { width: 52%; height: 52%; }
+.pf-modal-file-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pf-modal-file-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: max(14px, calc(var(--u) * 20)); font-weight: 500; color: #404040; }
+.pf-modal-file-info small { font-size: max(13px, calc(var(--u) * 18)); color: #858585; }
+.pf-btn-ganti {
+  flex: none;
+  min-width: calc(var(--u) * 130);
+  height: max(36px, calc(var(--u) * 45));
+  padding: 0 calc(var(--u) * 18);
+  border: 2px solid #55b5ef;
+  border-radius: 999px;
+  background: #fff;
+  color: #55b5ef;
+  font: 600 max(14px, calc(var(--u) * 19)) 'Poppins', sans-serif;
+  cursor: pointer;
+}
+.pf-btn-ganti:hover { background: #eef8fd; }
+.pf-modal-garis { position: absolute; top: calc(var(--u) * 149); left: calc(var(--u) * -10); right: calc(var(--u) * -10); margin: 0; border: 0; border-top: 1px solid #dfe5ea; }
+
+/* [9] KEADAAN MENYIMPAN: spinner + teks */
+.pf-modal-proses { height: calc(var(--u) * 190); box-sizing: border-box; padding-top: calc(var(--u) * 38); display: flex; flex-direction: column; align-items: center; }
+.pf-modal-proses p { margin: calc(var(--u) * 28) 0 0; font-size: max(16px, calc(var(--u) * 22)); line-height: calc(var(--u) * 33); color: #404040; }
+.pf-spinner {
+  display: inline-block;
+  width: calc(var(--u) * 28);
+  height: calc(var(--u) * 28);
+  min-width: 18px;
+  min-height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pf-putar 0.8s linear infinite;
+}
+.pf-spinner-besar { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 36px; min-height: 36px; border-color: #bfe3f9; border-top-color: #55b5ef; }
+@keyframes pf-putar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pf-spinner { animation-duration: 2.4s; } }
+
+/* [10] TOMBOL BATAL & SIMPAN */
+.pf-modal-aksi { display: flex; gap: calc(var(--u) * 21); }
+.pf-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 14);
+  height: max(44px, calc(var(--u) * 55));
+  border-radius: calc(var(--u) * 24);
+  font: 600 max(15px, calc(var(--u) * 20)) 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pf-btn-batal { background: #fff; border: calc(var(--u) * 3) solid #e7eef3; color: #858585; }
+.pf-btn-batal:hover { background: #f5f9fc; }
+.pf-btn-simpan { background: #55b5ef; border: 0; color: #fff; }
+.pf-btn-simpan:hover:not(:disabled) { background: #3ea4e3; }
+.pf-btn-simpan.memuat, .pf-btn-simpan:disabled { background: #6ec3f4; cursor: progress; }
+
+/* [11] NOTIFIKASI BERHASIL / GAGAL (kanan-bawah) */
+.pf-toast {
+  position: fixed;
+  right: calc(var(--u) * 30);
+  bottom: calc(var(--u) * 30);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 26);
+  max-width: calc(100vw - 24px);
+  min-height: calc(var(--u) * 141);
+  padding: calc(var(--u) * 20) calc(var(--u) * 43) calc(var(--u) * 20) calc(var(--u) * 40);
+  background: #fff;
+  border-radius: calc(var(--u) * 28);
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 28) rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  animation: pf-masuk 0.25s ease-out;
+}
+@keyframes pf-masuk { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.pf-toast-bar { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--u) * 10); }
+.pf-toast-ok .pf-toast-bar { background: #15803d; }
+.pf-toast-gagal .pf-toast-bar { background: #dc2626; }
+.pf-toast-ikon { flex: none; display: grid; place-items: center; width: max(48px, calc(var(--u) * 100)); height: max(48px, calc(var(--u) * 100)); border-radius: 50%; color: #fff; }
+.pf-toast-ok .pf-toast-ikon { background: #15803d; }
+.pf-toast-gagal .pf-toast-ikon { background: #dc2626; }
+.pf-toast-ikon svg { width: 52%; height: 52%; }
+.pf-toast-teks { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pf-toast-teks strong { font-size: max(15px, calc(var(--u) * 26)); font-weight: 700; line-height: 1.35; color: #404040; }
+.pf-toast-teks span { font-size: max(13px, calc(var(--u) * 15)); color: #858585; }
+
+/* [12] LAYAR KECIL: foto di atas, informasi di bawah */
+@media (max-width: 900px) {
+  .pf-card { flex-direction: column; align-items: center; padding: 28px 20px; }
+  .pf-garis { width: 100%; height: 2px; margin: 24px 0; }
+  .pf-info { width: 100%; align-self: stretch; }
+  .pf-baris { grid-template-columns: minmax(78px, 120px) minmax(0, 1fr); }
+  .pf-modal-file { gap: 12px; }
+  .pf-modal-file-ikon { width: 44px; height: 44px; }
+  .pf-btn-ganti { min-width: 0; padding: 0 12px; }
+  .pf-toast { right: 12px; bottom: 12px; }
+}
+
+/* ============================================================
+   TOP BAR — dipakai bersama halaman profil
+   ============================================================ */
+/* [T1] Avatar berupa foto (bila ada foto_url) */
+.sd-avatar { overflow: hidden; }
+.sd-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* [T2] Item menu netral ("Profil Mahasiswa"); "Keluar" tetap merah */
+.sd-user-menu-item.netral { color: #404040; text-decoration: none; }
+.sd-user-menu-item.netral:hover { background: #eef8fd; }

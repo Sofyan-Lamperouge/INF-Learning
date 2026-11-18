@@ -17,6 +17,7 @@ import DashboardMahasiswaWireframePage from "./pages/mahasiswa/DashboardMahasisw
 import MateriMahasiswaPage from "./pages/mahasiswa/MateriMahasiswaPage.jsx";
 import KuisMahasiswaPage from "./pages/mahasiswa/KuisMahasiswaPage.jsx";
 import BacaMateriPage from "./pages/mahasiswa/BacaMateriPage.jsx";
+import ProfilMahasiswaPage from "./pages/mahasiswa/ProfilMahasiswaPage.jsx";
 
 export default function App() {
   return (
@@ -129,6 +130,15 @@ export default function App() {
         element={
           <ProtectedRoute>
             <KuisMahasiswaPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profil"
+        element={
+          <ProtectedRoute>
+            <ProfilMahasiswaPage />
           </ProtectedRoute>
         }
       />
