@@ -1,0 +1,49 @@
+$kind: http-request
+url: "{{base_url}}/kontak-admin/whatsapp"
+method: GET
+auth:
+  type: bearer
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code 401 Unauthorized\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Pesan error menunjukkan token tidak tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \    pm.expect(response.detail).to.equal(\"Token tidak ada\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Header autentikasi Bearer tersedia\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.response.headers.get(\"WWW-Authenticate\")\r
+
+      \    ).to.equal(\"Bearer\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/KADM-02-Kontak Admin Tanpa Token.resources/examples
+order: 2000

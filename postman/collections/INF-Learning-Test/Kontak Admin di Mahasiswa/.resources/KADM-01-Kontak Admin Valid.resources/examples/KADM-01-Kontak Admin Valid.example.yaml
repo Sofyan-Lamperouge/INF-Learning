@@ -1,0 +1,30 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/kontak-admin/whatsapp?topik=akun&pesan=Saya%20mengalami%20masalah%20saat%20login"
+  method: GET
+  queryParams:
+    topik: akun
+    pesan: Saya%20mengalami%20masalah%20saat%20login
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Tue, 17 Nov 2026 08:51:46 GMT
+    server: railway-hikari
+    x-railway-request-id: mg0IMhsgQdOj4K2fjq4OvQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "nomor": "6283823589038",
+        "nomor_tampil": "+62 838-2358-9038",
+        "pesan": "Halo Admin INF-Learning, saya KURUMI TOKISAKI (NIM 2488010099, angkatan 2024).\nTopik: Masalah akun atau login\n\nSaya mengalami masalah saat login",
+        "tautan": "https://wa.me/6283823589038?text=Halo%20Admin%20INF-Learning%2C%20saya%20KURUMI%20TOKISAKI%20%28NIM%202488010099%2C%20angkatan%202024%29.%0ATopik%3A%20Masalah%20akun%20atau%20login%0A%0ASaya%20mengalami%20masalah%20saat%20login"
+      }
+order: 1000
