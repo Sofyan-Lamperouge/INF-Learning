@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     # Batas ukuran file upload (MB). Disamakan dengan batas di frontend.
     MAX_UPLOAD_MB: int = 10
+    # Pratinjau PPT/Word/Excel lewat viewer Office Online (url_pratinjau di respons materi).
+    # Set false untuk mematikannya; FE lalu hanya menampilkan tombol unduh untuk file Office.
+    PRATINJAU_OFFICE_AKTIF: bool = True
     # Batas ukuran foto profil (MB).
     MAX_FOTO_MB: int = 2
 
