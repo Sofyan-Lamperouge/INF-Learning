@@ -148,12 +148,18 @@ export function AuthProvider({
     );
 
 
+  // Perbarui sebagian data pengguna (mis. foto_url setelah ganti foto) tanpa login ulang.
+  const perbaruiUser = useCallback((patch) => {
+    setUser((lama) => (lama ? { ...lama, ...patch } : lama));
+  }, []);
+
   const value = useMemo(
     () => ({
       token,
       role,
       user,
       loading,
+      perbaruiUser,
 
       isAuthenticated:
         Boolean(
@@ -166,6 +172,7 @@ export function AuthProvider({
     }),
 
     [
+      perbaruiUser,
       token,
       role,
       user,

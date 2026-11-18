@@ -1,20 +1,29 @@
 // src/components/student/StudentTopBar.jsx
 // Top bar mahasiswa: logo | menu (Beranda, Materi, Kuis) | kartu pengguna.
 
-import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth.js";
-import { ChevronDownIcon, LogoutIcon, ProfileIcon } from "./StudentIcons.jsx";
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.js';
+import { ChevronDownIcon, LogoutIcon } from './StudentIcons.jsx';
 
+// Ikon orang untuk item menu "Profil Mahasiswa"
+const UserIcon = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+  </svg>
+);
 
 const NAV_ITEMS = [
-  { to: "/beranda", label: "Beranda" },
-  { to: "/materi", label: "Materi" },
-  { to: "/kuis", label: "Kuis" },
+  { to: '/beranda', label: 'Beranda' },
+  { to: '/materi', label: 'Materi' },
+  { to: '/kuis', label: 'Kuis' },
 ];
 
 export default function StudentTopBar() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [fotoRusak, setFotoRusak] = useState(false);
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const userRef = useRef(null);
@@ -27,23 +36,23 @@ export default function StudentTopBar() {
       }
     }
     function handleKeyDown(event) {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === 'Escape') setMenuOpen(false);
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
   function handleLogout() {
     logout();
-    navigate("/login", { replace: true });
+    navigate('/', { replace: true });
   }
 
-  const nama = user?.nama || "Mahasiswa";
+  const nama = user?.nama || 'Mahasiswa';
   const inisial = nama.trim().charAt(0).toUpperCase();
 
   return (
@@ -58,7 +67,9 @@ export default function StudentTopBar() {
             key={item.to}
             to={item.to}
             end
-            className={({ isActive }) => (isActive ? "active" : undefined)}
+            className={({ isActive }) =>
+              isActive || (item.to === '/beranda' && pathname === '/profil') ? 'active' : undefined
+            }
           >
             {item.label}
           </NavLink>
@@ -74,7 +85,11 @@ export default function StudentTopBar() {
           onClick={() => setMenuOpen((open) => !open)}
         >
           <span className="sd-avatar" aria-hidden="true">
-            {user?.foto ? <img src={user.foto} alt="" /> : inisial}
+            {user?.foto_url && !fotoRusak ? (
+              <img src={user.foto_url} alt="" onError={() => setFotoRusak(true)} />
+            ) : (
+              inisial
+            )}
           </span>
 
           <span className="sd-user-info">
@@ -83,29 +98,25 @@ export default function StudentTopBar() {
           </span>
 
           <ChevronDownIcon
-            className={`sd-user-chevron${menuOpen ? " is-open" : ""}`}
+            className={`sd-user-chevron${menuOpen ? ' is-open' : ''}`}
           />
         </button>
 
         {menuOpen && (
           <div className="sd-user-menu" role="menu">
+            <Link
+              to="/profil"
+              role="menuitem"
+              className="sd-user-menu-item netral"
+              onClick={() => setMenuOpen(false)}
+            >
+              <UserIcon />
+              Profil Mahasiswa
+            </Link>
             <button
               type="button"
               role="menuitem"
               className="sd-user-menu-item"
-              onClick={() => {
-                setMenuOpen(false);
-                // TODO: navigate('/profil') kalau halaman profil sudah dibuat
-              }}
-            >
-              <ProfileIcon />
-              Profil
-            </button>
-
-            <button
-              type="button"
-              role="menuitem"
-              className="sd-user-menu-item sd-user-menu-item--danger"
               onClick={handleLogout}
             >
               <LogoutIcon />
