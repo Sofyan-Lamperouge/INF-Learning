@@ -57,7 +57,7 @@ export default function MateriTable({
                     {materi.judul}
                   </td>
                   <td className="sm-td-file sm-hide-sm">
-                    {namaFile(materi.url, materi.jenis)}
+                    {namaFile(materi.url, materi.jenis, materi.nama_file)}
                   </td>
                   <td className="sm-td-tgl sm-hide-xs">
                     <CalendarIcon />

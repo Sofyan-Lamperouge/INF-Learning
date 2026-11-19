@@ -30,6 +30,7 @@ export function formatTanggal(iso) {
 
 // Backend menyimpan file dengan awalan uuid (32 hex + "_"); dibuang agar nama asli tampil.
 export function namaFile(url, jenis) {
+  if (namaAsli) return namaAsli; 
   if (!url) return jenis ? `File ${String(jenis).toUpperCase()}` : '-';
   try {
     const path = new URL(url, window.location.origin).pathname;

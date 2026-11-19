@@ -217,6 +217,15 @@ export default function KonfirmasiMateriPage() {
               Materi Berhasil Diunggah!
             </h2>
             <p className="modal-desc">
+              {savedMateri.nama_file && savedMateri.nama_file !== file.name && (
+                <>
+                  {" "}
+                  File disimpan sebagai <strong>
+                    {savedMateri.nama_file}
+                  </strong>{" "}
+                  karena nama file yang sama sudah ada.
+                </>
+              )}
               Materi “{savedMateri.judul || form.judul}” telah tersimpan di
               halaman materi.
             </p>
