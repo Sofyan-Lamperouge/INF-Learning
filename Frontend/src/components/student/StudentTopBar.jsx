@@ -4,15 +4,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
-import { ChevronDownIcon, LogoutIcon } from './StudentIcons.jsx';
-
-// Ikon orang untuk item menu "Profil Mahasiswa"
-const UserIcon = (p) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>
-    <circle cx="12" cy="8" r="4" />
-    <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
-  </svg>
-);
+import { ChevronDownIcon } from './StudentIcons.jsx';
+import BantuanModal from './bantuan/BantuanModal.jsx';
+import { InfoIcon, UsersIcon, LogoutDoorIcon } from './bantuan/BantuanIcons.jsx';
 
 const NAV_ITEMS = [
   { to: '/beranda', label: 'Beranda' },
@@ -26,6 +20,7 @@ export default function StudentTopBar() {
   const [fotoRusak, setFotoRusak] = useState(false);
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bantuanOpen, setBantuanOpen] = useState(false);
   const userRef = useRef(null);
 
   // Tutup menu pengguna saat klik di luar atau tekan Escape.
@@ -110,21 +105,35 @@ export default function StudentTopBar() {
               className="sd-user-menu-item netral"
               onClick={() => setMenuOpen(false)}
             >
-              <UserIcon />
-              Profil Mahasiswa
+              <UsersIcon />
+              Profil
             </Link>
+            <button
+              type="button"
+              role="menuitem"
+              className="sd-user-menu-item netral"
+              onClick={() => {
+                setMenuOpen(false);
+                setBantuanOpen(true);
+              }}
+            >
+              <InfoIcon />
+              Bantuan
+            </button>
             <button
               type="button"
               role="menuitem"
               className="sd-user-menu-item"
               onClick={handleLogout}
             >
-              <LogoutIcon />
+              <LogoutDoorIcon />
               Keluar
             </button>
           </div>
         )}
       </div>
+
+      {bantuanOpen && <BantuanModal onTutup={() => setBantuanOpen(false)} />}
     </header>
   );
 }

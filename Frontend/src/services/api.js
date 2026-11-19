@@ -1,35 +1,51 @@
 import { sesi } from "../utils/storage.js";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const REQUEST_TIMEOUT_MS = 15_000;
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/registrasi"];
 
+// Kode untuk kegagalan di level jaringan (status 0).
+// Membedakan penyebabnya penting: pada TIMEOUT, server bisa saja sudah
+// memproses permintaan sebelum balasannya sampai, sedangkan pada OFFLINE
+// permintaan hampir pasti tidak pernah sampai ke server.
+export const NETWORK_CODE = {
+  TIMEOUT: "TIMEOUT",
+  OFFLINE: "OFFLINE",
+  NETWORK: "NETWORK",
+  ABORTED: "ABORTED",
+};
+
 export class ApiError extends Error {
-  constructor(message, status = 0, details = null) {
+  constructor(message, status = 0, details = null, code = "") {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.details = details;
+    this.code = code;
   }
 }
 
 export async function request(path, options = {}) {
+  // `timeout` adalah opsi milik kita, jangan diteruskan ke fetch.
+  const { timeout = REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
+
   const isPublic = PUBLIC_PATHS.includes(path);
   const token = isPublic ? null : sesi.getItem("token");
 
   const headers = {
-    ...(typeof options.body === "string"
+    ...(typeof fetchOptions.body === "string"
       ? { "Content-Type": "application/json" }
       : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
+    ...fetchOptions.headers,
   };
 
   const controller = new AbortController();
   let timedOut = false;
 
   // Hormati AbortSignal dari pemanggil jika tersedia.
-  const externalSignal = options.signal;
+  const externalSignal = fetchOptions.signal;
   const abortFromExternalSignal = () => controller.abort();
 
   if (externalSignal?.aborted) {
@@ -41,22 +57,33 @@ export async function request(path, options = {}) {
   const timeoutId = window.setTimeout(() => {
     timedOut = true;
     controller.abort();
-  }, REQUEST_TIMEOUT_MS);
+  }, timeout);
 
   let response;
 
   try {
     response = await fetch(`${BASE_URL}${path}`, {
-      ...options,
+      ...fetchOptions,
       headers,
       signal: controller.signal,
     });
   } catch (error) {
+    // Dibatalkan oleh pemanggil (mis. komponen di-unmount), bukan masalah jaringan.
+    if (externalSignal?.aborted && !timedOut) {
+      throw new ApiError(
+        "Permintaan dibatalkan.",
+        0,
+        error,
+        NETWORK_CODE.ABORTED,
+      );
+    }
+
     if (timedOut) {
       throw new ApiError(
         "Koneksi terlalu lambat. Periksa jaringan Anda, lalu coba lagi.",
         0,
         error,
+        NETWORK_CODE.TIMEOUT,
       );
     }
 
@@ -65,6 +92,7 @@ export async function request(path, options = {}) {
         "Koneksi internet terputus. Periksa jaringan Anda, lalu coba lagi.",
         0,
         error,
+        NETWORK_CODE.OFFLINE,
       );
     }
 
@@ -72,6 +100,7 @@ export async function request(path, options = {}) {
       "Gagal terhubung ke server. Periksa koneksi jaringan Anda dan pastikan backend tersedia.",
       0,
       error,
+      NETWORK_CODE.NETWORK,
     );
   } finally {
     window.clearTimeout(timeoutId);
@@ -131,10 +160,12 @@ export const api = {
     });
   },
 
+  // Upload file: beri waktu lebih panjang daripada request JSON biasa.
   postFormData(path, body) {
     return request(path, {
       method: "POST",
       body,
+      timeout: 60_000,
     });
   },
 
@@ -149,6 +180,7 @@ export const api = {
     return request(path, {
       method: "PUT",
       body,
+      timeout: 60_000,
     });
   },
 

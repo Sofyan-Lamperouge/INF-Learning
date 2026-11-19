@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
 import MateriSkeleton from "../../components/skeletons/MateriSkeleton.jsx";
@@ -6,6 +6,7 @@ import ErrorMessage from "../../components/common/ErrorMessage.jsx";
 import EditMateriModal from "../../components/dashboard/EditMateriModal.jsx";
 import DeleteMateriModal from "../../components/dashboard/DeleteMateriModal.jsx";
 import { getMateriList, deleteMateri } from "../../services/materiService.js";
+import { NETWORK_CODE } from "../../services/api.js";
 
 const PAGE_SIZE = 5;
 
@@ -41,6 +42,20 @@ export default function MateriPage() {
   const [page, setPage] = useState(1);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+  // Kunci yang berubah seketika (tidak menunggu render) agar klik ganda
+  // pada tombol Hapus tidak mengirim dua permintaan.
+  const deleteLockRef = useRef(false);
+
+  // Saat koneksi kembali, sinkronkan daftar dengan data di server.
+  // PENTING: effect ini berdiri sendiri. Hook tidak boleh dipanggil di dalam
+  // hook lain (useEffect di dalam useEffect membuat halaman menjadi kosong).
+  useEffect(() => {
+    const muatUlang = () => setReloadKey((k) => k + 1);
+    window.addEventListener("online", muatUlang);
+    return () => window.removeEventListener("online", muatUlang);
+  }, []);
+
+  // Muat daftar materi setiap filter, halaman, atau reloadKey berubah.
   useEffect(() => {
     let active = true;
 
@@ -79,19 +94,52 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
+  function selesaiDihapus() {
+    setDeleteSuccess(true);
+    if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
+    setReloadKey((k) => k + 1);
+  }
+
   async function handleDelete() {
-    if (!deletingMateri || deleting) return;
+    if (!deletingMateri || deleteLockRef.current) return;
+
+    // Sedang offline: jangan kirim permintaan apa pun.
+    // Dengan begini materi pasti tetap utuh di server.
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setDeleteError(
+        "Koneksi internet terputus. Materi belum dihapus. Sambungkan kembali jaringan Anda, lalu coba lagi.",
+      );
+      return;
+    }
+
+    deleteLockRef.current = true;
     setDeleting(true);
     setDeleteError("");
+
     try {
       await deleteMateri(deletingMateri.id);
-      setDeleteSuccess(true);
-
-      if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
-      setReloadKey((k) => k + 1);
+      selesaiDihapus();
     } catch (err) {
-      setDeleteError(err.message || "Materi gagal dihapus. Silakan coba lagi.");
+      if (err.status === 404) {
+        // Materi sudah tidak ada di server. Biasanya permintaan sebelumnya sempat
+        // berhasil, tetapi balasannya hilang saat koneksi putus.
+        selesaiDihapus();
+      } else if (err.code === NETWORK_CODE.TIMEOUT) {
+        // Hasil tidak pasti: server mungkin sudah menghapusnya sebelum balasan tiba.
+        setDeleteError(
+          "Koneksi terlalu lambat sehingga hasil penghapusan belum dapat dipastikan. Tutup dialog ini untuk menyegarkan daftar, lalu periksa apakah materi masih ada.",
+        );
+      } else if (err.status === 0) {
+        // Koneksi putus saat permintaan berjalan: dialog tetap terbuka,
+        // materi tetap di daftar.
+        setDeleteError(`${err.message} Materi belum dihapus.`);
+      } else {
+        setDeleteError(
+          err.message || "Materi gagal dihapus. Silakan coba lagi.",
+        );
+      }
     } finally {
+      deleteLockRef.current = false;
       setDeleting(false);
     }
   }
@@ -487,11 +535,16 @@ export default function MateriPage() {
           deleting={deleting}
           error={deleteError}
           success={deleteSuccess}
-          onCancel={() => {
-            if (!deleting) setDeletingMateri(null);
-          }}
           onConfirm={handleDelete}
+          onCancel={() => {
+            if (deleting) return;
+            // Setelah gagal karena koneksi, segarkan daftar agar sesuai dengan server.
+            if (deleteError) setReloadKey((k) => k + 1);
+            setDeletingMateri(null);
+            setDeleteSuccess(false);
+          }}
           onDone={() => {
+            // Popup sukses menutup sendiri setelah beberapa detik.
             setDeletingMateri(null);
             setDeleteSuccess(false);
           }}
