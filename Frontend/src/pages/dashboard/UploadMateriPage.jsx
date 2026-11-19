@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
+import {
+  isiFileSesuai,
+  PESAN_FILE_PALSU,
+} from "../../utils/fileSignature.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx", "xlsx"];
+const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx"];
 
 export default function UploadMateriPage() {
   const navigate = useNavigate();
@@ -14,6 +18,8 @@ export default function UploadMateriPage() {
   );
   const [file, setFile] = useState(() => state?.file ?? null);
   const [error, setError] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
+  const fileInputRef = useRef(null);
 
   const updateForm = (event) => {
     setForm((current) => ({
@@ -34,7 +40,7 @@ export default function UploadMateriPage() {
     if (!ALLOWED_EXTENSIONS.includes(extension)) {
       setFile(null);
       event.target.value = "";
-      setError("Format file harus PDF, DOCX, PPTX, atau XLSX.");
+      setError("Format file harus PDF, DOCX, atau PPTX.");
       return;
     }
     if (selected.size > MAX_FILE_SIZE) {
@@ -46,12 +52,36 @@ export default function UploadMateriPage() {
     setFile(selected);
   };
 
-  const handleContinue = (event) => {
+  const handleContinue = async (event) => {
     event.preventDefault();
+    if (isChecking) return;
     if (!file) {
       setError("Pilih file materi terlebih dahulu.");
       return;
     }
+
+    // Periksa isi asli file (bukan hanya ekstensi namanya).
+    // Ini pemeriksaan cepat di browser; backend tetap memeriksa lagi saat Simpan.
+    setIsChecking(true);
+    try {
+      const extension = file.name.split(".").pop()?.toLowerCase();
+      const sesuai = await isiFileSesuai(file, extension);
+      if (!sesuai) {
+        setFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        setError(PESAN_FILE_PALSU);
+        return;
+      }
+    } catch {
+      // File tidak terbaca (mis. dihapus/dipindah setelah dipilih)
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setError("File tidak dapat dibaca. Silakan pilih file lagi.");
+      return;
+    } finally {
+      setIsChecking(false);
+    }
+
     navigate("/dashboard/materi/konfirmasi", { state: { form, file } });
   };
 
@@ -207,10 +237,11 @@ export default function UploadMateriPage() {
                   </label>
                   <div className="file-upload-wrapper">
                     <input
+                      ref={fileInputRef}
                       type="file"
                       id="file-upload"
                       name="file"
-                      accept=".pdf,.docx,.pptx,.xlsx"
+                      accept=".pdf,.docx,.pptx"
                       onChange={handleFileChange}
                       style={{ display: "none" }}
                     />
@@ -226,7 +257,7 @@ export default function UploadMateriPage() {
                     </label>
                   </div>
                   <p className="file-hint">
-                    Format: PDF, DOCX, PPTX, XLSX | Maks. 10 MB
+                    Format: PDF, DOCX, PPTX | Maks. 10 MB
                   </p>
                 </div>
               </div>
@@ -242,8 +273,12 @@ export default function UploadMateriPage() {
             <Link to="/dashboard/materi" className="btn-kembali">
               Batal
             </Link>
-            <button type="submit" className="btn-lanjutkan">
-              Lanjutkan
+            <button
+              type="submit"
+              className="btn-lanjutkan"
+              disabled={isChecking}
+            >
+              {isChecking ? "Memeriksa file..." : "Lanjutkan"}
             </button>
           </div>
         </form>
