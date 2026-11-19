@@ -10835,6 +10835,24 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .bt-pesan-edit::placeholder { color: #a3adb7; }
 .bt-pesan-hitung { display: block; margin-top: calc(var(--u) * 4); text-align: right; font-size: max(11px, calc(var(--u) * 16)); color: #9aa5af; }
 
+/* [B7c] PILIHAN TOPIK (Akun | Materi | Lainnya) */
+.bt-topik { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--u) * 10); margin-bottom: calc(var(--u) * 12); }
+.bt-topik-judul { font-size: max(13px, calc(var(--u) * 20)); line-height: calc(var(--u) * 30); color: #858585; }
+.bt-topik-pil {
+  padding: calc(var(--u) * 4) calc(var(--u) * 18);
+  min-height: 30px;
+  border: 1px solid #cfe3f1;
+  border-radius: 999px;
+  background: #ffffff;
+  font: 500 max(13px, calc(var(--u) * 19)) 'Poppins', sans-serif;
+  color: #404040;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bt-topik-pil:hover { border-color: #4aa8e8; }
+.bt-topik-pil:focus-visible { outline: 2px solid #55b5ef; outline-offset: 2px; }
+.bt-topik-pil.aktif { background: #1f6fa8; border-color: #1f6fa8; color: #ffffff; }
+
 /* [B8] TOMBOL HUBUNGI ADMIN (hijau WhatsApp) + catatan */
 .bt-btn-wa {
   display: flex;

@@ -22,3 +22,11 @@ export const FAQ = [
 
 // Kalimat awal pesan WhatsApp (mahasiswa tinggal melengkapi di WhatsApp)
 export const PESAN_AWAL = 'Saya ingin bertanya tentang ...';
+
+// Pilihan topik. `kunci` harus sama dengan yang diterima backend (akun | materi | lainnya).
+// `label` = teks di tombol, `teks` = tulisan yang masuk ke pesan WhatsApp (samakan dengan TOPIK di kontak_service.py).
+export const TOPIK = [
+  { kunci: 'akun', label: 'Akun', teks: 'Masalah akun atau login' },
+  { kunci: 'materi', label: 'Materi', teks: 'Kendala materi kuliah' },
+  { kunci: 'lainnya', label: 'Lainnya', teks: 'Pertanyaan lainnya' },
+];

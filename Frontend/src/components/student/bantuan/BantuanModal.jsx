@@ -2,7 +2,7 @@
 // Pop up "Bantuan": FAQ (accordion) di kiri, kartu "Masih butuh bantuan?" + tombol WhatsApp di kanan.
 import { useEffect, useId, useRef, useState } from 'react';
 import { CloseIcon, ChevronIcon, InfoIcon, WhatsAppIcon } from './BantuanIcons.jsx';
-import { FAQ, PESAN_AWAL } from './faqData.js';
+import { FAQ, PESAN_AWAL, TOPIK } from './faqData.js';
 import useKontakAdmin from './useKontakAdmin.js';
 
 function FaqItem({ item, terbuka, onToggle }) {
@@ -25,16 +25,15 @@ function FaqItem({ item, terbuka, onToggle }) {
 const MAKS_PESAN = 500;
 const ISI_AWAL = PESAN_AWAL.replace(/\s*\.\.\.$/, ' ');      // "Saya ingin bertanya tentang "
 
-// Bagian pesan yang tetap (salam + identitas + topik) = pesan dari server tanpa isi awal di ujungnya.
-function bagianTetap(pesanServer) {
-  return pesanServer.endsWith(PESAN_AWAL)
-    ? pesanServer.slice(0, -PESAN_AWAL.length)
-    : `${pesanServer}\n\n`;
+// Baris pertama pesan dari server (salam + nama + NIM + angkatan). Ini tetap, tidak bisa diedit.
+function barisIdentitas(pesanServer) {
+  return pesanServer.split('\n')[0].trim();
 }
 
 export default function BantuanModal({ onTutup }) {
   const dialog = useRef(null);
   const [isi, setIsi] = useState(ISI_AWAL);
+  const [topik, setTopik] = useState('lainnya');
   const [terbuka, setTerbuka] = useState(null); // id FAQ yang terbuka (satu saja)
   const { status, kontak, galat, muatUlang } = useKontakAdmin(true);
 
@@ -53,9 +52,10 @@ export default function BantuanModal({ onTutup }) {
 
   const teksIsi = isi.trim();
   const siap = status === 'siap' && kontak?.nomor && teksIsi.length > 0;
-  const tautan = siap
-    ? `https://wa.me/${kontak.nomor}?text=${encodeURIComponent(bagianTetap(kontak.pesan) + teksIsi)}`
-    : '';
+  const teksTopik = (TOPIK.find((t) => t.kunci === topik) || TOPIK[2]).teks;
+  const identitas = siap || status === 'siap' ? barisIdentitas(kontak.pesan) : '';
+  const pesanAkhir = `${identitas}\nTopik: ${teksTopik}\n\n${teksIsi}`;
+  const tautan = siap ? `https://wa.me/${kontak.nomor}?text=${encodeURIComponent(pesanAkhir)}` : '';
 
   return (
     <div className="bt-overlay" onMouseDown={(e) => e.target === e.currentTarget && onTutup()}>
@@ -94,7 +94,22 @@ export default function BantuanModal({ onTutup }) {
               {status === 'memuat' && <p className="bt-pesan-isi redup">Memuat pesan...</p>}
               {status === 'siap' && (
                 <>
-                  <p className="bt-pesan-isi bt-pesan-tetap">{bagianTetap(kontak.pesan).trim()}</p>
+                  <p className="bt-pesan-isi bt-pesan-tetap">{identitas}</p>
+                  <div className="bt-topik" role="radiogroup" aria-label="Topik pesan">
+                    <span className="bt-topik-judul">Topik:</span>
+                    {TOPIK.map((t) => (
+                      <button
+                        key={t.kunci}
+                        type="button"
+                        role="radio"
+                        aria-checked={topik === t.kunci}
+                        className={`bt-topik-pil${topik === t.kunci ? ' aktif' : ''}`}
+                        onClick={() => setTopik(t.kunci)}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
                   <textarea
                     className="bt-pesan-edit"
                     value={isi}
