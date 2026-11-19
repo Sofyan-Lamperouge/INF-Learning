@@ -8,6 +8,7 @@ import contextlib
 import os
 import re
 import uuid
+import zipfile
 from collections.abc import Callable
 from urllib.parse import urlparse
 
@@ -15,8 +16,59 @@ from fastapi import HTTPException, UploadFile, status
 
 from app.core.config import settings
 
-EKSTENSI_DIIZINKAN = {".pdf", ".docx", ".pptx", ".xlsx"}
+EKSTENSI_DIIZINKAN = {".pdf", ".docx", ".pptx"}  # Excel (.xlsx) tidak diizinkan
 _CHUNK = 1024 * 1024  # baca 1 MB per putaran agar file besar tidak memenuhi memori
+
+
+_PESAN_PALSU = (
+    "Isi file tidak sesuai dengan ekstensinya. "
+    "File ditolak karena kemungkinan telah dimanipulasi"
+)
+
+# DOCX/PPTX sebenarnya arsip ZIP; tiap jenis punya bagian wajib sendiri.
+_BAGIAN_WAJIB = {
+    ".docx": "word/document.xml",
+    ".pptx": "ppt/presentation.xml",
+}
+_MAX_ENTRI_ZIP = 5000
+_MAX_UKURAN_ZIP = 300 * 1024 * 1024  # total isi setelah diekstrak (cegah zip bomb)
+
+
+def _file_palsu() -> HTTPException:
+    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=_PESAN_PALSU)
+
+
+def cek_isi_awal(file: UploadFile, ext: str) -> None:
+    """Cek cepat signature (magic bytes) SEBELUM file ditulis ke disk.
+
+    Content-Type kiriman klien tidak dipercaya; yang dilihat adalah isi file.
+    """
+    awal = file.file.read(1024)
+    file.file.seek(0)
+    if not awal:
+        return  # file kosong ditangani simpan_upload ("File kosong")
+
+    if ext == ".pdf":
+        if b"%PDF-" not in awal:
+            raise _file_palsu()
+    elif not awal.startswith(b"PK\x03\x04"):  # docx/pptx harus berupa ZIP
+        raise _file_palsu()
+
+
+def cek_isi_penuh(lokasi: str, ext: str) -> None:
+    """Cek struktur file setelah tersimpan: jenis aslinya harus cocok dengan ekstensi."""
+    if ext == ".pdf":
+        return  # signature PDF sudah diperiksa di cek_isi_awal
+    try:
+        with zipfile.ZipFile(lokasi) as arsip:
+            info = arsip.infolist()
+            if len(info) > _MAX_ENTRI_ZIP or sum(i.file_size for i in info) > _MAX_UKURAN_ZIP:
+                raise _file_palsu()
+            nama = {i.filename for i in info}
+            if "[Content_Types].xml" not in nama or _BAGIAN_WAJIB[ext] not in nama:
+                raise _file_palsu()
+    except zipfile.BadZipFile:
+        raise _file_palsu() from None
 
 
 def cek_ekstensi(file: UploadFile) -> str:
@@ -27,6 +79,7 @@ def cek_ekstensi(file: UploadFile) -> str:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Format file tidak diizinkan",
         )
+    cek_isi_awal(file, ext)  # tolak ekstensi palsu sebelum menyentuh disk
     return ext
 
 
@@ -72,8 +125,9 @@ def simpan_upload(file: UploadFile) -> tuple[str, str]:
                 out.write(chunk)
         if ukuran == 0:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File kosong")
+        cek_isi_penuh(lokasi, ext)  # file sudah tertutup; periksa struktur aslinya
     except BaseException:
-        _hapus_lokasi(lokasi)
+        _hapus_lokasi(lokasi)  # file palsu langsung dibuang, tidak ada file yatim
         raise
 
     url = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/uploads/{nama}"
