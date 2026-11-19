@@ -45,6 +45,14 @@ def count_by_url(db: Session, url: str) -> int:
     return db.query(Materi).filter(Materi.url == url).count()
 
 
+def nama_file_ada(db: Session, nama: str, *, kecuali_id: int | None = None) -> bool:
+    """Apakah nama file ini sudah dipakai materi lain (tanpa membedakan huruf besar/kecil)."""
+    query = db.query(Materi.id).filter(func.lower(Materi.nama_file) == nama.lower())
+    if kecuali_id is not None:
+        query = query.filter(Materi.id != kecuali_id)
+    return query.first() is not None
+
+
 def kategori_semester(db: Session, *, status: str | None = None) -> list[tuple[int, int, int]]:
     """Return [(semester, jumlah materi, jumlah mata kuliah berbeda)] untuk semester yang berisi."""
     query = db.query(
@@ -84,6 +92,7 @@ def create(
     url: str,
     dibuat_oleh: int | None,
     status: str = "terbit",
+    nama_file: str | None = None,
 ) -> Materi:
     materi = Materi(
         judul=judul,
@@ -92,6 +101,7 @@ def create(
         semester=semester,
         jenis=jenis,
         url=url,
+        nama_file=nama_file,
         dibuat_oleh=dibuat_oleh,
         status=status,
     )

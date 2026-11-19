@@ -1,1286 +1,1937 @@
-# API Contract — INF-Learning
-
-Dokumen ini adalah acuan resmi antara **Backend (FastAPI)** dan **Frontend (React)**.
-Semua contoh respons di bawah diambil dari pemanggilan nyata ke backend, bukan karangan.
+# Kontrak API INF-Learning (Backend)
 
 | | |
 |---|---|
-| Versi API | `v1` |
-| Terakhir diperbarui | 31 Oktober 2026 |
-| Fitur yang tercakup | Autentikasi, Manajemen Mahasiswa (admin), Materi, Dashboard Admin, Dashboard Mahasiswa, Progres Belajar, Kategori Materi (menu Materi Kuliah), Kelola Mahasiswa |
-| Fitur yang **belum** ada | Kuis (dinonaktifkan sementara), refresh token, lupa/ubah password |
-| Dokumentasi interaktif | `GET {HOST}/docs` (Swagger UI) dan `{HOST}/redoc` |
+| Versi API | 0.1.0 |
+| Dibuat | 19-11-2026 |
+| Base URL (production) | `https://inf-learning-production.up.railway.app` |
+| Base URL (lokal) | `http://localhost:8000` |
+| Prefix | `/api/v1` |
+| Dokumentasi interaktif | `/docs` (Swagger UI) dan `/openapi.json` selalu mengikuti versi yang sedang berjalan |
 
----
+> Dokumen ini dibuat otomatis dari kode backend terbaru: struktur dari OpenAPI, peran akses dan daftar error dari kode, dan contoh respons dari panggilan nyata ke aplikasi. Bila ada selisih dengan perilaku server, anggap server sebagai acuan dan laporkan ke tim backend.
 
-## Daftar Isi
+## 1. Ketentuan umum
 
-1. [Konvensi Umum](#1-konvensi-umum)
-2. [Ringkasan Endpoint](#2-ringkasan-endpoint)
-3. [Autentikasi](#3-autentikasi)
-4. [Manajemen Mahasiswa (Admin)](#4-manajemen-mahasiswa-admin)
-5. [Materi](#5-materi)
-6. [Dashboard Admin](#6-dashboard-admin)
-7. [Dashboard Mahasiswa & Progres Belajar](#7-dashboard-mahasiswa--progres-belajar)
-8. [Endpoint Utilitas](#8-endpoint-utilitas)
-9. [Kamus Data (Enum & Aturan)](#9-kamus-data-enum--aturan)
-10. [Panduan Integrasi Frontend](#10-panduan-integrasi-frontend)
-11. [Catatan Penting & Masalah yang Diketahui](#11-catatan-penting--masalah-yang-diketahui)
+### 1.1 Format
+- Data dikirim dan diterima sebagai **JSON UTF-8** (`Content-Type: application/json`). Endpoint upload memakai **`multipart/form-data`**.
+- **Waktu** (`dibuat_pada`, `diubah_pada`, dan sejenisnya) dalam **UTC tanpa penanda zona**, contoh `2026-11-19T07:32:33.326606`. FE harus menganggapnya UTC lalu menampilkannya sesuai zona pengguna (WIB = UTC+7).
+- **Paginasi** memakai query `page` (mulai 1) dan `limit`; respons daftar berbentuk `{ items, total, page, limit, total_pages }`.
 
----
+### 1.2 Autentikasi dan sesi
+1. Panggil `POST /api/v1/auth/login` dan simpan `access_token`.
+2. Kirim di setiap request yang butuh login: header `Authorization: Bearer <access_token>`.
+3. **Batas tidak aktif 20 menit.** Setiap request yang berhasil memperpanjang sesi. Bila tidak ada request selama 20 menit, request berikutnya ditolak **401** dan pengguna harus login ulang. Field `expires_in` pada respons login (detik) adalah lama tidak-aktif yang diizinkan (1200 detik), bisa dipakai FE untuk timer idle.
+4. **Batas umur mutlak 12 jam** sejak login, tidak diperpanjang oleh aktivitas.
+5. **Jangan** membuat polling otomatis ke API (mis. refresh data tiap menit): request itu dihitung sebagai aktivitas dan sesi tidak akan pernah habis.
+6. Logout: `POST /api/v1/auth/logout` menghapus sesi di server; token yang sama langsung tidak berlaku lagi.
+7. FE harus menangani **401** di semua endpoint dengan mengarahkan ke halaman login.
 
-## 1. Konvensi Umum
-
-### 1.1 Base URL
-
-| Lingkungan | Base URL |
+### 1.3 Peran akses
+| Peran | Keterangan |
 |---|---|
-| Lokal | `http://localhost:8000/api/v1` |
-| Production (Railway) | `https://<domain-backend>.up.railway.app/api/v1` |
+| Mahasiswa | Hanya melihat materi berstatus `terbit`; mengakses fitur khusus mahasiswa. |
+| Admin | Mengelola materi dan mahasiswa; melihat semua status materi. |
 
-Di frontend, simpan di environment variable `VITE_API_BASE_URL` (sudah memuat `/api/v1`, tanpa garis miring di akhir).
+Akun yang berstatus `nonaktif` ditolak **403** `Akun Anda nonaktif` pada setiap request, walau sesinya belum berakhir. Peran yang salah menghasilkan **403** `Anda tidak memiliki akses ke endpoint ini`.
 
-Endpoint di luar `/api/v1` hanya `GET /` dan `GET /health` (lihat [bagian 8](#8-endpoint-utilitas)).
-
-### 1.2 Autentikasi
-
-Semua endpoint **kecuali** `POST /auth/registrasi`, `POST /auth/login`, `GET /`, dan `GET /health` wajib membawa header:
-
+### 1.4 Format error
+Error biasa:
+```json
+{ "detail": "Pesan error dalam Bahasa Indonesia" }
 ```
-Authorization: Bearer <access_token>
+Error validasi (**422**), `loc` menunjuk field yang salah:
+```json
+{ "detail": [ { "type": "string_too_short", "loc": ["body", "kata_sandi"], "msg": "String should have at least 8 characters", "input": "abc" } ] }
 ```
 
-- Token didapat dari `POST /auth/login`.
-- Masa berlaku token default **15 menit** (`expires_in: 900` detik). **Belum ada refresh token**, jadi setelah kedaluwarsa pengguna harus login ulang.
-- Token berupa JWT (HS256). Isinya hanya `sub` (id pengguna) dan `exp`. Frontend **tidak boleh** mengandalkan isi token untuk peran. Ambil peran dari `pengguna.peran` pada respons login atau `GET /auth/me`.
-- Backend memeriksa status akun di database pada **setiap request**. Akun yang dinonaktifkan admin langsung ditolak (`403`) meski tokennya belum kedaluwarsa.
-- Autentikasi memakai header, **bukan cookie**. CORS dibatasi lewat environment variable `CORS_ORIGINS` di backend (daftar domain frontend dipisah koma; kosong atau `*` = semua origin), tanpa credentials.
-
-### 1.3 Format Request & Response
-
-| Aturan | Nilai |
+### 1.5 Aturan data
+| Data | Aturan |
 |---|---|
-| Format body | JSON (`Content-Type: application/json`), kecuali upload materi yang memakai `multipart/form-data` |
-| Nama field | `snake_case`, bahasa Indonesia (`nomor_induk`, `kata_sandi`, `dibuat_pada`) |
-| Nilai kosong | `null` (field selalu ada di respons, tidak dihilangkan) |
-| Tanggal & waktu | ISO 8601 **tanpa zona waktu**, contoh `2026-10-27T08:24:02.701333`. Nilainya **UTC**. Saat menampilkan, tambahkan `Z` sebelum diparse: `new Date(value + "Z")` |
-| Bahasa pesan error | Indonesia (khusus pesan buatan backend). Pesan validasi 422 berbahasa Inggris |
+| NIM | 10 digit dengan pola `2?88??????` (contoh `2488010071`) |
+| Angkatan | 2000 sampai 2100 |
+| Kata sandi | 8 sampai 72 karakter |
+| Semester | 1 sampai 8 |
+| Jenis materi (`jenis`) | `pdf`, `ppt`, `pptx`, `doc`, `docx`, `xls`, `xlsx` (upload file hanya menerima `pdf`, `docx`, `pptx`, `xlsx`) |
+| File materi | format `pdf`, `docx`, `pptx`, `xlsx`; maksimal 10 MB |
+| Foto profil | `JPG`, `PNG`, `WEBP` (dikenali dari isi file); maksimal 2 MB |
+| Impor CSV | `.csv` UTF-8; maksimal 1 MB dan 2000 baris |
+| Status akun | `belum_aktif`, `aktif`, `nonaktif` |
+| Status materi | `draft`, `terbit`, `arsip` |
+| Status belajar | `belum`, `dilihat`, `selesai` |
 
-### 1.4 Paginasi
+## 2. Daftar endpoint
 
-Dipakai oleh `GET /mahasiswa` dan `GET /materi`.
+| No | Method | Path | Akses | Ringkasan |
+|---|---|---|---|---|
+| 1 | `POST` | `/api/v1/auth/registrasi` | Publik (tanpa token) | Aktivasi akun mahasiswa |
+| 2 | `POST` | `/api/v1/auth/login` | Publik (tanpa token) | Login dan ambil access token |
+| 3 | `POST` | `/api/v1/auth/logout` | Semua pengguna login | Logout (akhiri sesi di server) |
+| 4 | `GET` | `/api/v1/auth/me` | Semua pengguna login | Data pengguna yang sedang login |
+| 5 | `GET` | `/api/v1/materi` | Semua pengguna login | List materi (filter + paginasi) |
+| 6 | `POST` | `/api/v1/materi` | Admin | Tambah materi via upload file (admin only) |
+| 7 | `GET` | `/api/v1/materi/kategori/semester` | Semua pengguna login | Kategori semester beserta jumlah materi |
+| 8 | `GET` | `/api/v1/materi/kategori/mata-kuliah` | Semua pengguna login | Kategori mata kuliah pada sebuah semester |
+| 9 | `GET` | `/api/v1/materi/{materi_id}` | Semua pengguna login | Detail materi |
+| 10 | `PUT` | `/api/v1/materi/{materi_id}` | Admin | Edit materi via JSON (admin only) |
+| 11 | `DELETE` | `/api/v1/materi/{materi_id}` | Admin | Hapus materi beserta file fisiknya (admin only) |
+| 12 | `GET` | `/api/v1/materi/{materi_id}/unduh` | Semua pengguna login | Unduh file materi |
+| 13 | `PUT` | `/api/v1/materi/{materi_id}/edit` | Admin | Edit materi via form, file opsional (admin only) |
+| 14 | `GET` | `/api/v1/mahasiswa/dashboard` | Mahasiswa | Ringkasan dashboard mahasiswa (mahasiswa only) |
+| 15 | `POST` | `/api/v1/materi/{materi_id}/progres` | Mahasiswa | Catat progres belajar pada sebuah materi (mahasiswa only) |
+| 16 | `PUT` | `/api/v1/profil/foto` | Mahasiswa | Unggah atau ganti foto profil (mahasiswa only) |
+| 17 | `DELETE` | `/api/v1/profil/foto` | Mahasiswa | Hapus foto profil (mahasiswa only) |
+| 18 | `GET` | `/api/v1/kontak-admin/whatsapp` | Mahasiswa | Tautan WhatsApp untuk menghubungi admin (mahasiswa only) |
+| 19 | `GET` | `/api/v1/mahasiswa` | Admin | List mahasiswa + pencarian & filter (admin only) |
+| 20 | `POST` | `/api/v1/mahasiswa` | Admin | Tambah mahasiswa manual (admin only) |
+| 21 | `GET` | `/api/v1/mahasiswa/ringkasan` | Admin | Jumlah mahasiswa per status akun (admin only) |
+| 22 | `POST` | `/api/v1/mahasiswa/import` | Admin | Impor mahasiswa dari file CSV (admin only) |
+| 23 | `GET` | `/api/v1/mahasiswa/{id}` | Admin | Detail mahasiswa (admin only) |
+| 24 | `PUT` | `/api/v1/mahasiswa/{id}` | Admin | Edit data/status mahasiswa (admin only) |
+| 25 | `DELETE` | `/api/v1/mahasiswa/{id}` | Admin | Hapus mahasiswa (admin only) |
+| 26 | `POST` | `/api/v1/mahasiswa/{id}/reset-akun` | Admin | Reset akun mahasiswa (admin only) |
+| 27 | `GET` | `/api/v1/admin/dashboard` | Admin | Ambil data ringkasan untuk dashboard admin |
+| 28 | `GET` | `/` | Publik (tanpa token) | root |
+| 29 | `GET` | `/health` | Publik (tanpa token) | health |
 
-**Query:**
+## 3. Detail endpoint
 
-| Param | Tipe | Default | Batas |
+### Autentikasi
+
+#### `POST /api/v1/auth/registrasi`
+
+**Aktivasi akun mahasiswa**
+
+Aktivasi akun dengan NIM yang sudah diinput admin. Set password dan ubah status akun jadi aktif.
+
+- **Akses:** Publik (tanpa token)
+
+**Body** (`application/json`)
+
+| Field | Tipe | Wajib | Keterangan |
 |---|---|---|---|
-| `page` | integer | `1` | ≥ 1 |
-| `limit` | integer | `20` | 1 – 100 |
+| `nomor_induk` | string | ya | min 10 karakter; maks 10 karakter |
+| `kata_sandi` | string | ya | min 8 karakter; maks 72 karakter |
+| `konfirmasi_kata_sandi` | string \| null | tidak | min 8 karakter; maks 72 karakter |
 
-**Bentuk respons:**
+Contoh request:
 
 ```json
 {
-  "items": [],
-  "total": 42,
-  "page": 1,
-  "limit": 20,
-  "total_pages": 3
-}
-```
-
-`total_pages = ceil(total / limit)`. Jika `total = 0`, maka `total_pages = 0` dan `items = []`.
-Nilai `page`/`limit` di luar batas menghasilkan `422`, bukan dikoreksi otomatis.
-
-### 1.5 Format Error
-
-Ada **tiga bentuk** error. Frontend harus menangani ketiganya (lihat helper di [bagian 10.2](#102-wrapper-fetch--penanganan-error)).
-
-**A. Error bisnis (`detail` berupa string)** — `400`, `401`, `403`, `404`, `409`:
-
-```json
-{ "detail": "NIM atau kata sandi salah" }
-```
-
-**B. Error validasi (`detail` berupa array)** — `422`:
-
-```json
-{
-  "detail": [
-    {
-      "type": "string_too_short",
-      "loc": ["body", "nomor_induk"],
-      "msg": "String should have at least 10 characters",
-      "input": "abc",
-      "ctx": { "min_length": 10 }
-    }
-  ]
-}
-```
-
-- `loc[0]` = lokasi (`body`, `query`, `path`), `loc[1]` = nama field. Pakai ini untuk menandai input form yang salah.
-- Pesan dari validator buatan sendiri diawali `Value error, ` (contoh: `Value error, Format NIM tidak dikenali`). Buang awalan ini saat ditampilkan.
-
-**C. Error server (`500`)** — body **bukan JSON**, melainkan teks polos:
-
-```
-Internal Server Error
-```
-
-Jangan memanggil `response.json()` secara membabi buta. Bungkus dengan `try/catch`.
-
-### 1.6 Kode Status
-
-| Kode | Arti di API ini |
-|---|---|
-| `200` | Berhasil (termasuk registrasi, login, dan semua `PUT`/`POST` progres) |
-| `201` | Data berhasil dibuat (`POST /mahasiswa`, `POST /materi`) |
-| `204` | Berhasil tanpa body (`DELETE`). Jangan parse JSON |
-| `400` | Permintaan tidak bisa diproses (format file ditolak, tidak ada field diubah) |
-| `401` | Token tidak ada/tidak valid/kedaluwarsa, atau login gagal |
-| `403` | Sudah login tetapi tidak berhak (peran salah atau akun tidak aktif) |
-| `404` | Data tidak ditemukan |
-| `409` | Konflik data (NIM sudah ada, akun sudah aktif) |
-| `413` | Ukuran file upload melebihi batas (10 MB) |
-| `422` | Validasi input gagal |
-| `500` | Kesalahan server (lihat [bagian 11](#11-catatan-penting--masalah-yang-diketahui)) |
-
----
-
-## 2. Ringkasan Endpoint
-
-Akses: 🌐 publik · 🔑 semua pengguna login · 🛡️ admin saja · 🎓 mahasiswa saja
-
-| Method | Path | Akses | Fungsi |
-|---|---|---|---|
-| POST | `/auth/registrasi` | 🌐 | Aktivasi akun mahasiswa (set password) |
-| POST | `/auth/login` | 🌐 | Login, mendapat token |
-| GET | `/auth/me` | 🔑 | Data pengguna dari token |
-| GET | `/mahasiswa` | 🛡️ | Daftar mahasiswa + pencarian, filter, paginasi |
-| GET | `/mahasiswa/ringkasan` | 🛡️ | Jumlah mahasiswa per status akun |
-| POST | `/mahasiswa/import` | 🛡️ | Impor mahasiswa dari file CSV (`?simulasi=true` untuk pratinjau) |
-| GET | `/mahasiswa/{id}` | 🛡️ | Detail satu mahasiswa |
-| POST | `/mahasiswa` | 🛡️ | Tambah mahasiswa (NIM + nama) |
-| PUT | `/mahasiswa/{id}` | 🛡️ | Ubah nama/angkatan/status/NIM mahasiswa |
-| POST | `/mahasiswa/{id}/reset-akun` | 🛡️ | Reset akun (hapus kata sandi, kembali belum_aktif) |
-| DELETE | `/mahasiswa/{id}` | 🛡️ | Hapus mahasiswa |
-| GET | `/materi` | 🔑 | Daftar materi (filter + paginasi) |
-| GET | `/materi/kategori/semester` | 🔑 | Kategori semester 1–8 + jumlah materi |
-| GET | `/materi/kategori/mata-kuliah` | 🔑 | Kategori mata kuliah pada satu semester |
-| GET | `/materi/{id}` | 🔑 | Detail materi |
-| POST | `/materi` | 🛡️ | Upload materi (multipart) |
-| PUT | `/materi/{id}/edit` | 🛡️ | Edit materi via form, file opsional (dipakai modal Edit Materi) |
-| PUT | `/materi/{id}` | 🛡️ | Ubah materi / status via JSON |
-| DELETE | `/materi/{id}` | 🛡️ | Hapus materi |
-| GET | `/admin/dashboard` | 🛡️ | Ringkasan dashboard admin |
-| GET | `/mahasiswa/dashboard` | 🎓 | Ringkasan dashboard mahasiswa |
-| POST | `/materi/{id}/progres` | 🎓 | Catat progres belajar |
-
----
-
-## 3. Autentikasi
-
-### 3.1 Alur Akun (penting dipahami frontend)
-
-```
-Admin input NIM + nama   →   status: belum_aktif   (belum punya password)
-        │
-        ▼
-Mahasiswa registrasi     →   set password, status: aktif
-        │
-        ▼
-Mahasiswa login          →   dapat access_token
-        │
-        ▼
-Admin bisa nonaktifkan   →   status: nonaktif  (login & token langsung ditolak)
-```
-
-Mahasiswa **tidak bisa mendaftar sendiri dengan NIM sembarang**. NIM harus sudah diinput admin (manual atau lewat import CSV).
-
-### 3.2 `POST /auth/registrasi` — Aktivasi akun
-
-**Akses:** 🌐 publik
-
-**Body (JSON):**
-
-| Field | Tipe | Wajib | Aturan |
-|---|---|---|---|
-| `nomor_induk` | string | ✅ | Tepat 10 karakter, format NIM `^2\d88\d{6}$` (contoh `2488010071`). Spasi di awal/akhir **tidak** dibuang sebelum cek panjang |
-| `kata_sandi` | string | ✅ | 8–72 karakter dan maksimal 72 **byte** (huruf non-ASCII/emoji memakan lebih dari 1 byte) |
-| `konfirmasi_kata_sandi` | string | ❌ | Opsional. Jika dikirim, harus sama persis dengan `kata_sandi` |
-
-```json
-{
-  "nomor_induk": "2488010071",
+  "nomor_induk": "2388010001",
   "kata_sandi": "Rahasia123",
   "konfirmasi_kata_sandi": "Rahasia123"
 }
 ```
 
-**Respons `200 OK`:**
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `peran` | string |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `status` | string |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+
+Contoh respons:
 
 ```json
 {
   "id": 2,
   "peran": "mahasiswa",
-  "nomor_induk": "2488010071",
+  "nomor_induk": "2388010001",
   "nama": "Budi Santoso",
   "status": "aktif",
-  "dibuat_pada": "2026-10-27T08:23:43.143171"
+  "dibuat_pada": "2026-11-19T07:33:39.836112"
 }
 ```
 
-> Registrasi **tidak** mengembalikan token. Setelah sukses, arahkan ke halaman login (atau panggil `POST /auth/login` otomatis dengan kredensial yang sama).
+**Kemungkinan error**
 
-**Error:**
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 403 | Akun Anda dinonaktifkan. Hubungi admin. |
+| 404 | NIM tidak terdaftar. Hubungi admin. |
+| 409 | Akun sudah aktif. Silakan login. |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
 
-| Status | `detail` | Kapan |
-|---|---|---|
-| `404` | `NIM tidak terdaftar. Hubungi admin.` | NIM valid tetapi belum diinput admin |
-| `403` | `Akun Anda dinonaktifkan. Hubungi admin.` | Status akun `nonaktif` |
-| `409` | `Akun sudah aktif. Silakan login.` | Akun sudah punya password |
-| `422` | array validasi | Format NIM salah, password < 8 / > 72, konfirmasi tidak cocok, field hilang |
+#### `POST /api/v1/auth/login`
 
-Contoh pesan `422`: `Value error, Format NIM tidak dikenali` · `Value error, Konfirmasi kata sandi tidak cocok` · `String should have at least 8 characters`.
+**Login dan ambil access token**
 
-### 3.3 `POST /auth/login`
+Sesi berakhir otomatis jika tidak ada aktivitas selama `expires_in` detik (default 20 menit). Setiap request ke API memperpanjang sesi.
 
-**Akses:** 🌐 publik. Dipakai admin maupun mahasiswa.
+- **Akses:** Publik (tanpa token)
 
-**Body (JSON):**
+**Body** (`application/json`)
 
-| Field | Tipe | Wajib | Aturan |
+| Field | Tipe | Wajib | Keterangan |
 |---|---|---|---|
-| `nomor_induk` | string | ✅ | 3–50 karakter (NIM mahasiswa, atau `ADM001` untuk admin) |
-| `kata_sandi` | string | ✅ | 8–72 karakter |
+| `nomor_induk` | string | ya | min 3 karakter; maks 50 karakter |
+| `kata_sandi` | string | ya | min 8 karakter; maks 72 karakter |
+
+Contoh request:
 
 ```json
 {
-  "nomor_induk": "2488010071",
+  "nomor_induk": "2388010001",
   "kata_sandi": "Rahasia123"
 }
 ```
 
-**Respons `200 OK`:**
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `access_token` | string |  |
+| `token_type` | string | default `bearer` |
+| `expires_in` | integer |  |
+| `pengguna` | [PenggunaRingkas](#skema-penggunaringkas) |  |
+
+Contoh respons:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzkzMDkwMzIzfQ.xxxxx",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5…",
   "token_type": "bearer",
-  "expires_in": 900,
+  "expires_in": 1200,
   "pengguna": {
     "id": 2,
     "peran": "mahasiswa",
-    "nomor_induk": "2488010071",
+    "nomor_induk": "2388010001",
     "nama": "Budi Santoso",
-    "status": "aktif"
+    "status": "aktif",
+    "foto_url": null
   }
 }
 ```
 
-| Field | Keterangan |
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| `access_token` | Simpan dan kirim pada header `Authorization` |
-| `token_type` | Selalu `bearer` |
-| `expires_in` | Masa berlaku dalam **detik** (default 900) |
-| `pengguna.peran` | `admin` atau `mahasiswa`. Dasar untuk mengarahkan ke dashboard yang tepat |
+| 401 | NIM atau kata sandi salah |
+| 403 | Akun Anda nonaktif. Silakan hubungi admin. |
+| 404 | NIM tidak terdaftar |
+| 409 | NIM belum teregistrasi |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
 
-**Error:**
+#### `POST /api/v1/auth/logout`
 
-| Status | `detail` | Kapan |
+**Logout (akhiri sesi di server)**
+
+Menghapus sesi saat ini; token yang sama langsung tidak berlaku lagi.
+
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+Contoh respons:
+
+```json
+{
+  "detail": "Berhasil keluar"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+
+#### `GET /api/v1/auth/me`
+
+**Data pengguna yang sedang login**
+
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
 |---|---|---|
-| `401` | `NIM atau kata sandi salah` | Password salah, NIM tidak ada, **atau** akun belum registrasi (belum punya password). Pesan sengaja disamakan agar NIM tidak bisa ditebak |
-| `403` | `Akun Anda belum aktif. Silakan registrasi terlebih dahulu.` | Password benar tetapi status akun bukan `aktif` (termasuk `nonaktif`) |
-| `422` | array validasi | NIM < 3 karakter, password < 8 atau > 72 karakter, field hilang |
+| `id` | integer |  |
+| `peran` | string |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `status` | string |  |
+| `foto_url` | string \| null |  |
 
-> ⚠️ Password yang **kurang dari 8 karakter** menghasilkan `422`, bukan `401`. Di form login, cukup tampilkan pesan umum seperti "NIM atau kata sandi salah" untuk kedua kasus.
-
-### 3.4 `GET /auth/me`
-
-**Akses:** 🔑. Dipakai untuk memulihkan sesi saat aplikasi dibuka ulang (token tersimpan di browser).
-
-**Respons `200 OK`:**
+Contoh respons:
 
 ```json
 {
   "id": 2,
   "peran": "mahasiswa",
-  "nomor_induk": "2488010071",
+  "nomor_induk": "2388010001",
   "nama": "Budi Santoso",
-  "status": "aktif"
+  "status": "aktif",
+  "foto_url": null
 }
 ```
 
-**Error (berlaku untuk semua endpoint yang butuh token):**
+**Kemungkinan error**
 
-| Status | `detail` | Kapan |
-|---|---|---|
-| `401` | `Token tidak ada` | Header `Authorization` tidak dikirim |
-| `401` | `Token tidak valid atau sudah kedaluwarsa` | Token rusak atau lewat masa berlaku |
-| `401` | `Pengguna tidak ditemukan` | Pengguna di dalam token sudah dihapus |
-| `403` | `Akun Anda nonaktif` | Status akun bukan `aktif` |
-
-Semua `401` menyertakan header `WWW-Authenticate: Bearer`.
-
-**Error khusus peran (berlaku untuk endpoint 🛡️ dan 🎓):**
-
-| Status | `detail` |
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| `403` | `Anda tidak memiliki akses ke endpoint ini` |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
 
----
+### Materi
 
-## 4. Manajemen Mahasiswa (Admin)
+#### `GET /api/v1/materi`
 
-Semua endpoint di bagian ini: **🛡️ admin saja**. Endpoint ini hanya menyentuh pengguna berperan `mahasiswa`. Akun admin tidak bisa diubah atau dihapus lewat sini (ID admin menghasilkan `404`).
+**List materi (filter + paginasi)**
 
-Objek **Mahasiswa**:
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `mata_kuliah` | query | string \| null | tidak |  |
+| `semester` | query | integer \| null | tidak | min 1; maks 8 |
+| `jenis` | query | string \| null | tidak |  |
+| `q` | query | string \| null | tidak |  |
+| `page` | query | integer | tidak | min 1; default `1` |
+| `limit` | query | integer | tidak | min 1; maks 100; default `20` |
+
+Contoh request:
+
+Query: `semester=3&mata_kuliah=Basis Data&page=1&limit=20`
+
+**Respons sukses: `200`**
 
 | Field | Tipe | Keterangan |
 |---|---|---|
-| `id` | integer | ID pengguna |
-| `nomor_induk` | string | NIM, unik |
-| `nama` | string | |
-| `angkatan` | integer atau `null` | Tahun angkatan |
-| `status` | string | `belum_aktif`, `aktif`, atau `nonaktif` |
-| `dibuat_pada` | string | Waktu dibuat (UTC) |
+| `items` | array&lt;[MateriResponse](#skema-materiresponse)&gt; |  |
+| `total` | integer |  |
+| `page` | integer |  |
+| `limit` | integer |  |
+| `total_pages` | integer |  |
 
-Hash password **tidak pernah** dikirim.
-
-### 4.1 `GET /mahasiswa` — Daftar mahasiswa
-
-**Query** (semua opsional, bisa digabung):
-
-| Param | Tipe | Keterangan |
-|---|---|---|
-| `q` | string | Cari sebagian kata di **nama atau NIM**, tidak peka huruf besar/kecil. Maks 100 karakter. Spasi saja diabaikan |
-| `status` | string | Filter status akun: `belum_aktif`, `aktif`, atau `nonaktif` (nilai lain `422`) |
-| `angkatan` | integer | Filter tahun angkatan, 2000–2100 |
-| `page`, `limit` | integer | Lihat [1.4](#14-paginasi) |
-
-Urutan: `nomor_induk` naik. Contoh: `GET /mahasiswa?q=budi&status=aktif&angkatan=2024&page=1&limit=20`.
-
-Jika tidak ada yang cocok: `items: []`, `total: 0`, `total_pages: 0` (status tetap `200`).
-
-**Respons `200 OK`:**
+Contoh respons:
 
 ```json
 {
   "items": [
     {
       "id": 2,
-      "nomor_induk": "2488010071",
-      "nama": "Budi Santoso",
-      "angkatan": 2024,
-      "status": "belum_aktif",
-      "dibuat_pada": "2026-10-27T08:23:43.143171"
-    },
-    {
-      "id": 3,
-      "nomor_induk": "2488010072",
-      "nama": "Siti Aminah",
-      "angkatan": null,
-      "status": "belum_aktif",
-      "dibuat_pada": "2026-10-27T08:23:43.151977"
-    }
-  ],
-  "total": 2,
-  "page": 1,
-  "limit": 2,
-  "total_pages": 1
-}
-```
-
-### 4.1b `GET /mahasiswa/{id}` — Detail mahasiswa
-
-**Respons `200 OK`:** objek Mahasiswa (bentuk sama dengan item pada 4.1).
-
-**Error:** `404` `Mahasiswa tidak ditemukan` (termasuk bila `id` milik admin) · `422` jika `id` bukan angka.
-
-> Path `GET /mahasiswa/dashboard` adalah endpoint khusus mahasiswa (bagian 7.1), bukan detail dengan id `dashboard`.
-
-### 4.2 `POST /mahasiswa` — Tambah mahasiswa
-
-**Body (JSON):**
-
-| Field | Tipe | Wajib | Aturan |
-|---|---|---|---|
-| `nomor_induk` | string | ✅ | Tepat 10 karakter, format `^2\d88\d{6}$` |
-| `nama` | string | ✅ | 3–100 karakter. Spasi di tepi dibuang dan spasi ganda dirapikan; nama yang hanya berisi spasi ditolak |
-| `angkatan` | integer | ❌ | 2000–2100. Boleh dikosongkan (`null`) |
-
-```json
-{ "nomor_induk": "2488010071", "nama": "Budi Santoso", "angkatan": 2024 }
-```
-
-**Respons `201 Created`:** objek Mahasiswa, status awal selalu `belum_aktif`.
-
-```json
-{
-  "id": 2,
-  "nomor_induk": "2488010071",
-  "nama": "Budi Santoso",
-  "angkatan": 2024,
-  "status": "belum_aktif",
-  "dibuat_pada": "2026-10-27T08:23:43.143171"
-}
-```
-
-**Error:** `409` `NIM sudah terdaftar` · `422` validasi (contoh pesan: `Format NIM tidak dikenali`, `Nama minimal 3 karakter`). NIM dicek terhadap **semua** pengguna, jadi tidak bisa memakai nomor induk milik admin.
-
-### 4.3 `PUT /mahasiswa/{id}` — Ubah mahasiswa
-
-**Path:** `id` (integer, ID pengguna).
-
-**Body (JSON)**, semua opsional, kirim hanya yang berubah:
-
-| Field | Tipe | Aturan |
-|---|---|---|
-| `nomor_induk` | string | Format NIM yang sama seperti 4.2. **Hanya bisa diganti selama akun belum diaktivasi** (belum punya password) |
-| `nama` | string | 3–100 karakter (dirapikan seperti 4.2) |
-| `angkatan` | integer atau `null` | 2000–2100. **`null` mengosongkan angkatan** |
-| `status` | string | Salah satu: `belum_aktif`, `aktif`, `nonaktif` |
-
-```json
-{ "status": "nonaktif" }
-```
-
-**Respons `200 OK`:** objek Mahasiswa terbaru.
-
-Perilaku yang perlu diketahui:
-- Field yang tidak dikirim tidak berubah. `nama`, `nomor_induk`, dan `status` bernilai `null` **diabaikan**. Hanya `angkatan: null` yang berarti dikosongkan.
-- `nomor_induk` yang sama dengan NIM saat ini diabaikan (tidak error, meski akun sudah aktif), jadi frontend aman mengirim seluruh isi form.
-- Mengganti NIM akun yang sudah diaktivasi menghasilkan `409`, karena NIM dipakai sebagai identitas login.
-- Body `{}` tetap `200` tanpa perubahan (tidak ada error).
-- Mengubah status ke `nonaktif` membuat login dan token yang masih berlaku langsung ditolak.
-- Mengubah status ke `aktif` untuk akun yang belum punya password **tidak** menguncinya. Mahasiswa tetap bisa registrasi.
-
-**Error:**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `404` | `Mahasiswa tidak ditemukan` | ID tidak ada atau milik admin |
-| `409` | `NIM sudah terdaftar` | NIM baru dipakai pengguna lain |
-| `409` | `NIM tidak dapat diubah karena akun sudah diaktivasi` | Mengganti NIM pada akun yang sudah punya password |
-| `422` | array validasi | Status tidak dikenal (`Input should be 'belum_aktif', 'aktif' or 'nonaktif'`), format NIM salah, nama < 3 karakter atau hanya spasi, angkatan di luar 2000–2100 |
-
-### 4.4 `DELETE /mahasiswa/{id}` — Hapus mahasiswa
-
-**Respons:** `204 No Content` (tanpa body). Akun, sesi login, dan progres belajar mahasiswa tersebut ikut terhapus. Penghapusan **permanen**, jadi frontend sebaiknya meminta konfirmasi. Untuk memblokir akun tanpa menghapus datanya, ubah statusnya menjadi `nonaktif` (4.3).
-
-**Error:** `404` `Mahasiswa tidak ditemukan`.
-
-### 4.5 `GET /mahasiswa/ringkasan` — Jumlah mahasiswa per status
-
-**Akses:** 🛡️ · Tanpa parameter. Untuk kartu statistik di halaman Kelola Mahasiswa.
-
-**Respons `200 OK`:**
-
-```json
-{ "total": 6, "belum_aktif": 1, "aktif": 2, "nonaktif": 3 }
-```
-
-`total` = jumlah ketiga status. Akun admin tidak dihitung. Nilainya selalu angka (`0` bila kosong).
-
-### 4.6 `POST /mahasiswa/{id}/reset-akun` — Reset akun mahasiswa
-
-**Akses:** 🛡️ · **Body:** tidak ada. Dipakai saat mahasiswa lupa kata sandi (belum ada fitur lupa password).
-
-Efek:
-- Kata sandi dihapus dan `status` menjadi `belum_aktif`, apa pun status sebelumnya (termasuk `nonaktif`).
-- Mahasiswa mengaktifkan kembali akunnya lewat `POST /auth/registrasi` dengan kata sandi baru. NIM, nama, angkatan, dan progres belajar **tetap**.
-- Login dengan kata sandi lama langsung ditolak (`401`), dan token yang sedang dipegang mahasiswa ditolak (`403 Akun Anda nonaktif`) sampai ia registrasi ulang.
-- Aman dipanggil berulang pada akun yang sudah `belum_aktif`.
-
-**Respons `200 OK`:** objek Mahasiswa dengan `status: "belum_aktif"`.
-
-**Error:** `404` `Mahasiswa tidak ditemukan` · `401` / `403` (bagian 3.4).
-
-> Setelah registrasi ulang, token lama yang belum kedaluwarsa (maks 15 menit) bisa berlaku lagi karena identitas pengguna sama. Jika perlu memutus total, minta mahasiswa login ulang.
-
-### 4.7 `POST /mahasiswa/import` — Impor dari file CSV
-
-**Akses:** 🛡️ · **Content-Type:** `multipart/form-data`.
-
-**Form:**
-
-| Field | Tipe | Wajib | Aturan |
-|---|---|---|---|
-| `file` | file | ✅ | Ekstensi `.csv`, UTF-8, maksimal **1 MB** dan **2000 baris data** |
-
-**Query:**
-
-| Param | Tipe | Default | Keterangan |
-|---|---|---|---|
-| `simulasi` | boolean | `false` | `true` = hanya menghitung dan melaporkan, **tanpa menyimpan apa pun** (pratinjau sebelum impor) |
-
-**Format CSV** (baris 1 = header, `angkatan` boleh dikosongkan atau kolomnya dihilangkan):
-
-```
-nomor_induk,nama,angkatan
-2488010100,Andi Pratama,2023
-2488010101,Bela Safira,
-```
-
-- Pemisah koma, titik koma, atau tab dikenali otomatis. BOM UTF-8 dari Excel diterima (di Excel pilih **Save As → CSV UTF-8**).
-- Nama kolom tidak peka huruf besar/kecil dan boleh memakai alias: `nim`, `nomor induk` (NIM); `nama lengkap` (nama); `tahun angkatan` (angkatan).
-- Aturan per baris sama dengan `POST /mahasiswa` (4.2). Semua akun baru berstatus `belum_aktif`.
-- **Baris bermasalah tidak menggagalkan impor.** Baris tidak valid dan NIM yang sudah terdaftar dilewati, baris lain tetap masuk (disimpan dalam satu transaksi).
-- Baris kosong diabaikan dan tidak dihitung.
-
-**Respons `200 OK`:**
-
-```json
-{
-  "simulasi": false,
-  "total_baris": 10,
-  "ditambahkan": 2,
-  "dilewati": 2,
-  "gagal": 6,
-  "masalah": [
-    { "baris": 3, "nomor_induk": "2488010200", "status": "dilewati", "alasan": "NIM dobel dengan baris 2" },
-    { "baris": 4, "nomor_induk": "12345", "status": "gagal", "alasan": "NIM harus 10 digit" },
-    { "baris": 8, "nomor_induk": null, "status": "gagal", "alasan": "NIM kosong" },
-    { "baris": 11, "nomor_induk": "2488010100", "status": "dilewati", "alasan": "NIM sudah terdaftar" }
-  ]
-}
-```
-
-| Field | Keterangan |
-|---|---|
-| `simulasi` | Mengikuti parameter permintaan |
-| `total_baris` | Jumlah baris data yang diproses (header dan baris kosong tidak dihitung) |
-| `ditambahkan` | Jumlah yang disimpan. Pada `simulasi=true`: jumlah yang **akan** disimpan |
-| `dilewati` | NIM sudah terdaftar atau dobel di dalam file |
-| `gagal` | Data baris tidak valid |
-| `masalah` | Rincian baris `dilewati` dan `gagal` saja, urut `baris`. `baris` = nomor baris di file (header = baris 1). Selalu `ditambahkan + dilewati + gagal = total_baris` |
-
-Nilai `alasan` yang mungkin: `NIM kosong`, `Nama kosong`, `NIM harus 10 digit`, `Format NIM tidak dikenali`, `Nama minimal 3 karakter`, `Nama maksimal 100 karakter`, `Angkatan harus berupa angka`, `Angkatan harus antara 2000 dan 2100`, `NIM dobel dengan baris N`, `NIM sudah terdaftar`.
-
-**Error (seluruh file ditolak, tidak ada yang disimpan):**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `400` | `File harus berformat CSV (.csv)` | Ekstensi bukan `.csv` |
-| `400` | `File kosong` | Tidak ada isi |
-| `400` | `File harus berenkode UTF-8 (di Excel: Save As > CSV UTF-8)` | Enkode lain |
-| `400` | `Kolom wajib tidak ditemukan: nomor_induk, nama. Kolom yang terbaca: …` | Header tidak lengkap |
-| `400` | `Tidak ada baris data di file` | Hanya header |
-| `400` | `Maksimal 2000 baris data per impor` | Terlalu banyak baris |
-| `413` | `Ukuran file maksimal 1 MB` | File terlalu besar |
-| `409` | `Ada NIM yang baru saja didaftarkan proses lain. Ulangi impor.` | Bentrok saat dua proses menyimpan bersamaan |
-| `422` | array validasi | Field `file` tidak dikirim |
-| `401` / `403` | lihat bagian 3.4 | |
-
-**Alur yang disarankan di frontend:** kirim file dengan `simulasi=true`, tampilkan pratinjau (jumlah yang akan ditambahkan dan daftar `masalah`), lalu setelah admin menyetujui kirim ulang file yang sama tanpa `simulasi`.
-
-```js
-const fd = new FormData();
-fd.append("file", fileCsv);
-const pratinjau = await api("/mahasiswa/import?simulasi=true", { method: "POST", formData: fd, token });
-// ...admin menyetujui...
-const hasil = await api("/mahasiswa/import", { method: "POST", formData: fd, token });
-```
-
----
-
-## 5. Materi
-
-Objek **Materi**:
-
-| Field | Tipe | Keterangan |
-|---|---|---|
-| `id` | integer | |
-| `judul` | string | 3–200 karakter |
-| `deskripsi` | string atau `null` | Maks 2000 karakter |
-| `mata_kuliah` | string | 2–100 karakter, teks bebas |
-| `semester` | integer | 1–8 |
-| `jenis` | string | `pdf`, `docx`, `pptx`, `xlsx` (diisi otomatis dari ekstensi file) |
-| `url` | string | URL lengkap file (`https://…/uploads/<acak>.<ext>`). Bisa dibuka/diunduh langsung, **tanpa token** |
-| `dibuat_oleh` | integer atau `null` | ID admin pengunggah |
-| `status` | string | `draft`, `terbit`, atau `arsip` |
-| `dibuat_pada` | string | UTC |
-| `diubah_pada` | string | UTC |
-| `status_belajar` | string atau `null` | `belum`, `dilihat`, atau `selesai`. **Hanya terisi untuk mahasiswa** (milik mahasiswa yang login). Untuk admin dan pada respons upload/ubah selalu `null` |
-
-```json
-{
-  "id": 1,
-  "judul": "Pengantar Algoritma",
-  "deskripsi": "Bab 1",
-  "mata_kuliah": "Algoritma",
-  "semester": 1,
-  "jenis": "pdf",
-  "url": "https://api.contoh.app/uploads/eee70c8a991e412e8536447cda5194a8.pdf",
-  "dibuat_oleh": 1,
-  "status": "terbit",
-  "dibuat_pada": "2026-10-27T08:24:02.701333",
-  "diubah_pada": "2026-10-27T08:24:02.701336",
-  "status_belajar": null
-}
-```
-
-### 5.0 Aturan visibilitas (penting)
-
-| Peran | Materi yang terlihat |
-|---|---|
-| 🎓 Mahasiswa | **Hanya** `status: "terbit"`. Materi `draft`/`arsip` tidak muncul di daftar dan detailnya menghasilkan `404` |
-| 🛡️ Admin | Semua status |
-
-Aturan yang sama berlaku untuk dua endpoint kategori (5.6 dan 5.7): mahasiswa hanya menghitung materi `terbit`, admin menghitung semua status.
-
-### 5.1 `GET /materi` — Daftar materi
-
-**Akses:** 🔑
-
-**Query:**
-
-| Param | Tipe | Keterangan |
-|---|---|---|
-| `mata_kuliah` | string | Cocok persis dengan nama mata kuliah |
-| `semester` | integer | 1–8 (di luar itu `422`) |
-| `jenis` | string | Cocok persis, huruf kecil (`pdf`, `docx`, `pptx`, `xlsx`) |
-| `q` | string | Cari sebagian kata di `judul` atau `deskripsi` |
-| `page`, `limit` | integer | Lihat [1.4](#14-paginasi) |
-
-Semua filter bisa digabung. Urutan: terbaru lebih dulu (`dibuat_pada` turun).
-
-**Contoh:** `GET /materi?mata_kuliah=Algoritma&semester=1&q=pengantar&page=1&limit=10`
-
-**Respons `200 OK`:**
-
-```json
-{
-  "items": [
-    {
-      "id": 2,
-      "judul": "Basis Data Dasar",
+      "judul": "Slide ERD Pertemuan 2",
       "deskripsi": null,
       "mata_kuliah": "Basis Data",
       "semester": 3,
       "jenis": "pptx",
-      "url": "https://api.contoh.app/uploads/4e162b818dbb48a18a40257a49161802.pptx",
+      "url": "https://inf-learning-production.up.railway.app/uploads/1c04e63e21f142a1a3e7ac3a54a799a8.pptx",
       "dibuat_oleh": 1,
       "status": "terbit",
-      "dibuat_pada": "2026-10-27T08:24:02.709148",
-      "diubah_pada": "2026-10-27T08:24:02.709151",
-      "status_belajar": "belum"
-    }
-  ],
-  "total": 3,
-  "page": 1,
-  "limit": 1,
-  "total_pages": 3
-}
-```
-
-> Untuk daftar semester dan mata kuliah (menu Materi Kuliah), gunakan endpoint kategori di 5.6 dan 5.7, bukan mengelompokkan sendiri hasil endpoint ini.
-
-### 5.2 `GET /materi/{id}` — Detail materi
-
-**Akses:** 🔑 · **Respons `200`:** objek Materi.
-
-**Error:** `404` `Materi tidak ditemukan` (juga untuk materi non-`terbit` jika pemanggil mahasiswa) · `422` jika `id` bukan angka.
-
-### 5.3 `POST /materi` — Upload materi
-
-**Akses:** 🛡️ · **Content-Type:** `multipart/form-data` (diatur otomatis oleh browser saat memakai `FormData`).
-
-**Field form:**
-
-| Field | Tipe | Wajib | Aturan |
-|---|---|---|---|
-| `judul` | text | ✅ | 3–200 karakter |
-| `mata_kuliah` | text | ✅ | 2–100 karakter |
-| `semester` | text (angka) | ✅ | 1–8 |
-| `deskripsi` | text | ❌ | Maks 2000 karakter |
-| `file` | file | ✅ | Ekstensi `.pdf`, `.docx`, `.pptx`, atau `.xlsx` (tidak peka huruf besar/kecil). **Maksimal 10 MB** dan tidak boleh kosong |
-
-Spasi di awal/akhir `judul` dan `mata_kuliah` dibuang otomatis. Semua validasi dijalankan **sebelum** file disimpan, jadi upload yang ditolak tidak meninggalkan file di server.
-
-Yang diisi otomatis oleh backend: `jenis` (dari ekstensi), `url`, `dibuat_oleh`, dan `status = "terbit"` (materi baru langsung tampil ke mahasiswa).
-
-**Respons `201 Created`:** objek Materi.
-
-**Error:**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `400` | `Format file tidak diizinkan` | Ekstensi di luar daftar |
-| `400` | `File kosong` | File berukuran 0 byte |
-| `413` | `Ukuran file maksimal 10 MB` | File melebihi batas |
-| `422` | array validasi | Field hilang atau di luar aturan: judul < 3 karakter, mata kuliah < 2 karakter, semester di luar 1–8, deskripsi > 2000 karakter. `loc` berbentuk `["body", "<nama_field>"]` |
-| `401` / `403` | lihat bagian 3.4 | |
-
-> Batas 10 MB dapat diubah lewat environment variable `MAX_UPLOAD_MB` di backend. Frontend sebaiknya tetap memeriksa ukuran dan ekstensi sebelum mengirim agar pengguna mendapat pesan cepat.
-
-### 5.4 `PUT /materi/{id}` — Ubah materi
-
-**Akses:** 🛡️
-
-**Body (JSON)**, semua opsional, kirim hanya field yang berubah:
-
-| Field | Tipe | Aturan |
-|---|---|---|
-| `judul` | string | 3–200 karakter |
-| `deskripsi` | string | Maks 2000 karakter |
-| `mata_kuliah` | string | 2–100 karakter |
-| `semester` | integer | 1–8 |
-| `jenis` | string | Salah satu: `pdf`, `ppt`, `pptx`, `doc`, `docx`, `xls`, `xlsx` |
-| `url` | string | Harus diawali `http://` atau `https://` |
-| `status` | string | Salah satu: `draft`, `terbit`, `arsip` |
-
-Gunakan endpoint ini untuk **menerbitkan/menyembunyikan materi**:
-
-```json
-{ "status": "arsip" }
-```
-
-**Respons `200 OK`:** objek Materi terbaru (`diubah_pada` ikut diperbarui).
-
-**Error:**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `400` | `Tidak ada field yang diubah` | Body `{}` |
-| `404` | `Materi tidak ditemukan` | |
-| `422` | `Value error, Status harus: draft, terbit, atau arsip` | Status tidak dikenal |
-| `422` | `Value error, Jenis harus salah satu dari: doc, docx, pdf, ppt, pptx, xls, xlsx` | |
-| `422` | `Value error, URL harus dimulai dengan http:// atau https://` | |
-
-> Endpoint JSON ini **tidak bisa mengganti file**. Untuk mengganti file, gunakan `PUT /materi/{id}/edit` (5.8). Mengirim `"deskripsi": null` mengosongkan deskripsi. Jika `url` diganti, file lama di server dihapus selama tidak dipakai materi lain.
-
-### 5.5 `DELETE /materi/{id}` — Hapus materi
-
-**Akses:** 🛡️ · **Respons:** `204 No Content`. Progres belajar mahasiswa pada materi itu ikut terhapus. File fisiknya di server ikut dihapus, kecuali masih dipakai materi lain.
-
-**Error:** `404` `Materi tidak ditemukan`.
-
-### 5.6 `GET /materi/kategori/semester` — Kategori semester
-
-**Akses:** 🔑 · Tidak ada parameter. Dipakai untuk langkah 1 menu Materi Kuliah ("pilih semester").
-
-**Respons `200 OK`:**
-
-```json
-{
-  "items": [
-    { "semester": 1, "total_materi": 3, "total_mata_kuliah": 2 },
-    { "semester": 2, "total_materi": 0, "total_mata_kuliah": 0 },
-    { "semester": 3, "total_materi": 1, "total_mata_kuliah": 1 },
-    { "semester": 4, "total_materi": 0, "total_mata_kuliah": 0 },
-    { "semester": 5, "total_materi": 1, "total_mata_kuliah": 1 },
-    { "semester": 6, "total_materi": 0, "total_mata_kuliah": 0 },
-    { "semester": 7, "total_materi": 0, "total_mata_kuliah": 0 },
-    { "semester": 8, "total_materi": 0, "total_mata_kuliah": 0 }
-  ]
-}
-```
-
-| Field | Keterangan |
-|---|---|
-| `items` | **Selalu 8 entri**, semester 1 sampai 8 berurutan. Semester tanpa materi tetap tampil dengan nilai `0` |
-| `total_materi` | Jumlah materi pada semester itu (mahasiswa: hanya `terbit`) |
-| `total_mata_kuliah` | Jumlah nama mata kuliah berbeda pada semester itu |
-
-Saran tampilan: semester dengan `total_materi = 0` diredupkan atau diberi keterangan "Belum ada materi".
-
-**Error:** `401`, `403` (bagian 3.4).
-
-### 5.7 `GET /materi/kategori/mata-kuliah` — Kategori mata kuliah
-
-**Akses:** 🔑 · Dipakai untuk langkah 2 menu Materi Kuliah ("pilih mata kuliah").
-
-**Query:**
-
-| Param | Tipe | Wajib | Aturan |
-|---|---|---|---|
-| `semester` | integer | ✅ | 1–8 |
-
-**Contoh:** `GET /materi/kategori/mata-kuliah?semester=1`
-
-**Respons `200 OK`:**
-
-```json
-{
-  "semester": 1,
-  "items": [
-    { "mata_kuliah": "Algoritma", "total_materi": 2 },
-    { "mata_kuliah": "Pengantar TI", "total_materi": 1 }
-  ]
-}
-```
-
-- `items` diurutkan abjad berdasarkan `mata_kuliah`.
-- Jika semester belum punya materi, `items` berupa `[]` (status tetap `200`).
-- Nilai `mata_kuliah` bisa langsung dipakai sebagai filter `GET /materi?semester=1&mata_kuliah=Algoritma` (langkah 3). Encode dengan `URLSearchParams` karena bisa memuat spasi.
-
-**Error:** `422` jika `semester` tidak dikirim, bukan angka, atau di luar 1–8 · `401`, `403` (bagian 3.4).
-
-> Nama mata kuliah adalah teks bebas yang diketik admin saat upload. Ejaan yang berbeda ("Basis Data" dan "Basisdata") dianggap dua mata kuliah.
-
-### 5.8 `PUT /materi/{id}/edit` — Edit materi via form (dipakai modal Edit Materi)
-
-**Akses:** 🛡️ · **Content-Type:** `multipart/form-data` (otomatis oleh browser saat memakai `FormData`).
-
-Endpoint ini dipakai `EditMateriModal` di frontend. Berbeda dari `PUT /materi/{id}` (5.4, JSON), endpoint ini **bisa mengganti file**.
-
-**Field form** (semua opsional, kirim yang berubah saja):
-
-| Field | Tipe | Aturan |
-|---|---|---|
-| `judul` | text | 3–200 karakter (spasi awal/akhir dibuang) |
-| `mata_kuliah` | text | 2–100 karakter |
-| `semester` | text (angka) | 1–8 |
-| `deskripsi` | text | Maks 2000 karakter. **String kosong `""` berarti dikosongkan** (menjadi `null`) |
-| `file` | file | Opsional. Jika dikirim: `.pdf`, `.docx`, `.pptx`, atau `.xlsx`, maks 10 MB, tidak kosong |
-
-Perilaku:
-- Hanya field yang dikirim yang diubah. Field yang tidak dikirim tetap.
-- Jika `file` dikirim: `jenis` dan `url` ikut diperbarui, lalu **file lama dihapus** dari server (selama tidak dipakai materi lain). Jika `file` tidak dikirim, file dan `url` tidak berubah.
-- Semua validasi dijalankan **sebelum** file disimpan. Jika ada yang gagal, data dan file lama tetap utuh serta tidak ada file baru tersisa.
-- `status` dan `dibuat_oleh` tidak berubah. Untuk mengubah status gunakan 5.4.
-
-**Contoh (FormData):**
-
-```js
-const fd = new FormData();
-fd.append("judul", "Struktur Data Revisi");
-fd.append("semester", "4");
-fd.append("mata_kuliah", "Struktur Data");
-fd.append("deskripsi", "");            // dikosongkan
-fd.append("file", fileBaru);           // opsional: ganti file
-await api(`/materi/${id}/edit`, { method: "PUT", formData: fd, token });
-```
-
-**Respons `200 OK`:** objek Materi terbaru.
-
-**Error:**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `400` | `Tidak ada field yang diubah` | Tidak ada field maupun file yang dikirim |
-| `400` | `Format file tidak diizinkan` | Ekstensi file baru di luar daftar |
-| `400` | `File kosong` | File baru berukuran 0 byte |
-| `404` | `Materi tidak ditemukan` | ID tidak ada |
-| `413` | `Ukuran file maksimal 10 MB` | File baru melebihi batas |
-| `422` | array validasi | Nilai di luar aturan (mis. semester 9, judul < 3 karakter) |
-| `401` / `403` | lihat bagian 3.4 | |
-
----
-
-## 6. Dashboard Admin
-
-### `GET /admin/dashboard`
-
-**Akses:** 🛡️ · Tidak ada parameter.
-
-**Respons `200 OK`:**
-
-```json
-{
-  "total_mahasiswa": 1,
-  "total_materi": 3,
-  "materi_terbaru": [
+      "dibuat_pada": "2026-11-19T07:33:40.347731",
+      "diubah_pada": "2026-11-19T07:33:40.347738",
+      "status_belajar": "belum",
+      "url_pratinjau": "https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Finf-learning-production.up.railway.app%2Fuploads%2F1c04e63e21f142a1a3e7ac3a54a799a8.pptx"
+    },
     {
-      "id": 4,
-      "judul": "Materi Draft",
-      "mata_kuliah": "Algoritma",
-      "semester": 2,
+      "id": 1,
+      "judul": "Pengantar Basis Data",
+      "deskripsi": "Konsep dasar basis data relasional",
+      "mata_kuliah": "Basis Data",
+      "semester": 3,
       "jenis": "pdf",
-      "dibuat_pada": "2026-10-27T08:24:02.739484"
+      "url": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf",
+      "dibuat_oleh": 1,
+      "status": "terbit",
+      "dibuat_pada": "2026-11-19T07:33:40.338127",
+      "diubah_pada": "2026-11-19T07:33:40.338134",
+      "status_belajar": "belum",
+      "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf"
     }
   ],
-  "mahasiswa_terbaru": [
+  "total": 2,
+  "page": 1,
+  "limit": 20,
+  "total_pages": 1
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `POST /api/v1/materi`
+
+**Tambah materi via upload file (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Body** (`multipart/form-data`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `judul` | string | ya |  |
+| `mata_kuliah` | string | ya |  |
+| `semester` | integer | ya |  |
+| `deskripsi` | string \| null | tidak |  |
+| `file` | file | ya | pdf, docx, pptx, atau xlsx; maks 10 MB |
+
+Contoh request:
+
+Form fields:
+```json
+{
+  "judul": "Pengantar Basis Data",
+  "mata_kuliah": "Basis Data",
+  "semester": "3",
+  "deskripsi": "Konsep dasar basis data relasional"
+}
+```
+(+ file `file`)
+
+**Respons sukses: `201`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `judul` | string |  |
+| `deskripsi` | string \| null |  |
+| `mata_kuliah` | string |  |
+| `semester` | integer |  |
+| `jenis` | string |  |
+| `url` | string |  |
+| `dibuat_oleh` | integer \| null |  |
+| `status` | string |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+| `diubah_pada` | string (date-time, UTC) |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` \| null |  |
+| `url_pratinjau` | string \| null | Alamat yang bisa dipasang langsung di `<iframe>`: file PDF itu sendiri, atau viewer Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh). |
+
+Contoh respons:
+
+```json
+{
+  "id": 1,
+  "judul": "Pengantar Basis Data",
+  "deskripsi": "Konsep dasar basis data relasional",
+  "mata_kuliah": "Basis Data",
+  "semester": 3,
+  "jenis": "pdf",
+  "url": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf",
+  "dibuat_oleh": 1,
+  "status": "terbit",
+  "dibuat_pada": "2026-11-19T07:33:40.338127",
+  "diubah_pada": "2026-11-19T07:33:40.338134",
+  "status_belajar": null,
+  "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 400 | Format file tidak diizinkan<br>File kosong |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 413 | Ukuran file maksimal 10 MB |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `GET /api/v1/materi/kategori/semester`
+
+**Kategori semester beserta jumlah materi**
+
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `items` | array&lt;[KategoriSemester](#skema-kategorisemester)&gt; |  |
+
+Contoh respons:
+
+```json
+{
+  "items": [
     {
-      "id": 2,
-      "nama": "Budi Santoso",
-      "nomor_induk": "2488010071",
-      "angkatan": 2024,
-      "status": "aktif",
-      "dibuat_pada": "2026-10-27T08:24:02.085005"
+      "semester": 1,
+      "total_materi": 1,
+      "total_mata_kuliah": 1
+    },
+    {
+      "semester": 2,
+      "total_materi": 0,
+      "total_mata_kuliah": 0
     }
   ]
 }
 ```
 
-| Field | Keterangan |
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| `total_mahasiswa` | Jumlah semua mahasiswa (semua status) |
-| `total_materi` | Jumlah semua materi (**termasuk** `draft` dan `arsip`) |
-| `materi_terbaru` | Maksimal 5, terbaru dulu, semua status. Tidak memuat `url` dan `status` |
-| `mahasiswa_terbaru` | Maksimal 5, terbaru dulu |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
 
-> Statistik kuis **sudah dihapus** dari respons ini. Frontend tidak boleh lagi membaca `total_kuis`.
+#### `GET /api/v1/materi/kategori/mata-kuliah`
 
-**Error:** `401`, `403` (bagian 3.4).
+**Kategori mata kuliah pada sebuah semester**
 
----
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
 
-## 7. Dashboard Mahasiswa & Progres Belajar
+**Parameter**
 
-### 7.1 `GET /mahasiswa/dashboard`
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `semester` | query | integer | ya | min 1; maks 8 |
 
-**Akses:** 🎓 mahasiswa saja (admin mendapat `403`). Tidak ada parameter.
+Contoh request:
 
-> Path ini berbeda dari `GET /mahasiswa` (daftar mahasiswa untuk admin). Jangan tertukar.
+Query: `semester=3`
 
-**Respons `200 OK`:**
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `semester` | integer |  |
+| `items` | array&lt;[KategoriMataKuliah](#skema-kategorimatakuliah)&gt; |  |
+
+Contoh respons:
+
+```json
+{
+  "semester": 3,
+  "items": [
+    {
+      "mata_kuliah": "Basis Data",
+      "total_materi": 2
+    }
+  ]
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `GET /api/v1/materi/{materi_id}`
+
+**Detail materi**
+
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `judul` | string |  |
+| `deskripsi` | string \| null |  |
+| `mata_kuliah` | string |  |
+| `semester` | integer |  |
+| `jenis` | string |  |
+| `url` | string |  |
+| `dibuat_oleh` | integer \| null |  |
+| `status` | string |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+| `diubah_pada` | string (date-time, UTC) |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` \| null |  |
+| `url_pratinjau` | string \| null | Alamat yang bisa dipasang langsung di `<iframe>`: file PDF itu sendiri, atau viewer Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh). |
+
+Contoh respons:
+
+```json
+{
+  "id": 1,
+  "judul": "Pengantar Basis Data",
+  "deskripsi": "Konsep dasar basis data relasional",
+  "mata_kuliah": "Basis Data",
+  "semester": 3,
+  "jenis": "pdf",
+  "url": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf",
+  "dibuat_oleh": 1,
+  "status": "terbit",
+  "dibuat_pada": "2026-11-19T07:33:40.338127",
+  "diubah_pada": "2026-11-19T07:33:40.338134",
+  "status_belajar": "belum",
+  "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
+| 404 | Materi tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `PUT /api/v1/materi/{materi_id}`
+
+**Edit materi via JSON (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
+
+**Body** (`application/json`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `judul` | string \| null | tidak | min 3 karakter; maks 200 karakter |
+| `deskripsi` | string \| null | tidak | maks 2000 karakter |
+| `mata_kuliah` | string \| null | tidak | min 2 karakter; maks 100 karakter |
+| `semester` | integer \| null | tidak | min 1.0; maks 8.0 |
+| `jenis` | string \| null | tidak | min 3 karakter; maks 20 karakter |
+| `url` | string \| null | tidak | min 5 karakter; maks 500 karakter |
+| `status` | string \| null | tidak |  |
+
+Contoh request:
+
+```json
+{
+  "status": "terbit"
+}
+```
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `judul` | string |  |
+| `deskripsi` | string \| null |  |
+| `mata_kuliah` | string |  |
+| `semester` | integer |  |
+| `jenis` | string |  |
+| `url` | string |  |
+| `dibuat_oleh` | integer \| null |  |
+| `status` | string |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+| `diubah_pada` | string (date-time, UTC) |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` \| null |  |
+| `url_pratinjau` | string \| null | Alamat yang bisa dipasang langsung di `<iframe>`: file PDF itu sendiri, atau viewer Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh). |
+
+Contoh respons:
+
+```json
+{
+  "id": 1,
+  "judul": "Pengantar Basis Data",
+  "deskripsi": "Konsep dasar basis data relasional",
+  "mata_kuliah": "Basis Data",
+  "semester": 3,
+  "jenis": "pdf",
+  "url": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf",
+  "dibuat_oleh": 1,
+  "status": "terbit",
+  "dibuat_pada": "2026-11-19T07:33:40.338127",
+  "diubah_pada": "2026-11-19T07:33:40.338134",
+  "status_belajar": null,
+  "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 400 | Tidak ada field yang diubah |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Materi tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `DELETE /api/v1/materi/{materi_id}`
+
+**Hapus materi beserta file fisiknya (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
+
+**Respons sukses: `204`**
+
+Tanpa isi (body kosong).
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Materi tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `GET /api/v1/materi/{materi_id}/unduh`
+
+**Unduh file materi**
+
+Mengirim file dengan header `Content-Disposition: attachment` dan nama file dari judul materi. Mahasiswa hanya bisa mengunduh materi berstatus terbit.
+
+- **Akses:** Semua pengguna login (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
+
+**Respons sukses: `200`**
+
+File dikirim sebagai unduhan. Header: `Content-Disposition: attachment; filename*=utf-8''Pengantar%20Basis%20Data.pdf`, `Content-Type` sesuai format file (mis. `application/pdf`). Nama file diambil dari judul materi. FE harus memakai `fetch` dengan header Authorization lalu menyimpan hasilnya sebagai blob.
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 400 | Materi ini berupa tautan eksternal dan tidak dapat diunduh dari server |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif |
+| 404 | Materi tidak ditemukan<br>File materi tidak ditemukan di server |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `PUT /api/v1/materi/{materi_id}/edit`
+
+**Edit materi via form, file opsional (admin only)**
+
+Hanya field yang dikirim yang diubah. `deskripsi` kosong berarti dikosongkan. Jika `file` dikirim, file lama diganti dan dihapus dari server.
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
+
+**Body** (`multipart/form-data`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `judul` | string \| null | tidak |  |
+| `mata_kuliah` | string \| null | tidak |  |
+| `semester` | integer \| null | tidak |  |
+| `deskripsi` | string \| null | tidak |  |
+| `file` | file \| null | tidak | pdf, docx, pptx, atau xlsx; maks 10 MB |
+
+Contoh request:
+
+Form fields:
+```json
+{
+  "deskripsi": "Pengenalan algoritma dan pemrograman"
+}
+```
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `judul` | string |  |
+| `deskripsi` | string \| null |  |
+| `mata_kuliah` | string |  |
+| `semester` | integer |  |
+| `jenis` | string |  |
+| `url` | string |  |
+| `dibuat_oleh` | integer \| null |  |
+| `status` | string |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+| `diubah_pada` | string (date-time, UTC) |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` \| null |  |
+| `url_pratinjau` | string \| null | Alamat yang bisa dipasang langsung di `<iframe>`: file PDF itu sendiri, atau viewer Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh). |
+
+Contoh respons:
+
+```json
+{
+  "id": 3,
+  "judul": "Algoritma Dasar",
+  "deskripsi": "Pengenalan algoritma dan pemrograman",
+  "mata_kuliah": "Algoritma",
+  "semester": 1,
+  "jenis": "pdf",
+  "url": "https://inf-learning-production.up.railway.app/uploads/39f2d8da668a44ca82773f54925c7a00.pdf",
+  "dibuat_oleh": 1,
+  "status": "terbit",
+  "dibuat_pada": "2026-11-19T07:33:40.355440",
+  "diubah_pada": "2026-11-19T07:33:40.390260",
+  "status_belajar": null,
+  "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/39f2d8da668a44ca82773f54925c7a00.pdf"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 400 | Tidak ada field yang diubah<br>Format file tidak diizinkan<br>File kosong |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Materi tidak ditemukan |
+| 413 | Ukuran file maksimal 10 MB |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+### Dashboard & Progres Mahasiswa
+
+#### `GET /api/v1/mahasiswa/dashboard`
+
+**Ringkasan dashboard mahasiswa (mahasiswa only)**
+
+- **Akses:** Mahasiswa (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `profil` | [ProfilMahasiswa](#skema-profilmahasiswa) |  |
+| `statistik` | [StatistikBelajar](#skema-statistikbelajar) |  |
+| `lanjutkan_belajar` | [MateriDashboard](#skema-materidashboard) \| null |  |
+| `materi_terbaru` | array&lt;[MateriDashboard](#skema-materidashboard)&gt; |  |
+| `progres_mata_kuliah` | array&lt;[ProgresMataKuliah](#skema-progresmatakuliah)&gt; |  |
+
+Contoh respons:
 
 ```json
 {
   "profil": {
     "id": 2,
     "nama": "Budi Santoso",
-    "nomor_induk": "2488010071",
-    "angkatan": 2024
+    "nomor_induk": "2388010001",
+    "angkatan": 2023,
+    "foto_url": null
   },
   "statistik": {
-    "total_materi": 2,
-    "materi_dilihat": 2,
-    "materi_selesai": 1,
-    "persen_selesai": 50.0
+    "total_materi": 3,
+    "materi_dilihat": 1,
+    "materi_selesai": 0,
+    "persen_selesai": 0.0
   },
   "lanjutkan_belajar": {
-    "id": 2,
-    "judul": "Basis Data Dasar",
+    "id": 1,
+    "judul": "Pengantar Basis Data",
     "mata_kuliah": "Basis Data",
     "semester": 3,
-    "jenis": "pptx",
-    "url": "https://api.contoh.app/uploads/4e162b818dbb48a18a40257a49161802.pptx",
-    "dibuat_pada": "2026-10-27T08:24:02.709148",
+    "jenis": "pdf",
+    "url": "https://inf-learning-production.up.railway.app/uploads/93936b50b75646d1aefaa9f5b079c06c.pdf",
+    "dibuat_pada": "2026-11-19T07:33:40.338127",
     "status_belajar": "dilihat"
   },
   "materi_terbaru": [
     {
-      "id": 1,
-      "judul": "Pengantar Algoritma (Revisi)",
+      "id": 3,
+      "judul": "Algoritma Dasar",
       "mata_kuliah": "Algoritma",
       "semester": 1,
       "jenis": "pdf",
-      "url": "https://api.contoh.app/uploads/eee70c8a991e412e8536447cda5194a8.pdf",
-      "dibuat_pada": "2026-10-27T08:24:02.701333",
-      "status_belajar": "selesai"
+      "url": "https://inf-learning-production.up.railway.app/uploads/39f2d8da668a44ca82773f54925c7a00.pdf",
+      "dibuat_pada": "2026-11-19T07:33:40.355440",
+      "status_belajar": "belum"
+    },
+    {
+      "id": 2,
+      "judul": "Slide ERD Pertemuan 2",
+      "mata_kuliah": "Basis Data",
+      "semester": 3,
+      "jenis": "pptx",
+      "url": "https://inf-learning-production.up.railway.app/uploads/1c04e63e21f142a1a3e7ac3a54a799a8.pptx",
+      "dibuat_pada": "2026-11-19T07:33:40.347731",
+      "status_belajar": "belum"
     }
   ],
   "progres_mata_kuliah": [
-    { "mata_kuliah": "Algoritma", "total": 1, "selesai": 1, "persen": 100.0 },
-    { "mata_kuliah": "Basis Data", "total": 1, "selesai": 0, "persen": 0.0 }
+    {
+      "mata_kuliah": "Algoritma",
+      "total": 1,
+      "selesai": 0,
+      "persen": 0.0
+    },
+    {
+      "mata_kuliah": "Basis Data",
+      "total": 2,
+      "selesai": 0,
+      "persen": 0.0
+    }
   ]
 }
 ```
 
-| Field | Keterangan |
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| `profil` | Identitas mahasiswa yang login |
-| `statistik.total_materi` | Jumlah materi `terbit` |
-| `statistik.materi_dilihat` | Materi terbit yang pernah dibuka (**sudah termasuk** yang selesai) |
-| `statistik.materi_selesai` | Materi terbit yang ditandai selesai |
-| `statistik.persen_selesai` | `materi_selesai / total_materi × 100`, 1 angka desimal. `0.0` jika belum ada materi |
-| `lanjutkan_belajar` | Materi terakhir yang dibuka tetapi **belum selesai**. `null` jika tidak ada. Cocok untuk kartu "Lanjutkan belajar" |
-| `materi_terbaru` | Maksimal 5 materi `terbit` terbaru, dilengkapi `status_belajar` milik mahasiswa ini |
-| `progres_mata_kuliah` | Satu entri per mata kuliah yang punya materi terbit, urut abjad. Bisa kosong (`[]`) |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
 
-`status_belajar` bernilai `belum` (belum pernah dibuka), `dilihat`, atau `selesai`.
+#### `POST /api/v1/materi/{materi_id}/progres`
 
-Kondisi awal (belum ada materi/progres): `total_materi: 0`, semua angka `0`/`0.0`, `lanjutkan_belajar: null`, `materi_terbaru: []`, `progres_mata_kuliah: []`. Siapkan tampilan *empty state*.
+**Catat progres belajar pada sebuah materi (mahasiswa only)**
 
-### 7.2 `POST /materi/{id}/progres` — Catat progres
+status 'dilihat' saat materi dibuka, 'selesai' saat ditandai selesai. Status 'selesai' tidak akan turun kembali menjadi 'dilihat'.
 
-**Akses:** 🎓 mahasiswa saja.
+- **Akses:** Mahasiswa (header `Authorization: Bearer <token>`)
 
-**Path:** `id` = ID materi.
+**Parameter**
 
-**Body (JSON):**
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `materi_id` | path | integer | ya |  |
 
-| Field | Tipe | Wajib | Nilai |
+**Body** (`application/json`)
+
+| Field | Tipe | Wajib | Keterangan |
 |---|---|---|---|
-| `status` | string | ✅ | `dilihat` atau `selesai` |
+| `status` | enum: `dilihat`, `selesai` | ya |  |
+
+Contoh request:
 
 ```json
-{ "status": "selesai" }
+{
+  "status": "dilihat"
+}
 ```
 
-**Respons `200 OK`:**
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `materi_id` | integer |  |
+| `status` | enum: `belum`, `dilihat`, `selesai` |  |
+| `diubah_pada` | string (date-time, UTC) |  |
+
+Contoh respons:
 
 ```json
 {
   "materi_id": 1,
-  "status": "selesai",
-  "diubah_pada": "2026-10-27T08:24:02.912726"
+  "status": "dilihat",
+  "diubah_pada": "2026-11-19T07:33:40.933357"
 }
 ```
 
-Aturan:
-- Panggil dengan `dilihat` saat mahasiswa **membuka** sebuah materi, dan `selesai` saat menekan "Tandai selesai".
-- Aman dipanggil berulang (idempoten). Satu mahasiswa hanya punya satu catatan per materi.
-- Status `selesai` **tidak bisa turun** ke `dilihat`. Jika dikirim `dilihat` setelah `selesai`, respons tetap `status: "selesai"`. Pakai nilai `status` dari **respons** untuk memperbarui tampilan, bukan nilai yang dikirim.
+**Kemungkinan error**
 
-**Error:**
-
-| Status | `detail` | Kapan |
-|---|---|---|
-| `404` | `Materi tidak ditemukan` | ID tidak ada **atau** materi belum `terbit` |
-| `403` | `Anda tidak memiliki akses ke endpoint ini` | Dipanggil oleh admin |
-| `422` | `Input should be 'dilihat' or 'selesai'` | Status tidak valid |
-
----
-
-## 8. Endpoint Utilitas
-
-| Method | Path | Respons |
-|---|---|---|
-| GET | `/` | `{"app": "INF-Learning", "status": "ok"}` |
-| GET | `/health` | `{"status": "ok", "database": "connected"}`. Jika database bermasalah, `database` bernilai `"error"` (status HTTP tetap `200`). Rincian error hanya ada di log server |
-
-Keduanya berada di **luar** `/api/v1` (root domain) dan tanpa token.
-
-**File upload:** `GET {HOST}/uploads/<nama-file>` melayani file materi. URL lengkapnya sudah ada di field `url` pada objek Materi, jadi frontend cukup memakai nilai itu apa adanya (tautan unduh/buka di tab baru).
-
----
-
-## 9. Kamus Data (Enum & Aturan)
-
-| Nama | Nilai yang valid | Keterangan |
-|---|---|---|
-| `peran` | `admin`, `mahasiswa` | |
-| Status akun | `belum_aktif`, `aktif`, `nonaktif` | `belum_aktif` = diinput admin tapi belum registrasi |
-| Status materi | `draft`, `terbit`, `arsip` | Hanya `terbit` yang dilihat mahasiswa |
-| `jenis` materi (saat upload) | `pdf`, `docx`, `pptx`, `xlsx` | |
-| `jenis` materi (saat `PUT`) | `pdf`, `ppt`, `pptx`, `doc`, `docx`, `xls`, `xlsx` | |
-| Status progres (kirim) | `dilihat`, `selesai` | |
-| `status_belajar` (terima) | `belum`, `dilihat`, `selesai` | `belum` hanya muncul di respons dashboard |
-| Semester | `1` – `8` | |
-
-**Format NIM:** `^2\d88\d{6}$`, yaitu 10 digit, diawali `2`, digit ke-3 dan ke-4 adalah `88`. Contoh sah: `2488010071`. Contoh tidak sah: `1234567890`, `24880100`, `2488O10071` (huruf O).
-
-Regex untuk frontend:
-
-```js
-export const POLA_NIM = /^2\d88\d{6}$/;
-```
-
----
-
-## 10. Panduan Integrasi Frontend
-
-### 10.1 Alur Autentikasi
-
-1. **Registrasi:** `POST /auth/registrasi` → sukses → arahkan ke login.
-2. **Login:** `POST /auth/login` → simpan `access_token` dan `pengguna`.
-3. **Arahkan berdasarkan peran:**
-   - `pengguna.peran === "admin"` → dashboard admin (`GET /admin/dashboard`)
-   - `pengguna.peran === "mahasiswa"` → dashboard mahasiswa (`GET /mahasiswa/dashboard`)
-4. **Buka ulang aplikasi:** jika token tersimpan, panggil `GET /auth/me`. Sukses → pulihkan sesi. `401`/`403` → hapus token, ke halaman login.
-5. **Logout:** cukup hapus token di sisi klien (tidak ada endpoint logout).
-
-**Guard rute:** halaman admin hanya untuk `peran === "admin"` dan halaman mahasiswa hanya untuk `peran === "mahasiswa"`. Pengecekan di frontend hanya soal tampilan. Keamanan sebenarnya ada di backend (`403`).
-
-### 10.2 Wrapper Fetch & Penanganan Error
-
-```js
-const BASE_URL = import.meta.env.VITE_API_BASE_URL; // contoh: https://xxx.up.railway.app/api/v1
-
-export class ApiError extends Error {
-  constructor(status, message, fields = {}) {
-    super(message);
-    this.status = status;
-    this.fields = fields; // { nomor_induk: "Format NIM tidak dikenali", ... }
-  }
-}
-
-// Ubah 3 bentuk error backend (string / array 422 / teks polos 500) menjadi satu bentuk
-async function bacaError(res) {
-  let body = null;
-  try { body = await res.json(); } catch { /* 500 teks polos atau body kosong */ }
-
-  if (!body) {
-    return new ApiError(res.status,
-      res.status >= 500 ? "Terjadi kesalahan pada server. Coba lagi nanti." : "Permintaan gagal.");
-  }
-  if (typeof body.detail === "string") {
-    return new ApiError(res.status, body.detail);
-  }
-  if (Array.isArray(body.detail)) {
-    const fields = {};
-    const pesan = body.detail.map((e) => {
-      const teks = String(e.msg).replace(/^Value error, /, "");
-      const nama = e.loc?.[1];
-      if (nama && !fields[nama]) fields[nama] = teks;
-      return teks;
-    });
-    return new ApiError(res.status, pesan.join(". "), fields);
-  }
-  return new ApiError(res.status, "Terjadi kesalahan.");
-}
-
-export async function api(path, { method = "GET", body, formData, token } = {}) {
-  const headers = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-  if (body !== undefined) headers["Content-Type"] = "application/json";
-  // Untuk FormData JANGAN set Content-Type sendiri, browser mengisi boundary otomatis.
-
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: formData ?? (body !== undefined ? JSON.stringify(body) : undefined),
-  });
-
-  if (res.status === 204) return null;   // DELETE sukses
-  if (!res.ok) throw await bacaError(res);
-  return res.json();
-}
-```
-
-**Penanganan `401` global:** pada status `401` di endpoint selain `/auth/login` dan `/auth/registrasi`, hapus token lalu arahkan ke `/login` dengan pesan "Sesi berakhir, silakan login kembali". Ini penting karena token hanya berlaku 15 menit.
-
-**Tabel penanganan cepat:**
-
-| Status | Tindakan UI |
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| `401` di endpoint terproteksi | Hapus token → ke halaman login |
-| `401` di form login | Tampilkan "NIM atau kata sandi salah" |
-| `403` | "Anda tidak memiliki akses", atau di login: tampilkan `detail` |
-| `404` | "Data tidak ditemukan" (atau tampilkan `detail`) |
-| `409` | Tampilkan `detail` di form (NIM sudah ada / akun sudah aktif) |
-| `422` | Tandai input memakai `error.fields[namaField]` |
-| `500` | Pesan umum, jangan tampilkan teks mentah |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Materi tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
 
-### 10.3 Contoh Pemakaian per Fitur
+### Profil (Foto)
 
-```js
-// Login
-const hasil = await api("/auth/login", { method: "POST",
-  body: { nomor_induk, kata_sandi } });
-// hasil.access_token, hasil.pengguna.peran
+#### `PUT /api/v1/profil/foto`
 
-// Registrasi
-await api("/auth/registrasi", { method: "POST",
-  body: { nomor_induk, kata_sandi, konfirmasi_kata_sandi } });
+**Unggah atau ganti foto profil (mahasiswa only)**
 
-// Daftar materi dengan filter (buang parameter kosong)
-const params = new URLSearchParams(
-  Object.entries({ mata_kuliah, semester, q, page, limit })
-    .filter(([, v]) => v !== "" && v != null)
-);
-const daftar = await api(`/materi?${params}`, { token });
+Format JPG, PNG, atau WEBP, maksimal 2 MB. Format dikenali dari isi file, bukan dari ekstensi. Foto lama otomatis dihapus.
 
-// Upload materi (admin): pakai FormData
-const fd = new FormData();
-fd.append("judul", judul);
-fd.append("mata_kuliah", mataKuliah);
-fd.append("semester", String(semester));
-if (deskripsi) fd.append("deskripsi", deskripsi);
-fd.append("file", fileInput.files[0]);
-const materi = await api("/materi", { method: "POST", formData: fd, token });
+- **Akses:** Mahasiswa (header `Authorization: Bearer <token>`)
 
-// Edit materi dari modal (admin): form + file opsional, lihat 5.8
-const fe = new FormData();
-fe.append("judul", judul); fe.append("semester", String(semester));
-fe.append("mata_kuliah", mataKuliah); fe.append("deskripsi", deskripsi);
-if (fileBaru) fe.append("file", fileBaru);
-await api(`/materi/${id}/edit`, { method: "PUT", formData: fe, token });
+**Body** (`multipart/form-data`)
 
-// Terbitkan / arsipkan materi (admin)
-await api(`/materi/${id}`, { method: "PUT", body: { status: "arsip" }, token });
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `file` | file | ya |  |
 
-// Nonaktifkan mahasiswa (admin)
-await api(`/mahasiswa/${id}`, { method: "PUT", body: { status: "nonaktif" }, token });
+Contoh request:
 
-// Kelola mahasiswa (admin): daftar + pencarian + filter
-const pm = new URLSearchParams({ q, status, angkatan, page, limit }); // buang yang kosong sebelum dikirim
-const mhsList = await api(`/mahasiswa?${pm}`, { token });
-await api("/mahasiswa", { method: "POST", body: { nomor_induk, nama, angkatan }, token });
-await api(`/mahasiswa/${id}`, { method: "PUT", body: { nama, angkatan: null }, token }); // angkatan: null = kosongkan
-await api(`/mahasiswa/${id}`, { method: "DELETE", token });
-const ringkasan = await api("/mahasiswa/ringkasan", { token });          // { total, belum_aktif, aktif, nonaktif }
-await api(`/mahasiswa/${id}/reset-akun`, { method: "POST", token });     // lupa kata sandi
+Form: kirim file di field `file` (multipart/form-data).
 
-// Dashboard mahasiswa
-const dash = await api("/mahasiswa/dashboard", { token });
+**Respons sukses: `200`**
 
-// Mahasiswa membuka materi → catat "dilihat", lalu buka file
-await api(`/materi/${m.id}/progres`, { method: "POST", body: { status: "dilihat" }, token });
-window.open(m.url, "_blank", "noopener");
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `foto_url` | string \| null |  |
 
-// Tandai selesai, lalu pakai status dari RESPONS
-const p = await api(`/materi/${m.id}/progres`, { method: "POST", body: { status: "selesai" }, token });
-// p.status === "selesai"
+Contoh respons:
+
+```json
+{
+  "foto_url": "https://inf-learning-production.up.railway.app/uploads/foto-9632cd67af56411ea00218f32e5cd451.png"
+}
 ```
 
-### 10.4 Validasi Sisi Klien yang Disarankan
+**Kemungkinan error**
 
-Samakan dengan aturan backend agar pengguna mendapat pesan cepat tanpa menunggu respons server:
-
-| Form | Aturan |
+| Status | Kondisi (isi `detail`) |
 |---|---|
-| Registrasi | NIM cocok `POLA_NIM` · password 8–72 karakter · konfirmasi sama dengan password |
-| Login | NIM tidak kosong · password tidak kosong (kirim apa adanya; < 8 karakter pasti ditolak) |
-| Tambah / edit mahasiswa | NIM cocok `POLA_NIM` (setelah trim) · nama 3–100 karakter · angkatan kosong atau 2000–2100. Saat edit, kirim hanya field yang berubah |
-| Upload / edit materi | judul 3–200 · mata kuliah 2–100 · semester 1–8 · deskripsi ≤ 2000 · ekstensi file `.pdf/.docx/.pptx/.xlsx` · ukuran ≤ 10 MB |
+| 400 | File kosong<br>Format foto tidak diizinkan. Gunakan JPG, PNG, atau WEBP |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 413 | Ukuran foto maksimal 2 MB |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
 
-### 10.5 Menampilkan Tanggal
+#### `DELETE /api/v1/profil/foto`
 
-```js
-// Backend mengirim UTC tanpa penanda zona. Tambahkan "Z" agar dibaca sebagai UTC.
-export const formatTanggal = (s) =>
-  new Date(s + "Z").toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" });
+**Hapus foto profil (mahasiswa only)**
+
+- **Akses:** Mahasiswa (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `foto_url` | string \| null |  |
+
+Contoh respons:
+
+```json
+{
+  "foto_url": null
+}
 ```
 
-### 10.6 Definisi Tipe (JSDoc)
+**Kemungkinan error**
 
-```js
-/** @typedef {"admin"|"mahasiswa"} Peran */
-/** @typedef {"belum_aktif"|"aktif"|"nonaktif"} StatusAkun */
-/** @typedef {"draft"|"terbit"|"arsip"} StatusMateri */
-/** @typedef {"belum"|"dilihat"|"selesai"} StatusBelajar */
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
 
-/** @typedef {{ id:number, peran:Peran, nomor_induk:string, nama:string, status:StatusAkun }} Pengguna */
-/** @typedef {{ id:number, nomor_induk:string, nama:string, angkatan:number|null, status:StatusAkun, dibuat_pada:string }} Mahasiswa */
-/** @typedef {{ id:number, judul:string, deskripsi:string|null, mata_kuliah:string, semester:number,
- *             jenis:string, url:string, dibuat_oleh:number|null, status:StatusMateri,
- *             dibuat_pada:string, diubah_pada:string, status_belajar:StatusBelajar|null }} Materi */
-/** @typedef {{ semester:number, total_materi:number, total_mata_kuliah:number }} KategoriSemester */
-/** @typedef {{ mata_kuliah:string, total_materi:number }} KategoriMataKuliah */
-/** @template T @typedef {{ items:T[], total:number, page:number, limit:number, total_pages:number }} Halaman */
-/** @typedef {{ access_token:string, token_type:"bearer", expires_in:number, pengguna:Pengguna }} LoginResponse */
-/** @typedef {{ id:number, judul:string, mata_kuliah:string, semester:number, jenis:string,
- *             url:string, dibuat_pada:string, status_belajar:StatusBelajar }} MateriDashboard */
-/** @typedef {{ profil:{id:number,nama:string,nomor_induk:string,angkatan:number|null},
- *             statistik:{total_materi:number,materi_dilihat:number,materi_selesai:number,persen_selesai:number},
- *             lanjutkan_belajar:MateriDashboard|null, materi_terbaru:MateriDashboard[],
- *             progres_mata_kuliah:{mata_kuliah:string,total:number,selesai:number,persen:number}[] }} DashboardMahasiswa */
+### Kontak Admin (WhatsApp)
+
+#### `GET /api/v1/kontak-admin/whatsapp`
+
+**Tautan WhatsApp untuk menghubungi admin (mahasiswa only)**
+
+Mengembalikan tautan wa.me dengan pesan yang sudah terisi otomatis (nama, NIM, angkatan, topik, dan pesan opsional). Mengembalikan 503 bila nomor WhatsApp admin belum diatur.
+
+- **Akses:** Mahasiswa (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `topik` | query | enum: `akun`, `materi`, `lainnya` | tidak | Topik: akun, materi, atau lainnya; default `lainnya` |
+| `pesan` | query | string \| null | tidak | Pesan tambahan (opsional); maks 500 karakter |
+
+Contoh request:
+
+Query: `topik=materi&pesan=PDF Basis Data tidak bisa dibuka`
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `nomor` | string |  |
+| `nomor_tampil` | string |  |
+| `pesan` | string |  |
+| `tautan` | string |  |
+
+Contoh respons:
+
+```json
+{
+  "nomor": "6281234567890",
+  "nomor_tampil": "+62 812-3456-7890",
+  "pesan": "Halo Admin INF-Learning, saya Budi Santoso (NIM 2388010001, angkatan 2023).\nTopik: Kendala materi kuliah\n\nPDF Basis Data tidak bisa dibuka",
+  "tautan": "https://wa.me/6281234567890?text=Halo%20Admin%20INF-Learning%2C%20saya%20Budi%20Santoso%20%28NIM%202388010001%2C%20angkatan%202023%29.%0ATopik%3A%20Kendala%20materi%20kuliah%0A%0APDF%20Basis%20Data%20tidak%20bisa%20dibuka"
+}
 ```
 
-### 10.7 Alur Menu Materi Kuliah (Mahasiswa)
+**Kemungkinan error**
 
-Tiga langkah bertahap, masing-masing satu request:
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+| 503 | Kontak WhatsApp admin belum tersedia |
 
+### Manajemen Mahasiswa (Admin)
+
+#### `GET /api/v1/mahasiswa`
+
+**List mahasiswa + pencarian & filter (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `q` | query | string \| null | tidak | Cari di nama atau NIM; maks 100 karakter |
+| `status` | query | enum: `belum_aktif`, `aktif`, `nonaktif` \| null | tidak | Filter status akun |
+| `angkatan` | query | integer \| null | tidak | min 2000; maks 2100 |
+| `page` | query | integer | tidak | min 1; default `1` |
+| `limit` | query | integer | tidak | min 1; maks 100; default `20` |
+
+Contoh request:
+
+Query: `q=budi&status=aktif&page=1&limit=20`
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `items` | array&lt;[MahasiswaResponse](#skema-mahasiswaresponse)&gt; |  |
+| `total` | integer |  |
+| `page` | integer |  |
+| `limit` | integer |  |
+| `total_pages` | integer |  |
+
+Contoh respons:
+
+```json
+{
+  "items": [
+    {
+      "id": 2,
+      "nomor_induk": "2388010001",
+      "nama": "Budi Santoso",
+      "angkatan": 2023,
+      "status": "aktif",
+      "foto_url": null,
+      "dibuat_pada": "2026-11-19T07:33:39.836112"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 20,
+  "total_pages": 1
+}
 ```
-Langkah 1: pilih semester         GET /materi/kategori/semester
-Langkah 2: pilih mata kuliah      GET /materi/kategori/mata-kuliah?semester={n}
-Langkah 3: lihat daftar materi    GET /materi?semester={n}&mata_kuliah={nama}
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `POST /api/v1/mahasiswa`
+
+**Tambah mahasiswa manual (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Body** (`application/json`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string | ya | min 10 karakter; maks 10 karakter |
+| `nama` | string | ya | min 3 karakter; maks 100 karakter |
+| `angkatan` | integer \| null | tidak | min 2000.0; maks 2100.0 |
+
+Contoh request:
+
+```json
+{
+  "nomor_induk": "2388010001",
+  "nama": "Budi Santoso",
+  "angkatan": 2023
+}
 ```
 
-```js
-// 1) Kartu semester 1-8 (selalu 8 entri)
-const { items: semesterList } = await api("/materi/kategori/semester", { token });
-// semesterList[i] = { semester, total_materi, total_mata_kuliah }
+**Respons sukses: `201`**
 
-// 2) Setelah mahasiswa memilih semester
-const kat = await api(`/materi/kategori/mata-kuliah?semester=${semester}`, { token });
-// kat.items = [{ mata_kuliah, total_materi }, ...]  (bisa kosong)
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `angkatan` | integer \| null |  |
+| `status` | string |  |
+| `foto_url` | string \| null |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
 
-// 3) Setelah memilih mata kuliah
-const q = new URLSearchParams({ semester, mata_kuliah: mataKuliah, limit: 100 });
-const daftar = await api(`/materi?${q}`, { token });
-// daftar.items[i].status_belajar: "belum" | "dilihat" | "selesai"
+Contoh respons:
+
+```json
+{
+  "id": 2,
+  "nomor_induk": "2388010001",
+  "nama": "Budi Santoso",
+  "angkatan": 2023,
+  "status": "belum_aktif",
+  "foto_url": null,
+  "dibuat_pada": "2026-11-19T07:33:39.836112"
+}
 ```
 
-Catatan:
-- Tampilkan *empty state* bila `items` kosong, dan beri keterangan pada semester dengan `total_materi = 0`.
-- Label `status_belajar` pada tiap materi bisa dipakai untuk ikon/badge (belum, sedang dibaca, selesai).
-- Saat mahasiswa membuka materi, panggil `POST /materi/{id}/progres` (lihat 7.2), lalu perbarui label dari `status` pada **respons**.
-- Jika `total` lebih dari `limit`, gunakan `page` untuk halaman berikutnya (lihat 1.4).
+**Kemungkinan error**
 
----
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 409 | NIM sudah terdaftar |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `GET /api/v1/mahasiswa/ringkasan`
+
+**Jumlah mahasiswa per status akun (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `total` | integer |  |
+| `belum_aktif` | integer |  |
+| `aktif` | integer |  |
+| `nonaktif` | integer |  |
+
+Contoh respons:
+
+```json
+{
+  "total": 2,
+  "belum_aktif": 0,
+  "aktif": 2,
+  "nonaktif": 0
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+
+#### `POST /api/v1/mahasiswa/import`
+
+**Impor mahasiswa dari file CSV (admin only)**
+
+Kolom: `nomor_induk`, `nama`, `angkatan` (opsional). Pemisah koma/titik koma/tab dikenali otomatis. NIM yang sudah terdaftar dan baris tidak valid dilewati, baris lainnya tetap diproses. Dengan `simulasi=true` tidak ada data yang disimpan (untuk pratinjau).
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `simulasi` | query | boolean | tidak | true = hanya hitung & laporkan, tanpa menyimpan; default `False` |
+
+**Body** (`multipart/form-data`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `file` | file | ya | File .csv (UTF-8, maks 1 MB, maks 2000 baris) |
+
+Contoh request:
+
+Form: kirim file di field `file` (multipart/form-data).
+
+Query: `simulasi=true`
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `simulasi` | boolean |  |
+| `total_baris` | integer |  |
+| `ditambahkan` | integer |  |
+| `dilewati` | integer |  |
+| `gagal` | integer |  |
+| `masalah` | array&lt;[BarisImportBermasalah](#skema-barisimportbermasalah)&gt; |  |
+
+Contoh respons:
+
+```json
+{
+  "simulasi": true,
+  "total_baris": 4,
+  "ditambahkan": 2,
+  "dilewati": 1,
+  "gagal": 1,
+  "masalah": [
+    {
+      "baris": 4,
+      "nomor_induk": "2388010001",
+      "status": "dilewati",
+      "alasan": "NIM sudah terdaftar"
+    },
+    {
+      "baris": 5,
+      "nomor_induk": "20241",
+      "status": "gagal",
+      "alasan": "NIM harus 10 digit"
+    }
+  ]
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 400 | Kolom wajib tidak ditemukan: &lt;…&gt;. Kolom yang terbaca: &lt;…&gt;<br>File harus berformat CSV (.csv)<br>File kosong<br>File harus berenkode UTF-8 (di Excel: Save As > CSV UTF-8)<br>Tidak ada baris data di file<br>Maksimal 2000 baris data per impor |
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 409 | Ada NIM yang baru saja didaftarkan proses lain. Ulangi impor. |
+| 413 | Ukuran file maksimal 1 MB |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `GET /api/v1/mahasiswa/{id}`
+
+**Detail mahasiswa (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `id` | path | integer | ya |  |
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `angkatan` | integer \| null |  |
+| `status` | string |  |
+| `foto_url` | string \| null |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+
+Contoh respons:
+
+```json
+{
+  "id": 4,
+  "nomor_induk": "2488010001",
+  "nama": "Andi Pratama",
+  "angkatan": 2024,
+  "status": "belum_aktif",
+  "foto_url": null,
+  "dibuat_pada": "2026-11-19T07:33:41.306308"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Mahasiswa tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `PUT /api/v1/mahasiswa/{id}`
+
+**Edit data/status mahasiswa (admin only)**
+
+Kirim hanya field yang berubah. `angkatan: null` mengosongkan angkatan. `nomor_induk` hanya bisa diganti untuk akun yang belum diaktivasi.
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `id` | path | integer | ya |  |
+
+**Body** (`application/json`)
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string \| null | tidak | min 10 karakter; maks 10 karakter |
+| `nama` | string \| null | tidak | min 3 karakter; maks 100 karakter |
+| `angkatan` | integer \| null | tidak | min 2000.0; maks 2100.0 |
+| `status` | enum: `belum_aktif`, `aktif`, `nonaktif` \| null | tidak |  |
+
+Contoh request:
+
+```json
+{
+  "nama": "Andi Pratama Putra",
+  "angkatan": 2024
+}
+```
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `angkatan` | integer \| null |  |
+| `status` | string |  |
+| `foto_url` | string \| null |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+
+Contoh respons:
+
+```json
+{
+  "id": 4,
+  "nomor_induk": "2488010001",
+  "nama": "Andi Pratama Putra",
+  "angkatan": 2024,
+  "status": "belum_aktif",
+  "foto_url": null,
+  "dibuat_pada": "2026-11-19T07:33:41.306308"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Mahasiswa tidak ditemukan |
+| 409 | NIM sudah terdaftar<br>NIM tidak dapat diubah karena akun sudah diaktivasi |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `DELETE /api/v1/mahasiswa/{id}`
+
+**Hapus mahasiswa (admin only)**
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `id` | path | integer | ya |  |
+
+**Respons sukses: `204`**
+
+Tanpa isi (body kosong).
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Mahasiswa tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+#### `POST /api/v1/mahasiswa/{id}/reset-akun`
+
+**Reset akun mahasiswa (admin only)**
+
+Menghapus kata sandi dan mengembalikan status ke belum_aktif, sehingga mahasiswa bisa registrasi ulang (mis. lupa kata sandi). Data dan progres belajar tetap.
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Parameter**
+
+| Nama | Lokasi | Tipe | Wajib | Keterangan |
+|---|---|---|---|---|
+| `id` | path | integer | ya |  |
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `id` | integer |  |
+| `nomor_induk` | string |  |
+| `nama` | string |  |
+| `angkatan` | integer \| null |  |
+| `status` | string |  |
+| `foto_url` | string \| null |  |
+| `dibuat_pada` | string (date-time, UTC) |  |
+
+Contoh respons:
+
+```json
+{
+  "id": 4,
+  "nomor_induk": "2488010001",
+  "nama": "Andi Pratama Putra",
+  "angkatan": 2024,
+  "status": "belum_aktif",
+  "foto_url": null,
+  "dibuat_pada": "2026-11-19T07:33:41.306308"
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+| 404 | Mahasiswa tidak ditemukan |
+| 422 | Data yang dikirim tidak valid (lihat format error validasi) |
+
+### Dashboard Admin
+
+#### `GET /api/v1/admin/dashboard`
+
+**Ambil data ringkasan untuk dashboard admin**
+
+Endpoint ini hanya bisa diakses oleh user dengan role 'admin'.
+
+- **Akses:** Admin (header `Authorization: Bearer <token>`)
+
+**Respons sukses: `200`**
+
+| Field | Tipe | Keterangan |
+|---|---|---|
+| `total_mahasiswa` | integer |  |
+| `total_materi` | integer |  |
+| `mahasiswa_hari_ini` | integer |  |
+| `materi_hari_ini` | integer |  |
+| `materi_terbaru` | array&lt;[MateriRingkas](#skema-materiringkas)&gt; |  |
+| `mahasiswa_terbaru` | array&lt;[MahasiswaRingkas](#skema-mahasiswaringkas)&gt; |  |
+
+Contoh respons:
+
+```json
+{
+  "total_mahasiswa": 2,
+  "total_materi": 3,
+  "mahasiswa_hari_ini": 2,
+  "materi_hari_ini": 3,
+  "materi_terbaru": [
+    {
+      "id": 3,
+      "judul": "Algoritma Dasar",
+      "mata_kuliah": "Algoritma",
+      "semester": 1,
+      "jenis": "pdf",
+      "url": "https://inf-learning-production.up.railway.app/uploads/39f2d8da668a44ca82773f54925c7a00.pdf",
+      "dibuat_pada": "2026-11-19T07:33:40.355440"
+    },
+    {
+      "id": 2,
+      "judul": "Slide ERD Pertemuan 2",
+      "mata_kuliah": "Basis Data",
+      "semester": 3,
+      "jenis": "pptx",
+      "url": "https://inf-learning-production.up.railway.app/uploads/1c04e63e21f142a1a3e7ac3a54a799a8.pptx",
+      "dibuat_pada": "2026-11-19T07:33:40.347731"
+    }
+  ],
+  "mahasiswa_terbaru": [
+    {
+      "id": 3,
+      "nama": "Siti Rahma",
+      "nomor_induk": "2388010002",
+      "angkatan": 2023,
+      "status": "aktif",
+      "dibuat_pada": "2026-11-19T07:33:39.846324"
+    },
+    {
+      "id": 2,
+      "nama": "Budi Santoso",
+      "nomor_induk": "2388010001",
+      "angkatan": 2023,
+      "status": "aktif",
+      "dibuat_pada": "2026-11-19T07:33:39.836112"
+    }
+  ]
+}
+```
+
+**Kemungkinan error**
+
+| Status | Kondisi (isi `detail`) |
+|---|---|
+| 401 | Token tidak ada<br>Token tidak valid atau sudah kedaluwarsa<br>Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali<br>Sesi berakhir karena tidak ada aktivitas selama 20 menit. Silakan login kembali |
+| 403 | Akun Anda nonaktif<br>Anda tidak memiliki akses ke endpoint ini |
+
+### Sistem
+
+#### `GET /`
+
+**Root**
+
+- **Akses:** Publik (tanpa token)
+
+**Respons sukses: `200`**
+
+Contoh respons:
+
+```json
+{
+  "app": "INF-Learning",
+  "status": "ok"
+}
+```
+
+#### `GET /health`
+
+**Health**
+
+- **Akses:** Publik (tanpa token)
+
+**Respons sukses: `200`**
+
+Contoh respons:
+
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+
+## 4. Skema data
+
+<a id="skema-barisimportbermasalah"></a>
+#### BarisImportBermasalah
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `baris` | integer | ya |  |
+| `nomor_induk` | string \| null | ya |  |
+| `status` | enum: `dilewati`, `gagal` | ya |  |
+| `alasan` | string | ya |  |
+
+<a id="skema-dashboardmahasiswaresponse"></a>
+#### DashboardMahasiswaResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `profil` | [ProfilMahasiswa](#skema-profilmahasiswa) | ya |  |
+| `statistik` | [StatistikBelajar](#skema-statistikbelajar) | ya |  |
+| `lanjutkan_belajar` | [MateriDashboard](#skema-materidashboard) \| null | ya |  |
+| `materi_terbaru` | array&lt;[MateriDashboard](#skema-materidashboard)&gt; | ya |  |
+| `progres_mata_kuliah` | array&lt;[ProgresMataKuliah](#skema-progresmatakuliah)&gt; | ya |  |
+
+<a id="skema-dashboardstatsresponse"></a>
+#### DashboardStatsResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `total_mahasiswa` | integer | ya |  |
+| `total_materi` | integer | ya |  |
+| `mahasiswa_hari_ini` | integer | ya |  |
+| `materi_hari_ini` | integer | ya |  |
+| `materi_terbaru` | array&lt;[MateriRingkas](#skema-materiringkas)&gt; | ya |  |
+| `mahasiswa_terbaru` | array&lt;[MahasiswaRingkas](#skema-mahasiswaringkas)&gt; | ya |  |
+
+<a id="skema-fotoprofilresponse"></a>
+#### FotoProfilResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `foto_url` | string \| null | ya |  |
+
+<a id="skema-importmahasiswaresponse"></a>
+#### ImportMahasiswaResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `simulasi` | boolean | ya |  |
+| `total_baris` | integer | ya |  |
+| `ditambahkan` | integer | ya |  |
+| `dilewati` | integer | ya |  |
+| `gagal` | integer | ya |  |
+| `masalah` | array&lt;[BarisImportBermasalah](#skema-barisimportbermasalah)&gt; | ya |  |
+
+<a id="skema-kategorimatakuliah"></a>
+#### KategoriMataKuliah
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `mata_kuliah` | string | ya |  |
+| `total_materi` | integer | ya |  |
+
+<a id="skema-kategorimatakuliahresponse"></a>
+#### KategoriMataKuliahResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `semester` | integer | ya |  |
+| `items` | array&lt;[KategoriMataKuliah](#skema-kategorimatakuliah)&gt; | ya |  |
+
+<a id="skema-kategorisemester"></a>
+#### KategoriSemester
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `semester` | integer | ya |  |
+| `total_materi` | integer | ya |  |
+| `total_mata_kuliah` | integer | ya |  |
+
+<a id="skema-kategorisemesterresponse"></a>
+#### KategoriSemesterResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `items` | array&lt;[KategoriSemester](#skema-kategorisemester)&gt; | ya |  |
+
+<a id="skema-kontakwhatsappresponse"></a>
+#### KontakWhatsAppResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor` | string | ya |  |
+| `nomor_tampil` | string | ya |  |
+| `pesan` | string | ya |  |
+| `tautan` | string | ya |  |
+
+<a id="skema-loginrequest"></a>
+#### LoginRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string | ya | min 3 karakter; maks 50 karakter |
+| `kata_sandi` | string | ya | min 8 karakter; maks 72 karakter |
+
+<a id="skema-loginresponse"></a>
+#### LoginResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `access_token` | string | ya |  |
+| `token_type` | string | tidak | default `bearer` |
+| `expires_in` | integer | ya |  |
+| `pengguna` | [PenggunaRingkas](#skema-penggunaringkas) | ya |  |
+
+<a id="skema-mahasiswacreaterequest"></a>
+#### MahasiswaCreateRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string | ya | min 10 karakter; maks 10 karakter |
+| `nama` | string | ya | min 3 karakter; maks 100 karakter |
+| `angkatan` | integer \| null | tidak | min 2000.0; maks 2100.0 |
+
+<a id="skema-mahasiswalistresponse"></a>
+#### MahasiswaListResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `items` | array&lt;[MahasiswaResponse](#skema-mahasiswaresponse)&gt; | ya |  |
+| `total` | integer | ya |  |
+| `page` | integer | ya |  |
+| `limit` | integer | ya |  |
+| `total_pages` | integer | ya |  |
+
+<a id="skema-mahasiswaresponse"></a>
+#### MahasiswaResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `nomor_induk` | string | ya |  |
+| `nama` | string | ya |  |
+| `angkatan` | integer \| null | ya |  |
+| `status` | string | ya |  |
+| `foto_url` | string \| null | tidak |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+
+<a id="skema-mahasiswaringkas"></a>
+#### MahasiswaRingkas
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `nama` | string | ya |  |
+| `nomor_induk` | string | ya |  |
+| `angkatan` | integer \| null | ya |  |
+| `status` | string | ya |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+
+<a id="skema-mahasiswaupdaterequest"></a>
+#### MahasiswaUpdateRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string \| null | tidak | min 10 karakter; maks 10 karakter |
+| `nama` | string \| null | tidak | min 3 karakter; maks 100 karakter |
+| `angkatan` | integer \| null | tidak | min 2000.0; maks 2100.0 |
+| `status` | enum: `belum_aktif`, `aktif`, `nonaktif` \| null | tidak |  |
+
+<a id="skema-materidashboard"></a>
+#### MateriDashboard
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `judul` | string | ya |  |
+| `mata_kuliah` | string | ya |  |
+| `semester` | integer | ya |  |
+| `jenis` | string | ya |  |
+| `url` | string | ya |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` | ya |  |
+
+<a id="skema-materilistresponse"></a>
+#### MateriListResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `items` | array&lt;[MateriResponse](#skema-materiresponse)&gt; | ya |  |
+| `total` | integer | ya |  |
+| `page` | integer | ya |  |
+| `limit` | integer | ya |  |
+| `total_pages` | integer | ya |  |
+
+<a id="skema-materiresponse"></a>
+#### MateriResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `judul` | string | ya |  |
+| `deskripsi` | string \| null | ya |  |
+| `mata_kuliah` | string | ya |  |
+| `semester` | integer | ya |  |
+| `jenis` | string | ya |  |
+| `url` | string | ya |  |
+| `dibuat_oleh` | integer \| null | ya |  |
+| `status` | string | ya |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+| `diubah_pada` | string (date-time, UTC) | ya |  |
+| `status_belajar` | enum: `belum`, `dilihat`, `selesai` \| null | tidak |  |
+| `url_pratinjau` | string \| null | ya | Alamat yang bisa dipasang langsung di `<iframe>`: file PDF itu sendiri, atau viewer Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh). |
+
+<a id="skema-materiringkas"></a>
+#### MateriRingkas
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `judul` | string | ya |  |
+| `mata_kuliah` | string | ya |  |
+| `semester` | integer | ya |  |
+| `jenis` | string | ya |  |
+| `url` | string | ya |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+
+<a id="skema-materiupdaterequest"></a>
+#### MateriUpdateRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `judul` | string \| null | tidak | min 3 karakter; maks 200 karakter |
+| `deskripsi` | string \| null | tidak | maks 2000 karakter |
+| `mata_kuliah` | string \| null | tidak | min 2 karakter; maks 100 karakter |
+| `semester` | integer \| null | tidak | min 1.0; maks 8.0 |
+| `jenis` | string \| null | tidak | min 3 karakter; maks 20 karakter |
+| `url` | string \| null | tidak | min 5 karakter; maks 500 karakter |
+| `status` | string \| null | tidak |  |
+
+<a id="skema-penggunaringkas"></a>
+#### PenggunaRingkas
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `peran` | string | ya |  |
+| `nomor_induk` | string | ya |  |
+| `nama` | string | ya |  |
+| `status` | string | ya |  |
+| `foto_url` | string \| null | tidak |  |
+
+<a id="skema-profilmahasiswa"></a>
+#### ProfilMahasiswa
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `nama` | string | ya |  |
+| `nomor_induk` | string | ya |  |
+| `angkatan` | integer \| null | ya |  |
+| `foto_url` | string \| null | tidak |  |
+
+<a id="skema-progresmatakuliah"></a>
+#### ProgresMataKuliah
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `mata_kuliah` | string | ya |  |
+| `total` | integer | ya |  |
+| `selesai` | integer | ya |  |
+| `persen` | number | ya |  |
+
+<a id="skema-progresrequest"></a>
+#### ProgresRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `status` | enum: `dilihat`, `selesai` | ya |  |
+
+<a id="skema-progresresponse"></a>
+#### ProgresResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `materi_id` | integer | ya |  |
+| `status` | enum: `belum`, `dilihat`, `selesai` | ya |  |
+| `diubah_pada` | string (date-time, UTC) | ya |  |
+
+<a id="skema-registrasirequest"></a>
+#### RegistrasiRequest
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `nomor_induk` | string | ya | min 10 karakter; maks 10 karakter |
+| `kata_sandi` | string | ya | min 8 karakter; maks 72 karakter |
+| `konfirmasi_kata_sandi` | string \| null | tidak | min 8 karakter; maks 72 karakter |
+
+<a id="skema-registrasiresponse"></a>
+#### RegistrasiResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `id` | integer | ya |  |
+| `peran` | string | ya |  |
+| `nomor_induk` | string | ya |  |
+| `nama` | string | ya |  |
+| `status` | string | ya |  |
+| `dibuat_pada` | string (date-time, UTC) | ya |  |
+
+<a id="skema-ringkasanmahasiswaresponse"></a>
+#### RingkasanMahasiswaResponse
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `total` | integer | ya |  |
+| `belum_aktif` | integer | ya |  |
+| `aktif` | integer | ya |  |
+| `nonaktif` | integer | ya |  |
+
+<a id="skema-statistikbelajar"></a>
+#### StatistikBelajar
+
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `total_materi` | integer | ya |  |
+| `materi_dilihat` | integer | ya |  |
+| `materi_selesai` | integer | ya |  |
+| `persen_selesai` | number | ya |  |
+
+## 5. Perubahan terbaru yang berdampak ke FE
+
+| Area | Perubahan |
+|---|---|
+| Sesi | Sesi berakhir setelah **20 menit tanpa aktivitas** (bukan lagi token tetap 15 menit). `expires_in` pada login kini bernilai 1200 dan artinya batas tidak-aktif. Pengguna yang login sebelum deploy perlu login ulang sekali. |
+| Logout | Endpoint baru `POST /api/v1/auth/logout` menghapus sesi di server. Panggil saat pengguna keluar atau saat timer idle FE habis. |
+| Login | Kegagalan login dibedakan: **404** NIM tidak terdaftar, **409** NIM belum teregistrasi, **401** kata sandi salah, **403** akun nonaktif. |
+| Foto profil | Field baru `foto_url` pada data pengguna (`/auth/me`, login, dashboard, daftar mahasiswa). Endpoint `PUT` dan `DELETE` `/api/v1/profil/foto`. URL foto berganti tiap foto diubah, sehingga tidak terkena cache. |
+| Unduh materi | Endpoint `GET /api/v1/materi/{materi_id}/unduh`: butuh token, jadi gunakan `fetch` + blob, bukan `<a href>`. Nama file dibaca dari header `Content-Disposition` (`filename*=utf-8''...`). |
+| Pratinjau materi | Field baru `url_pratinjau` pada materi: untuk PDF sama dengan `url`; untuk PPT/Word/Excel berupa alamat viewer Office Online yang bisa dipasang di `<iframe>`; `null` bila tidak ada pratinjau. |
+| Kontak admin | `GET /api/v1/kontak-admin/whatsapp` mengembalikan `tautan` wa.me; FE cukup mengarahkan browser ke tautan itu (`window.location.href`). Respons **503** berarti nomor admin belum diatur: sembunyikan tombolnya. |
+| Dashboard admin | Ditambah `mahasiswa_hari_ini` dan `materi_hari_ini` (hari kalender WIB). |

@@ -17,6 +17,8 @@ class Materi(Base):
     semester: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     jenis: Mapped[str] = mapped_column(String(20), nullable=False)
     url: Mapped[str] = mapped_column(String(500), nullable=False)
+    # Nama file asli saat diupload (unik; duplikat diberi akhiran (1), (2), ...). Null = tautan/materi lama.
+    nama_file: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     dibuat_oleh: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("pengguna.id", ondelete="SET NULL"), nullable=True
     )
