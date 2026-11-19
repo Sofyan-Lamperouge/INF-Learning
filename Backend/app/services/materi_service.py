@@ -147,7 +147,7 @@ def siapkan_unduhan(db: Session, materi_id: int, *, hanya_terbit: bool) -> tuple
     ekstensi = os.path.splitext(lokasi)[1].lower()
     return (
         lokasi,
-        file_service.nama_unduhan(materi.judul, ekstensi),
+        materi.nama_file or file_service.nama_unduhan(materi.judul, ekstensi),
         MEDIA_TYPE.get(ekstensi, "application/octet-stream"),
     )
 
@@ -164,6 +164,7 @@ def create_materi(db: Session, data: MateriCreateRequest, admin_id: int) -> Mate
         semester=data.semester,
         jenis=data.jenis,
         url=data.url,
+        nama_file=data.nama_file,
         dibuat_oleh=admin_id,
         status="terbit",
     )
@@ -193,9 +194,17 @@ def upload_materi(
     except ValidationError as exc:
         raise _ke_422(exc) from None
 
+    nama_file = file_service.nama_unik(
+        file_service.nama_asli_bersih(file),
+        lambda n: crud_materi.nama_file_ada(db, n),
+    )
     jenis, url = file_service.simpan_upload(file)  # 413 bila > batas ukuran
     try:
-        return create_materi(db, MateriCreateRequest(**bidang, jenis=jenis, url=url), admin_id)
+        return create_materi(
+            db,
+            MateriCreateRequest(**bidang, jenis=jenis, url=url, nama_file=nama_file),
+            admin_id,
+        )
     except Exception:
         file_service.hapus_file_dari_url(url)
         raise
@@ -271,6 +280,10 @@ def ubah_materi_form(
     url_lama = materi.url
     url_baru = None
     if file is not None:
+        fields["nama_file"] = file_service.nama_unik(
+            file_service.nama_asli_bersih(file),
+            lambda n: crud_materi.nama_file_ada(db, n, kecuali_id=materi.id),
+        )
         jenis, url_baru = file_service.simpan_upload(file)  # 413 bila > batas ukuran
         fields["jenis"] = jenis
         fields["url"] = url_baru

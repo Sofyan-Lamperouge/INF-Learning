@@ -8,6 +8,7 @@ import contextlib
 import os
 import re
 import uuid
+from collections.abc import Callable
 from urllib.parse import urlparse
 
 from fastapi import HTTPException, UploadFile, status
@@ -27,6 +28,26 @@ def cek_ekstensi(file: UploadFile) -> str:
             detail="Format file tidak diizinkan",
         )
     return ext
+
+
+def nama_asli_bersih(file: UploadFile) -> str:
+    """Nama file asli dari klien, dibersihkan (tanpa folder & karakter terlarang)."""
+    nama = os.path.basename((file.filename or "").replace("\\", "/"))
+    nama = _KARAKTER_TERLARANG.sub("", nama).strip(" .")
+    dasar, ext = os.path.splitext(nama)
+    dasar = dasar[: 200 - len(ext)].strip(" .")
+    return f"{dasar or 'file'}{ext.lower()}"
+
+
+def nama_unik(nama: str, sudah_ada: Callable[[str], bool]) -> str:
+    """laporan.pdf -> laporan(1).pdf -> laporan(2).pdf ... sampai tidak bentrok."""
+    if not sudah_ada(nama):
+        return nama
+    dasar, ext = os.path.splitext(nama)
+    i = 1
+    while sudah_ada(f"{dasar}({i}){ext}"):
+        i += 1
+    return f"{dasar}({i}){ext}"
 
 
 def simpan_upload(file: UploadFile) -> tuple[str, str]:

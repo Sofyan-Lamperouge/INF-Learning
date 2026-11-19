@@ -18,6 +18,7 @@ class MateriCreateRequest(BaseModel):
     semester: int = Field(..., ge=1, le=8)
     jenis: str = Field(..., min_length=3, max_length=20)
     url: str = Field(..., min_length=5, max_length=500)
+    nama_file: str | None = Field(None, max_length=255)
 
     @field_validator("jenis")
     @classmethod
@@ -84,6 +85,7 @@ class MateriResponse(BaseModel):
     semester: int
     jenis: str
     url: str
+    nama_file: str | None = None
     dibuat_oleh: int | None
     status: str
     dibuat_pada: datetime
