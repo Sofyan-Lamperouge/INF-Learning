@@ -10809,12 +10809,31 @@ button[aria-label^="Hapus materi"]:focus-visible {
 .bt-kontak-desc { margin: calc(var(--u) * 5) 0 0; font-size: max(14px, calc(var(--u) * 21)); line-height: calc(var(--u) * 30); color: #858585; }
 
 /* [B7] KOTAK "PESAN YANG AKAN DIKIRIM" */
-.bt-pesan { margin-top: calc(var(--u) * 31); padding: calc(var(--u) * 16) calc(var(--u) * 26); background: #ffffff; border-radius: calc(var(--u) * 28); min-height: calc(var(--u) * 126); }
+.bt-pesan { margin-top: calc(var(--u) * 31); padding: calc(var(--u) * 16) calc(var(--u) * 26); background: #ffffff; border-radius: calc(var(--u) * 28); }
 .bt-pesan strong { display: block; font-size: max(14px, calc(var(--u) * 19)); font-weight: 600; line-height: calc(var(--u) * 30); color: #262626; }
 .bt-pesan-isi { margin: calc(var(--u) * 5) 0 0; font-size: max(13px, calc(var(--u) * 20)); line-height: calc(var(--u) * 30); color: #858585; white-space: pre-line; overflow-wrap: anywhere; }
 .bt-pesan-isi.redup { opacity: 0.7; }
 .bt-pesan-isi.galat { color: #dc2626; }
 .bt-ulang { padding: 0; border: 0; background: none; color: #1f6fa8; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+/* [B7b] PESAN BISA DIEDIT: teks tetap (salam, identitas, topik) + kolom ketik + penghitung */
+.bt-pesan-tetap { margin-bottom: calc(var(--u) * 8); }
+.bt-pesan-edit {
+  display: block;
+  width: 100%;
+  min-height: calc(var(--u) * 100);
+  padding: calc(var(--u) * 12) calc(var(--u) * 16);
+  border: 1px solid #cfe3f1;
+  border-radius: calc(var(--u) * 16);
+  background: #f8fcff;
+  font: 400 max(13px, calc(var(--u) * 20)) / calc(var(--u) * 30) 'Poppins', sans-serif;
+  color: #404040;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.bt-pesan-edit:focus { outline: none; border-color: #4aa8e8; box-shadow: 0 0 0 3px rgba(74, 168, 232, 0.2); }
+.bt-pesan-edit::placeholder { color: #a3adb7; }
+.bt-pesan-hitung { display: block; margin-top: calc(var(--u) * 4); text-align: right; font-size: max(11px, calc(var(--u) * 16)); color: #9aa5af; }
 
 /* [B8] TOMBOL HUBUNGI ADMIN (hijau WhatsApp) + catatan */
 .bt-btn-wa {

@@ -2,7 +2,7 @@
 // Pop up "Bantuan": FAQ (accordion) di kiri, kartu "Masih butuh bantuan?" + tombol WhatsApp di kanan.
 import { useEffect, useId, useRef, useState } from 'react';
 import { CloseIcon, ChevronIcon, InfoIcon, WhatsAppIcon } from './BantuanIcons.jsx';
-import { FAQ } from './faqData.js';
+import { FAQ, PESAN_AWAL } from './faqData.js';
 import useKontakAdmin from './useKontakAdmin.js';
 
 function FaqItem({ item, terbuka, onToggle }) {
@@ -22,8 +22,19 @@ function FaqItem({ item, terbuka, onToggle }) {
   );
 }
 
+const MAKS_PESAN = 500;
+const ISI_AWAL = PESAN_AWAL.replace(/\s*\.\.\.$/, ' ');      // "Saya ingin bertanya tentang "
+
+// Bagian pesan yang tetap (salam + identitas + topik) = pesan dari server tanpa isi awal di ujungnya.
+function bagianTetap(pesanServer) {
+  return pesanServer.endsWith(PESAN_AWAL)
+    ? pesanServer.slice(0, -PESAN_AWAL.length)
+    : `${pesanServer}\n\n`;
+}
+
 export default function BantuanModal({ onTutup }) {
   const dialog = useRef(null);
+  const [isi, setIsi] = useState(ISI_AWAL);
   const [terbuka, setTerbuka] = useState(null); // id FAQ yang terbuka (satu saja)
   const { status, kontak, galat, muatUlang } = useKontakAdmin(true);
 
@@ -40,7 +51,11 @@ export default function BantuanModal({ onTutup }) {
     };
   }, [onTutup]);
 
-  const siap = status === 'siap' && kontak?.tautan;
+  const teksIsi = isi.trim();
+  const siap = status === 'siap' && kontak?.nomor && teksIsi.length > 0;
+  const tautan = siap
+    ? `https://wa.me/${kontak.nomor}?text=${encodeURIComponent(bagianTetap(kontak.pesan) + teksIsi)}`
+    : '';
 
   return (
     <div className="bt-overlay" onMouseDown={(e) => e.target === e.currentTarget && onTutup()}>
@@ -77,7 +92,26 @@ export default function BantuanModal({ onTutup }) {
             <div className="bt-pesan" aria-live="polite">
               <strong>Pesan yang akan dikirim</strong>
               {status === 'memuat' && <p className="bt-pesan-isi redup">Memuat pesan...</p>}
-              {status === 'siap' && <p className="bt-pesan-isi">{kontak.pesan}</p>}
+              {status === 'siap' && (
+                <>
+                  <p className="bt-pesan-isi bt-pesan-tetap">{bagianTetap(kontak.pesan).trim()}</p>
+                  <textarea
+                    className="bt-pesan-edit"
+                    value={isi}
+                    onChange={(e) => setIsi(e.target.value)}
+                    maxLength={MAKS_PESAN}
+                    rows={3}
+                    placeholder="Tulis pesan Anda untuk admin..."
+                    aria-label="Isi pesan untuk admin"
+                    autoFocus
+                    onFocus={(e) => {
+                      const n = e.target.value.length;
+                      e.target.setSelectionRange(n, n);
+                    }}
+                  />
+                  <small className="bt-pesan-hitung">{isi.length}/{MAKS_PESAN}</small>
+                </>
+              )}
               {status === 'gagal' && (
                 <p className="bt-pesan-isi galat" role="alert">
                   {galat} <button type="button" className="bt-ulang" onClick={muatUlang}>Coba lagi</button>
@@ -86,7 +120,7 @@ export default function BantuanModal({ onTutup }) {
             </div>
 
             {siap ? (
-              <a className="bt-btn-wa" href={kontak.tautan} target="_blank" rel="noopener noreferrer">
+              <a className="bt-btn-wa" href={tautan} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon /> Hubungi admin
               </a>
             ) : (
@@ -94,7 +128,9 @@ export default function BantuanModal({ onTutup }) {
                 <WhatsAppIcon /> Hubungi admin
               </button>
             )}
-            <small className="bt-kontak-foot">Anda akan diarahkan ke aplikasi WhatsApp</small>
+            <small className="bt-kontak-foot">
+              {status === 'siap' && teksIsi.length === 0 ? 'Tulis pesan dulu sebelum menghubungi admin' : 'Anda akan diarahkan ke aplikasi WhatsApp'}
+            </small>
           </section>
         </div>
       </div>
