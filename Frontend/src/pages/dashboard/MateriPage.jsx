@@ -10,9 +10,12 @@ import { NETWORK_CODE } from "../../services/api.js";
 
 const PAGE_SIZE = 5;
 
-// Backend menyimpan file dengan nama acak (uuid), jadi nama asli tidak tersedia.
-// Untuk tampilan, nama file dibuat dari judul materi + ekstensi, mis. "pengantar_algoritma.pdf".
+// Backend menyimpan nama file asli di materi.nama_file dan menjamin unik:
+// file bernama sama diberi akhiran, mis. PBO.pdf -> PBO(1).pdf -> PBO(2).pdf.
+// Materi lama (nama_file kosong) memakai nama bentukan dari judul + ekstensi.
 function namaFileTampil(materi) {
+  if (materi.nama_file) return materi.nama_file;
+
   const slug = String(materi.judul || "materi")
     .toLowerCase()
     .normalize("NFD")
