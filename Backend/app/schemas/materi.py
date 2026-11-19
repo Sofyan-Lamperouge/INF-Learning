@@ -2,7 +2,9 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
+
+from app.core.pratinjau import buat_url_pratinjau
 
 from app.schemas.tipe import StatusBelajar
 
@@ -90,6 +92,16 @@ class MateriResponse(BaseModel):
     status_belajar: StatusBelajar | None = None
 
     model_config = {"from_attributes": True}
+
+    @computed_field(
+        description=(
+            "Alamat yang bisa dipasang langsung di <iframe>: file PDF itu sendiri, atau viewer "
+            "Office Online untuk PPT/Word/Excel. Null bila tidak ada pratinjau (tampilkan tombol unduh)."
+        )
+    )
+    @property
+    def url_pratinjau(self) -> str | None:
+        return buat_url_pratinjau(self.jenis, self.url)
 
 
 # Bentuk respons GET /materi (dengan paginasi)
