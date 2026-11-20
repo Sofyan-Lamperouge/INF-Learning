@@ -28,12 +28,21 @@ ROUTERS = (
     mahasiswa.router,
 )
 
+IS_PRODUCTION = settings.APP_ENV.strip().lower() == "production"
+
+# Di production dokumentasi API (/docs, /redoc, /openapi.json) dimatikan agar peta endpoint
+# tidak terbuka untuk umum. Di development tetap aktif.
 app = FastAPI(
     title=settings.APP_NAME,
     version="0.1.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
 )
+
+if IS_PRODUCTION and "*" in settings.cors_origins_list:
+    # Tidak menghentikan aplikasi, hanya mengingatkan di log Railway.
+    logger.warning("CORS_ORIGINS masih '*' di production. Isi dengan domain frontend resmi.")
 
 app.add_middleware(
     CORSMiddleware,
