@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import MahasiswaModal, { ModalCloseButton, ModalHeader } from './MahasiswaModal.jsx';
+import { bersihkanNama, validasiNama, PESAN_FILTER_NAMA } from '../../utils/validasiTeks.js';
 import {
   getAngkatanOptions,
   hasChanges,
