@@ -86,7 +86,7 @@ export default function BacaMateriPage() {
           <>
             <header className="bm-header">
               <Link to={linkKembali} className="bm-kembali">
-                <BackIcon /> Kembali ke Semester {materi.semester}
+                <BackIcon /> Kembali ke {materi.mata_kuliah}
               </Link>
               <div className="bm-header-isi">
                 <FileBadge jenis={materi.jenis} />
