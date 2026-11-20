@@ -24,6 +24,7 @@ export const WARNA_JENIS = {
 // Nama berkas yang ditampilkan: "<judul>.<jenis>" (nama di server hanya kode acak).
 export function namaBerkas(materi) {
   if (!materi) return '';
+  if (materi.nama_file) return materi.nama_file;
   const bersih = String(materi.judul || 'materi')
     .replace(/[\\/:*?"<>|\x00-\x1f]/g, '')
     .replace(/\s+/g, ' ')

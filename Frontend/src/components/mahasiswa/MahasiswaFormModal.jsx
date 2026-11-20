@@ -6,16 +6,16 @@ import {
   normalizeNama,
   POLA_NIM,
 } from '../../utils/mahasiswaStatus.js';
+import { bersihkanNama, validasiNama, PESAN_FILTER_NAMA } from '../../utils/validasiTeks.js';
 
 function validate(values, isEdit) {
   const errors = {};
-  const nama = normalizeNama(values.nama);
 
   if (!isEdit && !POLA_NIM.test(values.nomor_induk.trim())) {
     errors.nomor_induk = 'Format NIM tidak sesuai. Gunakan 10 digit, contoh: 2488010001.';
   }
-  if (nama.length < 3) errors.nama = 'Nama minimal 3 karakter.';
-  else if (nama.length > 100) errors.nama = 'Nama maksimal 100 karakter.';
+  const errNama = validasiNama(values.nama);
+  if (errNama) errors.nama = errNama;
   if (!values.angkatan) errors.angkatan = 'Pilih angkatan terlebih dahulu.';
 
   return errors;
@@ -48,10 +48,16 @@ export default function MahasiswaFormModal({
   function handleChange(event) {
     const { name } = event.target;
     let { value } = event.target;
+    let petunjuk; // pesan bila ada karakter yang dibuang saat mengetik
     if (name === 'nomor_induk') value = value.replace(/\D/g, '').slice(0, 10);
+    if (name === 'nama') {
+      const bersih = bersihkanNama(value);
+      if (bersih !== value) petunjuk = PESAN_FILTER_NAMA;
+      value = bersih;
+    }
 
     setValues((current) => ({ ...current, [name]: value }));
-    setFieldErrors((current) => ({ ...current, [name]: undefined }));
+    setFieldErrors((current) => ({ ...current, [name]: petunjuk }));
     setFormError('');
   }
 

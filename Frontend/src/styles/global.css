@@ -10079,7 +10079,10 @@ button[aria-label^="Hapus materi"]:focus-visible {
   text-decoration: none;
 }
 .bm-kembali svg { width: calc(var(--u) * 24); height: calc(var(--u) * 24); }
-.bm-kembali:hover { color: #55b5ef; }
+.bm-kembali:hover { 
+  color: #55b5ef;
+  text-decoration: none;
+}
 .bm-header-isi {
   display: flex;
   align-items: center;
