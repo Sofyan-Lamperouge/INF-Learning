@@ -28,9 +28,10 @@ export function formatTanggal(iso) {
   });
 }
 
-// Backend menyimpan file dengan awalan uuid (32 hex + "_"); dibuang agar nama asli tampil.
-export function namaFile(url, jenis) {
-  if (namaAsli) return namaAsli; 
+// Nama file yang ditampilkan: pakai nama asli dari backend (nama_file),
+// cadangan untuk materi lama: ambil dari URL.
+export function namaFile(url, jenis, namaAsli) {
+  if (namaAsli) return namaAsli;
   if (!url) return jenis ? `File ${String(jenis).toUpperCase()}` : '-';
   try {
     const path = new URL(url, window.location.origin).pathname;
