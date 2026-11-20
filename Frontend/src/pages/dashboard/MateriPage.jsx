@@ -12,7 +12,8 @@ const PAGE_SIZE = 5;
 
 // Backend menyimpan nama file asli di materi.nama_file dan menjamin unik:
 // file bernama sama diberi akhiran, mis. PBO.pdf -> PBO(1).pdf -> PBO(2).pdf.
-// Materi lama (nama_file kosong) memakai nama bentukan dari judul + ekstensi.
+// Materi lama (nama_file kosong) memakai nama bentukan dari judul + ekstensi,
+// mis. "pengantar_algoritma.pdf".
 function namaFileTampil(materi) {
   if (materi.nama_file) return materi.nama_file;
 
@@ -46,17 +47,8 @@ export default function MateriPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Kunci yang berubah seketika (tidak menunggu render) agar klik ganda
-  // pada tombol Hapus tidak mengirim dua permintaan.
+  // pada tombol Hapus tidak mengirim dua permintaan DELETE.
   const deleteLockRef = useRef(false);
-
-  // Saat koneksi kembali, sinkronkan daftar dengan data di server.
-  // PENTING: effect ini berdiri sendiri. Hook tidak boleh dipanggil di dalam
-  // hook lain (useEffect di dalam useEffect membuat halaman menjadi kosong).
-  useEffect(() => {
-    const muatUlang = () => setReloadKey((k) => k + 1);
-    window.addEventListener("online", muatUlang);
-    return () => window.removeEventListener("online", muatUlang);
-  }, []);
 
   // Muat daftar materi setiap filter, halaman, atau reloadKey berubah.
   useEffect(() => {
@@ -97,12 +89,24 @@ export default function MateriPage() {
     };
   }, [semester, mataKuliah, search, page, reloadKey]);
 
+  // Saat koneksi internet kembali, sinkronkan daftar dengan data di server.
+  // (Hook ini harus tetap berada SEBELUM `if (loading) return ...` di bawah,
+  // dan tidak boleh dipanggil di dalam hook lain.)
+  useEffect(() => {
+    const muatUlang = () => setReloadKey((k) => k + 1);
+    window.addEventListener("online", muatUlang);
+    return () => window.removeEventListener("online", muatUlang);
+  }, []);
+
+  // Dipanggil saat server memastikan materi sudah tidak ada.
   function selesaiDihapus() {
     setDeleteSuccess(true);
+
     if (materiList.length === 1 && page > 1) setPage((p) => p - 1);
     setReloadKey((k) => k + 1);
   }
 
+  // Materi hanya dianggap terhapus kalau server menjawab sukses.
   async function handleDelete() {
     if (!deletingMateri || deleteLockRef.current) return;
 
@@ -538,7 +542,6 @@ export default function MateriPage() {
           deleting={deleting}
           error={deleteError}
           success={deleteSuccess}
-          onConfirm={handleDelete}
           onCancel={() => {
             if (deleting) return;
             // Setelah gagal karena koneksi, segarkan daftar agar sesuai dengan server.
@@ -546,8 +549,8 @@ export default function MateriPage() {
             setDeletingMateri(null);
             setDeleteSuccess(false);
           }}
+          onConfirm={handleDelete}
           onDone={() => {
-            // Popup sukses menutup sendiri setelah beberapa detik.
             setDeletingMateri(null);
             setDeleteSuccess(false);
           }}

@@ -2,13 +2,17 @@ import { sesi } from "../utils/storage.js";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const REQUEST_TIMEOUT_MS = 15_000;
+// Upload file (maks. 10 MB) butuh waktu lebih lama dari request biasa.
+const UPLOAD_TIMEOUT_MS = 60_000;
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/registrasi"];
 
 // Kode untuk kegagalan di level jaringan (status 0).
-// Membedakan penyebabnya penting: pada TIMEOUT, server bisa saja sudah
-// memproses permintaan sebelum balasannya sampai, sedangkan pada OFFLINE
-// permintaan hampir pasti tidak pernah sampai ke server.
+// Penyebabnya dibedakan karena artinya berbeda:
+// - OFFLINE / NETWORK: permintaan hampir pasti tidak sampai ke server.
+// - TIMEOUT: server mungkin sudah memproses permintaan sebelum balasannya tiba,
+//   jadi hasilnya belum pasti.
+// - ABORTED: dibatalkan oleh pemanggil (mis. komponen ditutup), bukan masalah jaringan.
 export const NETWORK_CODE = {
   TIMEOUT: "TIMEOUT",
   OFFLINE: "OFFLINE",
@@ -27,8 +31,8 @@ export class ApiError extends Error {
 }
 
 export async function request(path, options = {}) {
-  // `timeout` adalah opsi milik kita, jangan diteruskan ke fetch.
-  const { timeout = REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
+  // timeoutMs dipisahkan dari opsi fetch supaya tidak ikut dikirim ke fetch().
+  const { timeoutMs = REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
 
   const isPublic = PUBLIC_PATHS.includes(path);
   const token = isPublic ? null : sesi.getItem("token");
@@ -57,7 +61,7 @@ export async function request(path, options = {}) {
   const timeoutId = window.setTimeout(() => {
     timedOut = true;
     controller.abort();
-  }, timeout);
+  }, timeoutMs);
 
   let response;
 
@@ -68,7 +72,7 @@ export async function request(path, options = {}) {
       signal: controller.signal,
     });
   } catch (error) {
-    // Dibatalkan oleh pemanggil (mis. komponen di-unmount), bukan masalah jaringan.
+    // Dibatalkan oleh pemanggil, bukan masalah jaringan.
     if (externalSignal?.aborted && !timedOut) {
       throw new ApiError(
         "Permintaan dibatalkan.",
@@ -160,12 +164,12 @@ export const api = {
     });
   },
 
-  // Upload file: beri waktu lebih panjang daripada request JSON biasa.
+  // Upload diberi batas waktu lebih panjang.
   postFormData(path, body) {
     return request(path, {
       method: "POST",
       body,
-      timeout: 60_000,
+      timeoutMs: UPLOAD_TIMEOUT_MS,
     });
   },
 
@@ -176,11 +180,12 @@ export const api = {
     });
   },
 
+  // Upload diberi batas waktu lebih panjang.
   putFormData(path, body) {
     return request(path, {
       method: "PUT",
       body,
-      timeout: 60_000,
+      timeoutMs: UPLOAD_TIMEOUT_MS,
     });
   },
 
