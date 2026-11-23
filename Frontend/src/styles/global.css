@@ -335,6 +335,14 @@ body,
   font-weight: 650;  
 }
 
+.auth-footer a:hover {
+  color: #6fc6f7;
+  text-decoration: underline;          
+  text-underline-offset: 1px;          
+  text-decoration-thickness: 1.5px;  
+  font-weight: 650;  
+}
+
 .input-field:has(+ .field-error) {
   margin-bottom: calc(var(--u) * 6);
 }
@@ -5287,7 +5295,7 @@ div.dashboard-bottom-grid .btn-tambah:hover {
   background: #ffffff;
   border: 1px solid #e3eef7;
   border-radius: 6px;
-  overflow-x: hidden;    
+  overflow-x: auto;    
 }
 
 .materi-table {
