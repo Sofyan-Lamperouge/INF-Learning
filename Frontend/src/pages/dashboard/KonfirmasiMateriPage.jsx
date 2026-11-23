@@ -9,6 +9,8 @@ function formatError(error) {
   if (error?.status === 403)
     return "Akun ini tidak memiliki izin untuk mengunggah materi.";
   return error?.message || "Materi gagal diunggah. Silakan coba lagi.";
+  if (error?.status === 409)
+    return `${error.message} Klik "Kembali" untuk mengganti nama materi.`;
 }
 
 export default function KonfirmasiMateriPage() {
