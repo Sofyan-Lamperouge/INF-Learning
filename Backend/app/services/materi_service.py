@@ -153,6 +153,39 @@ def siapkan_unduhan(db: Session, materi_id: int, *, hanya_terbit: bool) -> tuple
 
 
 # ------------------------------------------------------------
+# Aturan duplikasi nama materi
+# ------------------------------------------------------------
+def _norm(teks: str) -> str:
+    return (teks or "").strip().lower()
+
+
+def _cek_judul_unik(
+    db: Session, judul: str, mata_kuliah: str, *, kecuali_id: int | None = None
+) -> None:
+    """409 bila materi lain pada mata kuliah yang sama sudah memakai judul ini."""
+    if crud_materi.judul_ada(db, judul, mata_kuliah, kecuali_id=kecuali_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Nama materi sudah digunakan pada mata kuliah ini. Gunakan nama lain.",
+        )
+
+
+def _cek_judul_saat_ubah(db: Session, materi: Materi, fields: dict) -> None:
+    """Periksa duplikasi hanya jika judul atau mata kuliah benar-benar berubah.
+
+    Dengan begitu materi lama yang kebetulan sudah kembar tetap bisa diedit
+    (mis. ganti semester) selama judul dan mata kuliahnya tidak diubah.
+    """
+    judul_baru = fields.get("judul", materi.judul)
+    mk_baru = fields.get("mata_kuliah", materi.mata_kuliah)
+    berubah = _norm(judul_baru) != _norm(materi.judul) or _norm(mk_baru) != _norm(
+        materi.mata_kuliah
+    )
+    if berubah:
+        _cek_judul_unik(db, judul_baru, mk_baru, kecuali_id=materi.id)
+
+
+# ------------------------------------------------------------
 # Tulis (admin)
 # ------------------------------------------------------------
 def create_materi(db: Session, data: MateriCreateRequest, admin_id: int) -> Materi:
@@ -194,6 +227,8 @@ def upload_materi(
     except ValidationError as exc:
         raise _ke_422(exc) from None
 
+    _cek_judul_unik(db, bidang["judul"], bidang["mata_kuliah"])  # 409 bila kembar
+
     nama_file = file_service.nama_unik(
         file_service.nama_asli_bersih(file),
         lambda n: crud_materi.nama_file_ada(db, n),
@@ -220,6 +255,8 @@ def update_materi(db: Session, materi_id: int, data: MateriUpdateRequest) -> Mat
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Tidak ada field yang diubah",
         )
+
+    _cek_judul_saat_ubah(db, materi, fields)  # 409 bila kembar
 
     url_lama = materi.url
     materi = crud_materi.update(db, materi, **fields)
@@ -276,6 +313,8 @@ def ubah_materi_form(
         MateriUpdateRequest(**fields)
     except ValidationError as exc:
         raise _ke_422(exc) from None
+
+    _cek_judul_saat_ubah(db, materi, fields)  # 409 bila kembar, data tidak diubah
 
     url_lama = materi.url
     url_baru = None
