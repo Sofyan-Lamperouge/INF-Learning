@@ -53,6 +53,23 @@ def nama_file_ada(db: Session, nama: str, *, kecuali_id: int | None = None) -> b
     return query.first() is not None
 
 
+def judul_ada(
+    db: Session, judul: str, mata_kuliah: str, *, kecuali_id: int | None = None
+) -> bool:
+    """Apakah materi lain sudah memakai judul ini pada mata kuliah yang sama?
+
+    Perbandingan tidak membedakan huruf besar/kecil dan mengabaikan spasi di tepi.
+    `kecuali_id` dipakai saat edit agar materi itu sendiri tidak dihitung.
+    """
+    query = db.query(Materi.id).filter(
+        func.lower(func.trim(Materi.judul)) == judul.strip().lower(),
+        func.lower(func.trim(Materi.mata_kuliah)) == mata_kuliah.strip().lower(),
+    )
+    if kecuali_id is not None:
+        query = query.filter(Materi.id != kecuali_id)
+    return query.first() is not None
+
+
 def kategori_semester(db: Session, *, status: str | None = None) -> list[tuple[int, int, int]]:
     """Return [(semester, jumlah materi, jumlah mata kuliah berbeda)] untuk semester yang berisi."""
     query = db.query(
