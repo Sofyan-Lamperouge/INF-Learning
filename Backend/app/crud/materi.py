@@ -154,3 +154,8 @@ def hitung_dibuat_antara(db: Session, awal: datetime, akhir: datetime) -> int:
         .scalar()
         or 0
     )
+
+
+def get_by_nama_berkas(db: Session, nama: str) -> Materi | None:
+    """Materi yang file-nya bernama `nama` di folder upload (cocok pada ujung URL /uploads/<nama>)."""
+    return db.query(Materi).filter(Materi.url.endswith("/uploads/" + nama, autoescape=True)).first()

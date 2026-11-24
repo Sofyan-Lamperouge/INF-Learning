@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.core.tautan_file import UrlBerkas
+
 
 # Schema ringkas untuk list materi di dashboard
 class MateriRingkas(BaseModel):
@@ -10,7 +12,7 @@ class MateriRingkas(BaseModel):
     mata_kuliah: str
     semester: int
     jenis: str
-    url: str
+    url: UrlBerkas
     dibuat_pada: datetime
 
     model_config = {"from_attributes": True}

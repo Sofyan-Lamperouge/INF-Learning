@@ -5,6 +5,7 @@ from datetime import timedelta
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core import tautan_file
 from app.core.config import settings
 from app.core.security import (
     buat_access_token,
@@ -110,6 +111,8 @@ def login(
         alamat_ip=alamat_ip[:45] if alamat_ip else None,
         kedaluwarsa_pada=sekarang + timedelta(minutes=settings.SESI_IDLE_MENIT),
     )
+    # Respons login memuat foto_url: ikat ke sesi yang baru dibuat ini
+    tautan_file.tetapkan_sesi(sesi.id)
 
     return LoginResponse(
         access_token=buat_access_token({"sub": str(pengguna.id), "sid": sesi.id, "jti": jti}),

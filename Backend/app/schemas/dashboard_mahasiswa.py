@@ -4,6 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.core.tautan_file import UrlBerkas, UrlBerkasOpsional
 from app.schemas.tipe import StatusBelajar, StatusProgres
 
 
@@ -12,7 +13,7 @@ class ProfilMahasiswa(BaseModel):
     nama: str
     nomor_induk: str
     angkatan: int | None
-    foto_url: str | None = None
+    foto_url: UrlBerkasOpsional = None
 
 
 class StatistikBelajar(BaseModel):
@@ -28,7 +29,7 @@ class MateriDashboard(BaseModel):
     mata_kuliah: str
     semester: int
     jenis: str
-    url: str
+    url: UrlBerkas
     dibuat_pada: datetime
     status_belajar: StatusBelajar
 

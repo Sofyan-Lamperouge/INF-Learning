@@ -8,6 +8,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.orm import Session
 
+from app.core import tautan_file
 from app.core.config import settings
 from app.core.security import decode_access_token
 from app.core.waktu import sekarang_utc
@@ -68,6 +69,8 @@ def get_sesi_aktif(
         sesi.kedaluwarsa_pada = batas_baru
         db.commit()
 
+    # URL file di respons request ini akan terikat ke sesi ini (lihat core/tautan_file.py)
+    tautan_file.tetapkan_sesi(sesi.id)
     return sesi
 
 
