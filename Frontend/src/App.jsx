@@ -33,7 +33,7 @@ export default function App() {
       <Route
         path="/materi"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <MateriMahasiswaPage />
           </ProtectedRoute>
         }
@@ -41,7 +41,7 @@ export default function App() {
       <Route
         path="/materi/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <BacaMateriPage />
           </ProtectedRoute>
         }
@@ -104,13 +104,17 @@ export default function App() {
 
       <Route
         path="/wireframe/dashboard-mahasiswa"
-        element={<DashboardMahasiswaWireframePage />}
+        element={
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
+            <DashboardMahasiswaWireframePage />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/mahasiswa"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <DashboardMahasiswaWireframePage />
           </ProtectedRoute>
         }
@@ -119,7 +123,7 @@ export default function App() {
       <Route
         path="/beranda"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <DashboardMahasiswaWireframePage />
           </ProtectedRoute>
         }
@@ -128,7 +132,7 @@ export default function App() {
       <Route
         path="/kuis"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <KuisMahasiswaPage />
           </ProtectedRoute>
         }
@@ -137,7 +141,7 @@ export default function App() {
       <Route
         path="/profil"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["mahasiswa"]}>
             <ProfilMahasiswaPage />
           </ProtectedRoute>
         }
