@@ -2,6 +2,15 @@ import { useEffect, useRef } from "react";
 
 const SUCCESS_DURATION_MS = 2100;
 
+// Potong nama yang terlalu panjang menjadi "Nama yang panjang sekali..."
+const MAKS_NAMA_SUKSES = 40;
+function potongNama(teks, maks = MAKS_NAMA_SUKSES) {
+  const huruf = Array.from(String(teks || ""));
+  return huruf.length > maks
+    ? `${huruf.slice(0, maks).join("").trimEnd()}...`
+    : huruf.join("");
+}
+
 export default function DeleteMateriModal({
   materi,
   deleting = false,
@@ -27,13 +36,15 @@ export default function DeleteMateriModal({
 
   useEffect(() => {
     if (!success) return undefined;
-    const timer = window.setTimeout(() => onDoneRef.current?.(), SUCCESS_DURATION_MS);
+    const timer = window.setTimeout(
+      () => onDoneRef.current?.(),
+      SUCCESS_DURATION_MS,
+    );
     return () => window.clearTimeout(timer);
   }, [success]);
 
   return (
-    <div
-      className="hapus-materi-overlay">
+    <div className="hapus-materi-overlay">
       {success ? (
         <section
           className="edit-materi-result edit-materi-result--success"
@@ -54,7 +65,11 @@ export default function DeleteMateriModal({
           </div>
           <h2>Materi Berhasil Dihapus!</h2>
           <p>
-            Data "<strong>{materi?.judul || "Materi"}</strong>" telah dihapus dari sistem!
+            Data "
+            <strong title={materi?.judul}>
+              {potongNama(materi?.judul) || "Materi"}
+            </strong>
+            " telah dihapus dari sistem!
           </p>
         </section>
       ) : (
@@ -87,7 +102,9 @@ export default function DeleteMateriModal({
           <p id="hapus-materi-description" className="hapus-materi-question">
             Apakah anda yakin ingin menghapus data materi
           </p>
-          <p className="hapus-materi-name">“{materi?.judul || "Materi ini"}”?</p>
+          <p className="hapus-materi-name">
+            “{materi?.judul || "Materi ini"}”?
+          </p>
           <p className="hapus-materi-warning">
             <span aria-hidden="true">*</span>Tindakan ini tidak dapat dibatalkan
           </p>
