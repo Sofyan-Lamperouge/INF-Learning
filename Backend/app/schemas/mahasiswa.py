@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.tautan_file import UrlBerkasOpsional
 from app.core.validators import validasi_nim
 from app.schemas.tipe import StatusAkun
 
@@ -63,7 +64,7 @@ class MahasiswaResponse(BaseModel):
     nama: str
     angkatan: int | None
     status: str
-    foto_url: str | None = None
+    foto_url: UrlBerkasOpsional = None
     dibuat_pada: datetime
 
     model_config = {"from_attributes": True}

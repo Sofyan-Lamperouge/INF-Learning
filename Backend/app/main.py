@@ -1,15 +1,24 @@
-"""Titik masuk aplikasi FastAPI: middleware, router, file statis, dan endpoint kesehatan."""
+"""Titik masuk aplikasi FastAPI: middleware, router, rute file upload, dan endpoint kesehatan."""
 
 import logging
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
-from app.api.v1 import admin, auth, dashboard_mahasiswa, kontak_admin, mahasiswa, materi, profil
+from app.api.v1 import (
+    admin,
+    auth,
+    berkas,
+    dashboard_mahasiswa,
+    kontak_admin,
+    mahasiswa,
+    materi,
+    profil,
+)
 from app.core.config import settings
+from app.core.tautan_file import KonteksSesiMiddleware
 from app.db.session import engine
 
 logger = logging.getLogger(__name__)
@@ -54,12 +63,17 @@ app.add_middleware(
     expose_headers=["Content-Disposition"],
 )
 
+# Menyediakan penampung id sesi per request, dipakai untuk menandatangani URL file (core/tautan_file.py)
+app.add_middleware(KonteksSesiMiddleware)
+
 for router in ROUTERS:
     app.include_router(router, prefix=API_PREFIX)
 
-# File upload dilayani statis dari UPLOAD_DIR (production: folder di Railway Volume)
+# File upload TIDAK dilayani statis/publik. Rute /uploads/{nama} hanya melayani URL bertanda
+# tangan yang terikat sesi login dan memeriksa hak akses ke database (lihat api/v1/berkas.py).
+# Production: UPLOAD_DIR berada di Railway Volume.
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+app.include_router(berkas.router)
 
 
 @app.get("/", tags=["root"])

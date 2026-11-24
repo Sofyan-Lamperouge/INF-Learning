@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from app.core.pratinjau import buat_url_pratinjau
+from app.core.tautan_file import UrlBerkas, buang_tanda_tangan, tandatangani_url
 
 from app.schemas.tipe import StatusBelajar
 
@@ -34,7 +35,8 @@ class MateriCreateRequest(BaseModel):
         v = v.strip()
         if not (v.startswith("http://") or v.startswith("https://")):
             raise ValueError("URL harus dimulai dengan http:// atau https://")
-        return v
+        # Bila FE mengirim balik URL bertanda tangan dari respons, simpan URL polosnya saja
+        return buang_tanda_tangan(v)
 
 
 class MateriUpdateRequest(BaseModel):
@@ -64,7 +66,8 @@ class MateriUpdateRequest(BaseModel):
         v = v.strip()
         if not (v.startswith("http://") or v.startswith("https://")):
             raise ValueError("URL harus dimulai dengan http:// atau https://")
-        return v
+        # Bila FE mengirim balik URL bertanda tangan dari respons, simpan URL polosnya saja
+        return buang_tanda_tangan(v)
 
     @field_validator("status")
     @classmethod
@@ -84,7 +87,7 @@ class MateriResponse(BaseModel):
     mata_kuliah: str
     semester: int
     jenis: str
-    url: str
+    url: UrlBerkas
     nama_file: str | None = None
     dibuat_oleh: int | None
     status: str
@@ -103,7 +106,8 @@ class MateriResponse(BaseModel):
     )
     @property
     def url_pratinjau(self) -> str | None:
-        return buat_url_pratinjau(self.jenis, self.url)
+        # Dihitung dari URL bertanda tangan agar viewer Office dapat membuka file selama sesi aktif
+        return buat_url_pratinjau(self.jenis, tandatangani_url(self.url))
 
 
 # Bentuk respons GET /materi (dengan paginasi)

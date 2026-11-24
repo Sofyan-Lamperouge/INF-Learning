@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     # Folder file upload materi. Di Railway arahkan ke folder di dalam Volume
     # (mis. /data/uploads) agar file tidak hilang saat redeploy.
     UPLOAD_DIR: str = "uploads"
+    # Masa berlaku MINIMAL URL file bertanda tangan (menit). URL dibuat untuk jendela waktu tetap,
+    # jadi berlaku antara 1x dan 2x nilai ini, dan URL yang sama dipakai bersama dalam satu jendela
+    # (browser bisa meng-cache foto). Selain itu URL hanya berfungsi selama SESI LOGIN pemiliknya
+    # masih aktif. Materinya sendiri tidak kedaluwarsa, hanya URL-nya.
+    FILE_URL_TTL_MENIT: int = 30
     # Batas ukuran file upload (MB). Disamakan dengan batas di frontend.
     MAX_UPLOAD_MB: int = 10
     # Pratinjau PPT/Word/Excel lewat viewer Office Online (url_pratinjau di respons materi).

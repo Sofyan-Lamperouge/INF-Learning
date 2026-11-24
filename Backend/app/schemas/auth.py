@@ -4,6 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.core.tautan_file import UrlBerkasOpsional
 from app.core.validators import validasi_nim
 
 BATAS_BYTE_KATA_SANDI = 72  # batas bcrypt, dihitung dalam byte (bukan karakter)
@@ -60,7 +61,7 @@ class PenggunaRingkas(BaseModel):
     nomor_induk: str
     nama: str
     status: str
-    foto_url: str | None = None
+    foto_url: UrlBerkasOpsional = None
 
     model_config = {"from_attributes": True}
 
