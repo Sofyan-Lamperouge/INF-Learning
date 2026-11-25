@@ -3,3 +3,6 @@ variables:
   read_materi_url: ""
   foto_url: ""
   pesan_panjang: ""
+  access_token: ""
+  expected_id: ""
+  expected_nim: ""
