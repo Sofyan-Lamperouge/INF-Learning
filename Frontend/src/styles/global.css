@@ -2625,6 +2625,7 @@ body > .alert-success {
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
+  min-width: 1280px;
   background: #eef8fd;
 }
 
