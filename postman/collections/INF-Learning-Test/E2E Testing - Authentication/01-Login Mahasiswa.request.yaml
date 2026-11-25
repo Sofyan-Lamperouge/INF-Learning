@@ -1,0 +1,126 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "\r
+
+    {\r
+
+    \    \"nomor_induk\": \"2488010031\",\r
+
+    \    \"kata_sandi\": \"Sofyan31!\"\r
+
+    }\r\n"
+scripts:
+  - type: afterResponse
+    code: "\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      // LOGIN-01: Status berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Access token tersedia\r
+
+      pm.test(\"LOGIN-02: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token).to.be.a(\"string\");\r
+
+      \    pm.expect(response.access_token).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Token type Bearer\r
+
+      pm.test(\"LOGIN-03: Token type valid\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-04: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      \    pm.expect(response.pengguna.id).to.exist;\r
+
+      \    pm.expect(response.pengguna.nama).to.be.a(\"string\");\r
+
+      \    pm.expect(response.pengguna.nomor_induk).to.be.a(\"string\");\r
+
+      \    pm.expect(response.pengguna.peran).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Akun aktif\r
+
+      pm.test(\"LOGIN-05: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token untuk request berikutnya\r
+
+      if (response.access_token) {\r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"access_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // Simpan identitas pengguna untuk validasi\r
+
+      if (response.pengguna) {\r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"expected_id\",\r
+
+      \        String(response.pengguna.id)\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"expected_nim\",\r
+
+      \        response.pengguna.nomor_induk\r
+
+      \    );\r
+
+      }\r\n"
+    language: text/javascript
+examples: .resources/01-Login Mahasiswa.resources/examples
+order: 1000

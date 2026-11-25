@@ -1,0 +1,79 @@
+$kind: http-request
+url: "{{base_url}}/auth/me"
+method: GET
+headers:
+  Content-Type: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"ME-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-02: Data profil berupa object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-03: ID pengguna sesuai login\", function () {\r
+
+      \    pm.expect(String(response.id))\r
+
+      \        .to.eql(pm.collectionVariables.get(\"expected_id\"));\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-04: Nomor induk sesuai login\", function () {\r
+
+      \    pm.expect(response.nomor_induk)\r
+
+      \        .to.eql(pm.collectionVariables.get(\"expected_nim\"));\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-05: Data profil utama tersedia\", function () {\r
+
+      \    pm.expect(response.nama).to.be.a(\"string\");\r
+
+      \    pm.expect(response.peran).to.be.a(\"string\");\r
+
+      \    pm.expect(response.status).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-06: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"ME-07: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"aktif\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/02-Validasi Identitas.resources/examples
+order: 2000
