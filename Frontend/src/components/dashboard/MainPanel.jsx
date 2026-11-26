@@ -68,14 +68,26 @@ function MahasiswaIcon() {
   );
 }
 
-export default function MainPanel({ user, stats, onUpload }) {
+// Badge "[+N]": biru jika belum ada penambahan hari ini, hijau jika ada.
+// Angka N berasal dari backend (materi_hari_ini, mahasiswa_hari_ini, ...).
+function badgeHariIni(jumlah) {
+  const n = Number(jumlah) || 0;
+  return { text: `[+${n}]`, tone: n > 0 ? "green" : "blue" };
+}
+
+export default function MainPanel({ user, stats, statsError = "", onUpload }) {
   const nama = user?.namaLengkap || "Admin";
 
-  const totalMateri = stats?.totalMateri ?? 0;
-  const totalKuis = stats?.totalKuis ?? 0;
-  const totalMahasiswa = stats?.totalMahasiswa ?? 0;
-  const materiHariIni = stats?.materiHariIni ?? 0;
-  const mahasiswaHariIni = stats?.mahasiswaHariIni ?? 0;
+  // stats === null berarti data gagal dimuat: tampilkan "—", bukan 0 (0 menyesatkan).
+  const tampil = (nilai) => (stats ? (nilai ?? 0) : "0");
+
+  const totalMateri = tampil(stats?.totalMateri);
+  const totalKuis = tampil(stats?.totalKuis);
+  const totalMahasiswa = tampil(stats?.totalMahasiswa);
+
+  const badgeMateri = badgeHariIni(stats?.materiHariIni);
+  const badgeKuis = badgeHariIni(stats?.kuisHariIni);
+  const badgeMahasiswa = badgeHariIni(stats?.mahasiswaHariIni);
 
   return (
     <div className="main-panel">
@@ -124,14 +136,20 @@ export default function MainPanel({ user, stats, onUpload }) {
         </button>
       </div>
 
+      {statsError && (
+        <p className="main-panel-error" role="alert">
+          Statistik gagal dimuat. {statsError}
+        </p>
+      )}
+
       {/* === ROW BAWAH: 3 Kartu Statistik === */}
       <div className="main-panel-stats">
         <StatCard
           icon={<MateriIcon />}
           title="Total Materi"
           value={totalMateri}
-          badge="[+0]"
-          badgeTone="blue"
+          badge={badgeMateri.text}
+          badgeTone={badgeMateri.tone}
           subtitle="Materi ditambahkan hari ini"
         />
 
@@ -139,8 +157,8 @@ export default function MainPanel({ user, stats, onUpload }) {
           icon={<KuisIcon />}
           title="Total Kuis"
           value={totalKuis}
-          badge="[+0]"
-          badgeTone="blue"
+          badge={badgeKuis.text}
+          badgeTone={badgeKuis.tone}
           subtitle="Kuis ditambahkan hari ini"
         />
 
@@ -148,8 +166,8 @@ export default function MainPanel({ user, stats, onUpload }) {
           icon={<MahasiswaIcon />}
           title="Total Mahasiswa"
           value={totalMahasiswa}
-          badge="[+0]"
-          badgeTone="green"
+          badge={badgeMahasiswa.text}
+          badgeTone={badgeMahasiswa.tone}
           subtitle="Mahasiswa aktivasi akun hari ini"
         />
       </div>
