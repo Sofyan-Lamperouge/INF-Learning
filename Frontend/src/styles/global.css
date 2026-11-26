@@ -3216,6 +3216,15 @@ body > .alert-success {
 .stat-card-badge-blue  { color: #55b5ef; }
 .stat-card-badge-green { color: #16a34a; }
 
+.main-panel-error {
+  margin: 0 0 12px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #fde0e0;
+  color: #9b1c1c;
+  font-size: 14px;
+}
+
 
 /* ============================================================
    RESPONSIVE — Dashboard

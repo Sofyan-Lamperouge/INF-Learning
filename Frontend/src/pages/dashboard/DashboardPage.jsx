@@ -1,14 +1,15 @@
-// Frontend/src/pages/dashboard/DashboardPage.jsx
+// src/pages/dashboard/DashboardPage.jsx
 //
-// [DIUBAH]
-//  - fetchDashboardData sekarang benar-benar memanggil GET /admin/dashboard
-//    (sebelumnya hanya menunggu 1,5 detik, sehingga semua data selalu kosong).
-//  - Menambah import getDashboard dari adminService.
-//  - kuisList belum diisi karena backend belum mengirim daftar kuis.
-//  - [DIPERBAIKI] total_kuis sudah tidak dikirim backend (fitur kuis ditunda) -> pakai ?? 0
-//    agar kartu statistik tidak menampilkan undefined.
+//  - Dua request terpisah, supaya satu panel yang gagal tidak menjatuhkan panel lain:
+//      1) GET /admin/dashboard  -> statistik + mahasiswa terbaru
+//      2) GET /materi           -> Rekap Materi
+//  - `stats` bernilai null jika data belum ada / gagal dimuat. Semua pembacaan data
+//    (d.total_materi, dst.) hanya dilakukan setelah dicek `d ? ... : null`,
+//    sehingga halaman tidak error saat data kosong.
+//  - Angka "hari ini" untuk badge [+N] dikirim backend (materi_hari_ini,
+//    mahasiswa_hari_ini). Backend belum punya kuis, jadi kuis_hari_ini jatuh ke 0.
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import DashboardLayout from "../../components/dashboard/DashboardLayout.jsx";
@@ -17,74 +18,56 @@ import MainPanel from "../../components/dashboard/MainPanel.jsx";
 import RekapMateri from "../../components/dashboard/RekapMateri.jsx";
 import RekapKuis from "../../components/dashboard/RekapKuis.jsx";
 import TabelMahasiswa from "../../components/dashboard/TabelMahasiswa.jsx";
-import { useAuth } from "../../hooks/useAuth.js";
 import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton.jsx";
+import { useAuth } from "../../hooks/useAuth.js";
+import { usePanelData } from "../../hooks/usePanelData.js";
 import { getDashboard } from "../../services/adminService.js";
-import ErrorMessage from "../../components/common/ErrorMessage.jsx";
+import { getMateriList } from "../../services/materiService.js";
+
+// Didefinisikan di LUAR komponen agar referensinya stabil (dibutuhkan usePanelData).
+const muatRingkasan = () => getDashboard();
+const muatMateriTerbaru = () => getMateriList({ page: 1, limit: 5 });
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [stats, setStats] = useState({
-    totalMateri: 0,
-    totalKuis: 0,
-    totalMahasiswa: 0,
-    materiHariIni: 0, 
-    mahasiswaHariIni: 0, 
-  });
-  const [materiList, setMateriList] = useState([]);
   const [kuisList] = useState([]); // belum ada datanya dari backend
-  const [mahasiswaList, setMahasiswaList] = useState([]);
 
-  const [error, setError] = useState("");
-  const [reloadKey, setReloadKey] = useState(0);
+  const ringkasan = usePanelData(muatRingkasan);
+  const materi = usePanelData(muatMateriTerbaru);
 
+  // Sesi habis (401) -> arahkan ke login.
+  const sesiHabis = ringkasan.status === 401 || materi.status === 401;
   useEffect(() => {
-    let active = true;
-
-    async function fetchDashboardData() {
-      try {
-        const data = await getDashboard();
-
-        if (!active) return;
-
-        setStats({
-          totalMateri: data.total_materi,
-          totalKuis: data.total_kuis ?? 0, 
-          totalMahasiswa: data.total_mahasiswa,
-          materiHariIni: data.materi_hari_ini ?? 0, // BARU
-          mahasiswaHariIni: data.mahasiswa_hari_ini ?? 0, // BARU
-        });
-        setMateriList(data.materi_terbaru);
-        setMahasiswaList(data.mahasiswa_terbaru);
-      } catch (err) {
-        if (active) setError(err.message || "Data dashboard gagal dimuat.");
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-
-    fetchDashboardData();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+    if (sesiHabis) navigate("/login", { replace: true });
+  }, [sesiHabis, navigate]);
 
   function handleUpload() {
     navigate("/dashboard/materi/upload");
   }
 
-  if (loading) {
+  // Skeleton hanya selama SEMUA panel masih memuat.
+  if (ringkasan.loading && materi.loading) {
     return (
       <DashboardLayout>
         <DashboardSkeleton />
       </DashboardLayout>
     );
   }
+
+  const d = ringkasan.data;
+  const stats = d
+    ? {
+        totalMateri: d.total_materi,
+        totalKuis: d.total_kuis ?? 0,
+        totalMahasiswa: d.total_mahasiswa,
+        materiHariIni: d.materi_hari_ini ?? 0,
+        kuisHariIni: d.kuis_hari_ini ?? 0,
+        mahasiswaHariIni: d.mahasiswa_hari_ini ?? 0,
+      }
+    : null; // null = belum ada / gagal dimuat
 
   return (
     <DashboardLayout>
@@ -95,28 +78,29 @@ export default function DashboardPage() {
         onSearchChange={(e) => setSearch(e.target.value)}
       />
 
-      {error && (
-        <>
-          <ErrorMessage message={error} />
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => setReloadKey((k) => k + 1)}
-          >
-            Coba lagi
-          </button>
-        </>
-      )}
+      {/* Statistik + welcome. Jika gagal: kartu menampilkan "—" dan pesan error. */}
+      <MainPanel
+        user={user}
+        stats={stats}
+        statsError={ringkasan.error}
+        onUpload={handleUpload}
+      />
 
-      <MainPanel user={user} stats={stats} onUpload={handleUpload} />
-
-      {/* Rekap Materi (full width) */}
-      <RekapMateri materiList={materiList} />
+      {/* Rekap Materi (full width), dimuat dari request sendiri */}
+      <RekapMateri
+        materiList={materi.data?.items ?? []}
+        loading={materi.loading}
+        error={materi.error}
+      />
 
       {/* Rekap Kuis + Mahasiswa (2 kolom) */}
       <div className="dashboard-bottom-grid">
         <RekapKuis kuisList={kuisList} />
-        <TabelMahasiswa mahasiswaList={mahasiswaList} />
+        <TabelMahasiswa
+          mahasiswaList={d?.mahasiswa_terbaru ?? []}
+          loading={ringkasan.loading}
+          error={ringkasan.error}
+        />
       </div>
     </DashboardLayout>
   );
