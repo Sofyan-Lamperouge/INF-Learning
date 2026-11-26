@@ -2,9 +2,9 @@ name: INF-Learning Railway
 values:
   - key: base_url
     value: ''
-  - key: nim_register
+  - key: nim
     value: ''
-  - key: password_register
+  - key: password
     value: ''
   - key: nim_admin
     value: ''
