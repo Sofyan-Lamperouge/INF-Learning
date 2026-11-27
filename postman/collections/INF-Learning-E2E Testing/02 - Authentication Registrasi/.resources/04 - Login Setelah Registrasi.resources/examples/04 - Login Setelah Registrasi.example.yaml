@@ -1,0 +1,43 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"{{e2e_registrasi_nim}}\",\r
+
+      \    \"kata_sandi\": \"{{e2e_registrasi_password}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 16:53:14 GMT
+    server: railway-hikari
+    x-railway-request-id: VNa2Gfq-RX6qDg00jq4OvQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.462z
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MCIsInNpZCI6MjM5LCJqdGkiOiIwOWhzSHdCNVZVLVlrWTJWeC1kMGJUbjcwQTRQZ3RQTjVtclRXRzlZNmpBIiwiZXhwIjoxNzk1NzU1MTk0fQ.VrCwv1f_8ox3_nhDwkP-TfwuhkyYi-JcvcdeM_3EmYA",
+        "token_type": "bearer",
+        "expires_in": 1200,
+        "pengguna": {
+          "id": 70,
+          "peran": "mahasiswa",
+          "nomor_induk": "2488290537",
+          "nama": "E2E Registrasi 2488290537",
+          "status": "aktif",
+          "foto_url": null
+        }
+      }
+order: 1000

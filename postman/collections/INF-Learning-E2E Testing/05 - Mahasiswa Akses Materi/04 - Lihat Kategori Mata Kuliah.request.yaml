@@ -1,0 +1,298 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/kategori/mata-kuliah?semester={{e2e_aks_mtr_semester}}"
+method: GET
+queryParams:
+  semester: "{{e2e_aks_mtr_semester}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_mahasiswa_token\");\r
+
+      const id = pm.environment.get(\"e2e_mahasiswa_id\");\r
+
+      \r
+
+      const semester = pm.environment.get(\"e2e_aks_mtr_semester\");\r
+
+      const mataKuliah = pm.environment.get(\"e2e_aks_mtr_mata_kuliah\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !semester || !mataKuliah) {\r
+
+      \    console.error(\"Sesi atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_aks_mtr_semester\") !== semester ||\r
+
+      \    pm.variables.get(\"e2e_aks_mtr_mata_kuliah\") !== mataKuliah\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi semester\r
+
+      else if (!/^[1-8]$/.test(semester)) {\r
+
+      \    console.error(\"Semester materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Sesi mahasiswa tersedia.\");\r
+
+      \    console.log(\"Semester pengujian:\", semester);\r
+
+      \    console.log(\"Mata kuliah pengujian:\", mataKuliah);\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const semester = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_semester\")\r
+
+      );\r
+
+      \r
+
+      const mataKuliah = pm.environment.get(\r
+
+      \    \"e2e_aks_mtr_mata_kuliah\"\r
+
+      );\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const kategori = items.find(\r
+
+      \    item => item.mata_kuliah === mataKuliah\r
+
+      );\r
+
+      \r
+
+      // MK-01: Status code berhasil\r
+
+      pm.test(\"MK-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // MK-02: Response JSON\r
+
+      pm.test(\"MK-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // MK-03: Semester response valid\r
+
+      pm.test(\"MK-03: Semester response valid\", function () {\r
+
+      \    pm.expect(Number.isInteger(response.semester))\r
+
+      \        .to.be.true;\r
+
+      \r
+
+      \    pm.expect(response.semester).to.be.within(1, 8);\r
+
+      });\r
+
+      \r
+
+      // MK-04: Semester sesuai parameter\r
+
+      pm.test(\"MK-04: Semester sesuai parameter\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(semester);\r
+
+      });\r
+
+      \r
+
+      // MK-05: Items berupa array\r
+
+      pm.test(\"MK-05: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // MK-06: Daftar mata kuliah tidak kosong\r
+
+      pm.test(\"MK-06: Daftar mata kuliah tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // MK-07: Seluruh nama mata kuliah valid\r
+
+      pm.test(\"MK-07: Seluruh nama mata kuliah valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.mata_kuliah).to.be.a(\"string\");\r
+
+      \r
+
+      \        pm.expect(item.mata_kuliah.trim())\r
+
+      \            .not.to.be.empty;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // MK-08: Tidak ada mata kuliah duplikat\r
+
+      pm.test(\"MK-08: Tidak ada mata kuliah duplikat\", function () {\r
+
+      \    const names = items.map(item => item.mata_kuliah);\r
+
+      \r
+
+      \    pm.expect(new Set(names).size)\r
+
+      \        .to.eql(names.length);\r
+
+      });\r
+
+      \r
+
+      // MK-09: Jumlah materi setiap mata kuliah valid\r
+
+      pm.test(\"MK-09: Jumlah materi setiap mata kuliah valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.total_materi))\r
+
+      \            .to.be.true;\r
+
+      \r
+
+      \        pm.expect(item.total_materi).to.be.above(0);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // MK-10: Mata kuliah pengujian ditemukan\r
+
+      pm.test(\"MK-10: Mata kuliah pengujian ditemukan\", function () {\r
+
+      \    pm.expect(kategori).to.exist;\r
+
+      \r
+
+      \    pm.expect(kategori?.mata_kuliah)\r
+
+      \        .to.eql(mataKuliah);\r
+
+      });\r
+
+      \r
+
+      // MK-11: Mata kuliah pengujian memiliki materi\r
+
+      pm.test(\"MK-11: Mata kuliah pengujian memiliki materi\", function () {\r
+
+      \    pm.expect(kategori?.total_materi).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // MK-12: Identitas materi pengujian tetap tersedia\r
+
+      pm.test(\"MK-12: Identitas materi pengujian tetap tersedia\", function () {\r
+
+      \    const variables = [\r
+
+      \        \"e2e_aks_mtr_id\",\r
+
+      \        \"e2e_aks_mtr_judul\",\r
+
+      \        \"e2e_aks_mtr_semester\",\r
+
+      \        \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \        \"e2e_aks_mtr_jenis\",\r
+
+      \        \"e2e_aks_mtr_url\"\r
+
+      \    ];\r
+
+      \r
+
+      \    variables.forEach(key => {\r
+
+      \        pm.expect(pm.environment.get(key))\r
+
+      \            .to.be.a(\"string\").and.not.be.empty;\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/04 - Lihat Kategori Mata Kuliah.resources/examples
+order: 4000

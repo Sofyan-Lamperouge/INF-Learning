@@ -1,0 +1,180 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_registrasi_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_registrasi_token\");\r
+
+      const id = pm.environment.get(\"e2e_registrasi_id\");\r
+
+      const nim = pm.environment.get(\"e2e_registrasi_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_registrasi_nama\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !nim || !nama) {\r
+
+      \    throw new Error(\r
+
+      \        \"Data registrasi belum lengkap. Periksa REG-02 dan REG-04.\"\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel token\r
+
+      if (pm.variables.get(\"e2e_registrasi_token\") !== token) {\r
+
+      \    throw new Error(\"Terdeteksi konflik variabel token registrasi.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // GET-01: Status berhasil\r
+
+      pm.test(\"GET-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // GET-02: Response berupa JSON\r
+
+      pm.test(\"GET-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // GET-03: ID sesuai mahasiswa registrasi\r
+
+      pm.test(\"GET-03: ID mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(String(response.id)).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_id\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-04: NIM sesuai mahasiswa registrasi\r
+
+      pm.test(\"GET-04: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-05: Nama sesuai mahasiswa registrasi\r
+
+      pm.test(\"GET-05: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nama\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-06: Role mahasiswa\r
+
+      pm.test(\"GET-06: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // GET-07: Status akun aktif\r
+
+      pm.test(\"GET-07: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // GET-08: Foto profil masih kosong\r
+
+      pm.test(\"GET-08: Foto profil masih kosong\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"foto_url\");\r
+
+      \    pm.expect(response.foto_url).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      // GET-09: Password tidak dikembalikan\r
+
+      pm.test(\"GET-09: Password tidak terekspos\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"kata_sandi\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password_hash\");\r
+
+      });\r
+
+      \r
+
+      // GET-10: Tidak ada konflik variabel token\r
+
+      pm.test(\"GET-10: Tidak ada konflik variabel token\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_registrasi_token\")\r
+
+      \    ).to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.variables.get(\"e2e_registrasi_token\")\r
+
+      \    ).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_token\")\r
+
+      \    );\r
+
+      });"
+    language: text/javascript
+examples: .resources/05 - Akses Profil Mahasiswa.resources/examples
+order: 5000

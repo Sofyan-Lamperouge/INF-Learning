@@ -1,0 +1,209 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_admin_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_admin_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "// Bersihkan token dan ID admin sebelumnya\r
+
+      pm.environment.unset(\"e2e_admin_token\");\r
+
+      pm.environment.unset(\"e2e_admin_id\");"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // LOGIN-01: Status berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Access token tersedia\r
+
+      pm.test(\"LOGIN-02: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Token type valid\r
+
+      pm.test(\"LOGIN-03: Token type valid\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Durasi sesi valid\r
+
+      pm.test(\"LOGIN-04: Durasi sesi valid\", function () {\r
+
+      \    pm.expect(response.expires_in)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-05: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      \    pm.expect(response.pengguna.id).to.be.a(\"number\");\r
+
+      \    pm.expect(response.pengguna.nama)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \    pm.expect(response.pengguna.nomor_induk)\r
+
+      \        .to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-06: Nomor induk sesuai\r
+
+      pm.test(\"LOGIN-06: Nomor induk sesuai\", function () {\r
+
+      \    pm.expect(response.pengguna.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_admin_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // LOGIN-07: Role admin\r
+
+      pm.test(\"LOGIN-07: Role admin\", function () {\r
+
+      \    pm.expect(response.pengguna.peran).to.eql(\"admin\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-08: Status akun aktif\r
+
+      pm.test(\"LOGIN-08: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token dan ID admin\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    typeof response.access_token === \"string\" &&\r
+
+      \    response.access_token.length > 0 &&\r
+
+      \    response.pengguna &&\r
+
+      \    Number.isInteger(response.pengguna.id) &&\r
+
+      \    response.pengguna.peran === \"admin\" &&\r
+
+      \    response.pengguna.status === \"aktif\" &&\r
+
+      \    response.pengguna.nomor_induk ===\r
+
+      \        pm.environment.get(\"e2e_admin_nim\")\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_admin_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_admin_id\",\r
+
+      \        String(response.pengguna.id)\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // LOGIN-09: Token berhasil disimpan\r
+
+      pm.test(\"LOGIN-09: Token admin berhasil disimpan\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_admin_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-10: Tidak ada konflik variabel\r
+
+      pm.test(\"LOGIN-10: Tidak ada konflik variabel token\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.variables.get(\"e2e_admin_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });"
+    language: text/javascript
+examples: .resources/01 - Login Admin.resources/examples
+order: 1000

@@ -1,0 +1,143 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi?mata_kuliah=Sistem Terdistribusi"
+  method: GET
+  queryParams:
+    mata_kuliah: Sistem Terdistribusi
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 22:24:02 GMT
+    server: railway-hikari
+    x-railway-request-id: 83ZJJDyfSM2uUemD0_TJvA
+    content-encoding: gzip
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 85,
+            "judul": "E2E Kelola Materi 1795731154070",
+            "deskripsi": "Materi khusus pengujian E2E",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 4,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM",
+            "nama_file": "TuTur 2-Class Diagram(1).pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-26T22:12:35",
+            "diubah_pada": "2026-11-26T22:12:35",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM"
+          },
+          {
+            "id": 84,
+            "judul": "E2E Kelola Materi 1795731052268",
+            "deskripsi": "Materi khusus pengujian E2E",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/dc175dbd10234d7d9fc10e705d33a350.pdf?exp=1795734000&sid=253&sig=_Or738SqWXEFOFFHjiJvk7GnwL20l6vfMlYuIDjTnPA",
+            "nama_file": "TuTur 2-Class Diagram.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-26T22:10:56",
+            "diubah_pada": "2026-11-26T22:10:56",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/dc175dbd10234d7d9fc10e705d33a350.pdf?exp=1795734000&sid=253&sig=_Or738SqWXEFOFFHjiJvk7GnwL20l6vfMlYuIDjTnPA"
+          },
+          {
+            "id": 64,
+            "judul": "05. Teorema CAP",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/ab8e9519442f42cc8c2ce56e6b6bb8f8.pdf?exp=1795734000&sid=253&sig=qGJ3PuO7IN6VwaAWdJDKyN4SsKuq2OOrlVEif4BXcI4",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:16:46",
+            "diubah_pada": "2026-11-13T12:16:46",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/ab8e9519442f42cc8c2ce56e6b6bb8f8.pdf?exp=1795734000&sid=253&sig=qGJ3PuO7IN6VwaAWdJDKyN4SsKuq2OOrlVEif4BXcI4"
+          },
+          {
+            "id": 63,
+            "judul": "04. Fault Tolerance",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/b9388c0b6e974f27a4509c643e1f37df.pdf?exp=1795734000&sid=253&sig=G7p0qE30XeceuLod7wndZpk5T9KIvwu3mn7ACY0cR7U",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:15:50",
+            "diubah_pada": "2026-11-13T12:15:50",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/b9388c0b6e974f27a4509c643e1f37df.pdf?exp=1795734000&sid=253&sig=G7p0qE30XeceuLod7wndZpk5T9KIvwu3mn7ACY0cR7U"
+          },
+          {
+            "id": 62,
+            "judul": "03. Teknik Komunikasi dalam Sistem Terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/d5d650d1fa134f0485b599e2c99a8157.pdf?exp=1795734000&sid=253&sig=bvjoSoxvT1r8ODfMFHXlcSlmEPqe6h84kQwev6-5tS8",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:15:11",
+            "diubah_pada": "2026-11-13T12:15:11",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/d5d650d1fa134f0485b599e2c99a8157.pdf?exp=1795734000&sid=253&sig=bvjoSoxvT1r8ODfMFHXlcSlmEPqe6h84kQwev6-5tS8"
+          },
+          {
+            "id": 61,
+            "judul": "02. Model Arsitektur Sistem Terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/270adf1a6ba5490398e54bd862057603.pdf?exp=1795734000&sid=253&sig=EQmUJ4qggOLaykaMY6YzVjjCzTD1K9t_sJMGp-i1m-Q",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:14:29",
+            "diubah_pada": "2026-11-13T12:14:29",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/270adf1a6ba5490398e54bd862057603.pdf?exp=1795734000&sid=253&sig=EQmUJ4qggOLaykaMY6YzVjjCzTD1K9t_sJMGp-i1m-Q"
+          },
+          {
+            "id": 60,
+            "judul": "01. Pengantar sistem terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/5d6b76245c264f10bb5bf6760f36ccb9.pdf?exp=1795734000&sid=253&sig=walXMeyDffxHk1Eb4ZKmXOZ5eI214cA9OGpc8bIVgxU",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:13:46",
+            "diubah_pada": "2026-11-13T12:13:46",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/5d6b76245c264f10bb5bf6760f36ccb9.pdf?exp=1795734000&sid=253&sig=walXMeyDffxHk1Eb4ZKmXOZ5eI214cA9OGpc8bIVgxU"
+          }
+        ],
+        "total": 7,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

@@ -1,0 +1,239 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_mhs_nim}}\",\r
+
+    \    \"nama\": \"{{e2e_mhs_nama}}\",\r
+
+    \    \"angkatan\": 2024\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "// Pastikan token admin tersedia\r
+
+      const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      \r
+
+      if (!token || pm.variables.get(\"e2e_admin_token\") !== token) {\r
+
+      \    console.error(\"Token admin tidak tersedia atau konflik.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Cegah pembuatan data baru sebelum data lama dihapus\r
+
+      else if (pm.environment.get(\"e2e_mhs_id\")) {\r
+
+      \    console.error(\"Mahasiswa pengujian sebelumnya masih tersimpan.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    // Generate NIM dinamis\r
+
+      \    const angkaAcak = String(\r
+
+      \        Math.floor(Math.random() * 1000000)\r
+
+      \    ).padStart(6, \"0\");\r
+
+      \r
+
+      \    const nim = \"2488\" + angkaAcak;\r
+
+      \    const nama = \"E2E Kelola Mahasiswa \" + nim;\r
+
+      \r
+
+      \    // Simpan ke Environment\r
+
+      \    pm.environment.set(\"e2e_mhs_nim\", nim);\r
+
+      \    pm.environment.set(\"e2e_mhs_nama\", nama);\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // CREATE-01: Status berhasil\r
+
+      pm.test(\"CREATE-01: Status code 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      // CREATE-02: Response JSON\r
+
+      pm.test(\"CREATE-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // CREATE-03: ID mahasiswa valid\r
+
+      pm.test(\"CREATE-03: ID mahasiswa valid\", function () {\r
+
+      \    pm.expect(response.id)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      \    pm.expect(Number.isInteger(response.id)).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // CREATE-04: NIM sesuai request\r
+
+      pm.test(\"CREATE-04: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(nim);\r
+
+      });\r
+
+      \r
+
+      // CREATE-05: Format NIM valid\r
+
+      pm.test(\"CREATE-05: Format NIM valid\", function () {\r
+
+      \    pm.expect(response.nomor_induk)\r
+
+      \        .to.match(/^2488\\d{6}$/);\r
+
+      });\r
+
+      \r
+
+      // CREATE-06: Nama mahasiswa sesuai\r
+
+      pm.test(\"CREATE-06: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(nama);\r
+
+      });\r
+
+      \r
+
+      // CREATE-07: Angkatan sesuai\r
+
+      pm.test(\"CREATE-07: Angkatan mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.angkatan).to.eql(2024);\r
+
+      });\r
+
+      \r
+
+      // CREATE-08: Status awal belum aktif\r
+
+      pm.test(\"CREATE-08: Status awal belum aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      // CREATE-09: Foto profil masih kosong\r
+
+      pm.test(\"CREATE-09: Foto profil masih kosong\", function () {\r
+
+      \    pm.expect(response.foto_url).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // CREATE-10: Waktu pembuatan valid\r
+
+      pm.test(\"CREATE-10: Waktu pembuatan valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.be.false;\r
+
+      });\r
+
+      \r
+
+      // Simpan ID jika identitas mahasiswa sesuai\r
+
+      if (\r
+
+      \    pm.response.code === 201 &&\r
+
+      \    Number.isInteger(response.id) &&\r
+
+      \    response.id > 0 &&\r
+
+      \    response.nomor_induk === nim &&\r
+
+      \    response.nama === nama\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_mhs_id\",\r
+
+      \        String(response.id)\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // CREATE-11: ID berhasil disimpan\r
+
+      pm.test(\"CREATE-11: ID mahasiswa berhasil disimpan\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mhs_id\")\r
+
+      \    ).to.eql(String(response.id));\r
+
+      });"
+    language: text/javascript
+examples: .resources/02 - Tambah Mahasiswa.resources/examples
+order: 2000

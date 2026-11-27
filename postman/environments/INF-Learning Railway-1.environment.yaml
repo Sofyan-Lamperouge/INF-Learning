@@ -20,5 +20,7 @@ values:
     value: ''
   - key: token_expired
     value: ''
+  - key: access_token_registrasi
+    value: ''
   - key: ''
     value: ''

@@ -1,0 +1,225 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_admin_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_admin_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "// Bersihkan data sesi admin sebelumnya\r
+
+      pm.environment.unset(\"e2e_admin_token\");\r
+
+      pm.environment.unset(\"e2e_admin_id\");\r
+
+      \r
+
+      const nim = pm.environment.get(\"e2e_admin_nim\");\r
+
+      const password = pm.environment.get(\"e2e_admin_password\");\r
+
+      \r
+
+      // Pastikan kredensial admin tersedia\r
+
+      if (!nim || !password) {\r
+
+      \    console.error(\"Kredensial admin belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_nim\") !== nim ||\r
+
+      \    pm.variables.get(\"e2e_admin_password\") !== password\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      const pengguna = response.pengguna || {};\r
+
+      \r
+
+      // LOGIN-01: Status code berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Response JSON\r
+
+      pm.test(\"LOGIN-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Access token tersedia\r
+
+      pm.test(\"LOGIN-03: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Token type bearer\r
+
+      pm.test(\"LOGIN-04: Token type bearer\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Masa berlaku token valid\r
+
+      pm.test(\"LOGIN-05: Expires in valid\", function () {\r
+
+      \    pm.expect(response.expires_in)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-06: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-06: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-07: ID admin valid\r
+
+      pm.test(\"LOGIN-07: ID admin valid\", function () {\r
+
+      \    pm.expect(pengguna.id).to.be.a(\"number\").and.above(0);\r
+
+      \    pm.expect(Number.isInteger(pengguna.id)).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-08: Peran pengguna adalah admin\r
+
+      pm.test(\"LOGIN-08: Peran pengguna admin\", function () {\r
+
+      \    pm.expect(pengguna.peran).to.eql(\"admin\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-09: Nomor induk sesuai\r
+
+      pm.test(\"LOGIN-09: Nomor induk admin sesuai\", function () {\r
+
+      \    pm.expect(pengguna.nomor_induk)\r
+
+      \        .to.eql(pm.environment.get(\"e2e_admin_nim\"));\r
+
+      });\r
+
+      \r
+
+      // LOGIN-10: Status admin aktif\r
+
+      pm.test(\"LOGIN-10: Status admin aktif\", function () {\r
+
+      \    pm.expect(pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token dan ID admin jika login valid\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    typeof response.access_token === \"string\" &&\r
+
+      \    response.access_token.length > 0 &&\r
+
+      \    response.token_type === \"bearer\" &&\r
+
+      \    Number.isInteger(pengguna.id) &&\r
+
+      \    pengguna.id > 0 &&\r
+
+      \    pengguna.peran === \"admin\" &&\r
+
+      \    pengguna.status === \"aktif\" &&\r
+
+      \    pengguna.nomor_induk ===\r
+
+      \        pm.environment.get(\"e2e_admin_nim\")\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_admin_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_admin_id\",\r
+
+      \        String(pengguna.id)\r
+
+      \    );\r
+
+      \r
+
+      \    console.log(\"Login admin berhasil.\");\r
+
+      \    console.log(\"ID Admin:\", pengguna.id);\r
+
+      }"
+    language: text/javascript
+examples: .resources/01 - Login Admin.resources/examples
+order: 1000

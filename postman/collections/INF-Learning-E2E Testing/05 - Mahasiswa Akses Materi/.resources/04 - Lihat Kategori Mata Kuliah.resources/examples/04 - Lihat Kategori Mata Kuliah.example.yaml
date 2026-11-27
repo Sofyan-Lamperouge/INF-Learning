@@ -1,0 +1,35 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi/kategori/mata-kuliah?semester={{e2e_aks_mtr_semester}}"
+  method: GET
+  queryParams:
+    semester: "{{e2e_aks_mtr_semester}}"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 23:21:07 GMT
+    server: railway-hikari
+    x-railway-request-id: IyZ4HsbDT_WA0euB9fVATg
+    content-length: "142"
+    x-hikari-trace: sin1.462z
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "semester": 5,
+        "items": [
+          {
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "total_materi": 6
+          },
+          {
+            "mata_kuliah": "Sistem Terdistribusi",
+            "total_materi": 6
+          }
+        ]
+      }
+order: 1000

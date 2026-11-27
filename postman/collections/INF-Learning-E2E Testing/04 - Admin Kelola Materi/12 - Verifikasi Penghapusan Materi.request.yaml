@@ -1,0 +1,228 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !judul || !url) {\r
+
+      \    console.error(\"Data pengujian belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul ||\r
+
+      \    pm.variables.get(\"e2e_mtr_url\") !== url\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi identitas materi\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+ Update$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      \r
+
+      // VERIFY-01: Status code 404\r
+
+      pm.test(\"VERIFY-01: Status code 404 Not Found\", function () {\r
+
+      \    pm.response.to.have.status(404);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-02: Response JSON\r
+
+      pm.test(\"VERIFY-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-03: Response berupa object\r
+
+      pm.test(\"VERIFY-03: Response berupa object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-04: Response memiliki field detail\r
+
+      pm.test(\"VERIFY-04: Response memiliki field detail\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"detail\");\r
+
+      \    pm.expect(response.detail).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-05: Pesan materi tidak ditemukan\r
+
+      pm.test(\"VERIFY-05: Materi tidak ditemukan\", function () {\r
+
+      \    pm.expect(response.detail)\r
+
+      \        .to.eql(\"Materi tidak ditemukan\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-06: Data materi tidak dikembalikan\r
+
+      pm.test(\"VERIFY-06: Data materi tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"id\");\r
+
+      \    pm.expect(response).to.not.have.property(\"judul\");\r
+
+      \    pm.expect(response).to.not.have.property(\"url\");\r
+
+      });\r
+
+      \r
+
+      // Bersihkan Environment jika penghapusan terverifikasi\r
+
+      if (\r
+
+      \    pm.response.code === 404 &&\r
+
+      \    response.detail === \"Materi tidak ditemukan\" &&\r
+
+      \    !Object.prototype.hasOwnProperty.call(response, \"id\") &&\r
+
+      \    !Object.prototype.hasOwnProperty.call(response, \"judul\") &&\r
+
+      \    !Object.prototype.hasOwnProperty.call(response, \"url\")\r
+
+      ) {\r
+
+      \    console.log(\"Penghapusan materi terverifikasi.\");\r
+
+      \    console.log(\"ID materi yang dihapus:\", id);\r
+
+      \    console.log(\"Judul materi yang dihapus:\", judul);\r
+
+      \r
+
+      \    pm.environment.unset(\"e2e_mtr_id\");\r
+
+      \    pm.environment.unset(\"e2e_mtr_judul\");\r
+
+      \    pm.environment.unset(\"e2e_mtr_url\");\r
+
+      \r
+
+      \    console.log(\"Environment materi berhasil dibersihkan.\");\r
+
+      }\r
+
+      \r
+
+      // VERIFY-07: Environment materi berhasil dibersihkan\r
+
+      pm.test(\"VERIFY-07: Environment materi berhasil dibersihkan\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_id\"))\r
+
+      \        .to.be.undefined;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_judul\"))\r
+
+      \        .to.be.undefined;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_url\"))\r
+
+      \        .to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-08: Sesi admin tetap tersedia\r
+
+      pm.test(\"VERIFY-08: Sesi admin tetap tersedia\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_admin_token\"))\r
+
+      \        .to.be.a(\"string\").and.not.be.empty;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_admin_id\"))\r
+
+      \        .to.exist;\r
+
+      });"
+    language: text/javascript
+examples: .resources/12 - Verifikasi Penghapusan Materi.resources/examples
+order: 12000

@@ -1,0 +1,67 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/mahasiswa?angkatan=2024"
+  method: GET
+  queryParams:
+    angkatan: "2024"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 17:37:48 GMT
+    server: railway-hikari
+    x-railway-request-id: 6Jt5cAh8S-qD4_5fYqVb7A
+    content-encoding: gzip
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 52,
+            "nomor_induk": "2488010031",
+            "nama": "Mohammad Sofyan Nurseha",
+            "angkatan": 2024,
+            "status": "aktif",
+            "foto_url": null,
+            "dibuat_pada": "2026-11-24T08:08:08"
+          },
+          {
+            "id": 54,
+            "nomor_induk": "2488010071",
+            "nama": "Mohammad Rizky Saputra",
+            "angkatan": 2024,
+            "status": "aktif",
+            "foto_url": "https://inf-learning-production.up.railway.app/uploads/foto-02a5619f8d9d47ffa9dae33b92a436b4.jpg?exp=1795717800&sid=245&sig=x2hoP6AbgWV1O-Te7dtU3OXMmieCcnN4u09PTRnEc2M",
+            "dibuat_pada": "2026-11-26T05:41:55"
+          },
+          {
+            "id": 69,
+            "nomor_induk": "2488010099",
+            "nama": "Kurumi Tokisaki",
+            "angkatan": 2024,
+            "status": "aktif",
+            "foto_url": null,
+            "dibuat_pada": "2026-11-26T15:32:11"
+          },
+          {
+            "id": 73,
+            "nomor_induk": "2488640512",
+            "nama": "E2E Kelola Mahasiswa 2488640512",
+            "angkatan": 2024,
+            "status": "belum_aktif",
+            "foto_url": null,
+            "dibuat_pada": "2026-11-26T17:24:05"
+          }
+        ],
+        "total": 4,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

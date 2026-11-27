@@ -1,0 +1,57 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/me"
+method: GET
+auth:
+  type: bearer
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // GET-01: Status unauthorized\r
+
+      pm.test(\"GET-01: Status code 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      // GET-02: Response berupa JSON\r
+
+      pm.test(\"GET-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // GET-03: Pesan penolakan tersedia\r
+
+      pm.test(\"GET-03: Akses tanpa token ditolak\", function () {\r
+
+      \    pm.expect(response.detail)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // GET-04: Data profil tidak dikembalikan\r
+
+      pm.test(\"GET-04: Data profil tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"id\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nomor_induk\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/05 - Akses Profil Tanpa Token.resources/examples
+order: 5000

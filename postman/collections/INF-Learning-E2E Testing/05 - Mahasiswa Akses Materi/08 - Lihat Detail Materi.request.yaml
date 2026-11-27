@@ -1,0 +1,390 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_aks_mtr_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const keys = [\r
+
+      \    \"e2e_mahasiswa_token\",\r
+
+      \    \"e2e_mahasiswa_id\",\r
+
+      \    \"e2e_aks_mtr_id\",\r
+
+      \    \"e2e_aks_mtr_judul\",\r
+
+      \    \"e2e_aks_mtr_semester\",\r
+
+      \    \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \    \"e2e_aks_mtr_jenis\",\r
+
+      \    \"e2e_aks_mtr_url\"\r
+
+      ];\r
+
+      \r
+
+      const materiId = pm.environment.get(\"e2e_aks_mtr_id\");\r
+
+      \r
+
+      // Pastikan seluruh variabel tersedia\r
+
+      const missing = keys.filter(\r
+
+      \    key => !pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      // Periksa konflik variabel\r
+
+      const conflicts = keys.filter(\r
+
+      \    key => pm.variables.get(key) !== pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      if (missing.length > 0) {\r
+
+      \    console.error(\"Variabel belum tersedia:\", missing);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (conflicts.length > 0) {\r
+
+      \    console.error(\"Konflik variabel:\", conflicts);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (!/^[1-9]\\d*$/.test(materiId)) {\r
+
+      \    console.error(\"ID materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"ID materi pengujian:\", materiId);\r
+
+      \    console.log(\"Detail materi dapat diakses.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const materiId = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_id\")\r
+
+      );\r
+
+      \r
+
+      const judul = pm.environment.get(\"e2e_aks_mtr_judul\");\r
+
+      \r
+
+      const semester = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_semester\")\r
+
+      );\r
+
+      \r
+
+      const mataKuliah = pm.environment.get(\r
+
+      \    \"e2e_aks_mtr_mata_kuliah\"\r
+
+      );\r
+
+      \r
+
+      const jenis = pm.environment.get(\"e2e_aks_mtr_jenis\");\r
+
+      const url = pm.environment.get(\"e2e_aks_mtr_url\");\r
+
+      \r
+
+      // Abaikan query parameter signed URL\r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // DTL-01: Status code berhasil\r
+
+      pm.test(\"DTL-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // DTL-02: Response JSON\r
+
+      pm.test(\"DTL-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // DTL-03: Response berupa object\r
+
+      pm.test(\"DTL-03: Response berupa object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // DTL-04: ID materi sesuai\r
+
+      pm.test(\"DTL-04: ID materi sesuai\", function () {\r
+
+      \    pm.expect(response.id).to.eql(materiId);\r
+
+      });\r
+
+      \r
+
+      // DTL-05: Judul materi sesuai\r
+
+      pm.test(\"DTL-05: Judul materi sesuai\", function () {\r
+
+      \    pm.expect(response.judul).to.eql(judul);\r
+
+      });\r
+
+      \r
+
+      // DTL-06: Deskripsi materi valid\r
+
+      pm.test(\"DTL-06: Deskripsi materi valid\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.deskripsi === null ||\r
+
+      \        typeof response.deskripsi === \"string\"\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // DTL-07: Mata kuliah sesuai\r
+
+      pm.test(\"DTL-07: Mata kuliah sesuai\", function () {\r
+
+      \    pm.expect(response.mata_kuliah).to.eql(mataKuliah);\r
+
+      });\r
+
+      \r
+
+      // DTL-08: Semester sesuai\r
+
+      pm.test(\"DTL-08: Semester sesuai\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(semester);\r
+
+      });\r
+
+      \r
+
+      // DTL-09: Jenis file sesuai\r
+
+      pm.test(\"DTL-09: Jenis file sesuai\", function () {\r
+
+      \    pm.expect(response.jenis).to.eql(jenis);\r
+
+      });\r
+
+      \r
+
+      // DTL-10: URL materi sesuai\r
+
+      pm.test(\"DTL-10: URL materi sesuai\", function () {\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url).to.match(/^https?:\\/\\//);\r
+
+      \r
+
+      \    pm.expect(cleanUrl(response.url))\r
+
+      \        .to.eql(cleanUrl(url));\r
+
+      });\r
+
+      \r
+
+      // DTL-11: Nama file valid\r
+
+      pm.test(\"DTL-11: Nama file valid\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.nama_file === null ||\r
+
+      \        (\r
+
+      \            typeof response.nama_file === \"string\" &&\r
+
+      \            response.nama_file.trim().length > 0\r
+
+      \        )\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // DTL-12: ID pembuat materi valid\r
+
+      pm.test(\"DTL-12: ID pembuat materi valid\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.dibuat_oleh === null ||\r
+
+      \        (\r
+
+      \            Number.isInteger(response.dibuat_oleh) &&\r
+
+      \            response.dibuat_oleh > 0\r
+
+      \        )\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // DTL-13: Status materi terbit\r
+
+      pm.test(\"DTL-13: Status materi terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      // DTL-14: Timestamp materi valid\r
+
+      pm.test(\"DTL-14: Timestamp materi valid\", function () {\r
+
+      \    const dibuat = Date.parse(response.dibuat_pada);\r
+
+      \    const diubah = Date.parse(response.diubah_pada);\r
+
+      \r
+
+      \    pm.expect(Number.isNaN(dibuat)).to.be.false;\r
+
+      \    pm.expect(Number.isNaN(diubah)).to.be.false;\r
+
+      \r
+
+      \    pm.expect(diubah).to.be.at.least(dibuat);\r
+
+      });\r
+
+      \r
+
+      // DTL-15: Status belajar mahasiswa valid\r
+
+      pm.test(\"DTL-15: Status belajar mahasiswa valid\", function () {\r
+
+      \    const statusValid = [\"belum\", \"dilihat\", \"selesai\"];\r
+
+      \r
+
+      \    pm.expect(statusValid)\r
+
+      \        .to.include(response.status_belajar);\r
+
+      });\r
+
+      \r
+
+      // DTL-16: URL pratinjau valid\r
+
+      pm.test(\"DTL-16: URL pratinjau valid\", function () {\r
+
+      \    if (response.jenis === \"pdf\") {\r
+
+      \        pm.expect(response.url_pratinjau)\r
+
+      \            .to.be.a(\"string\");\r
+
+      \r
+
+      \        pm.expect(cleanUrl(response.url_pratinjau))\r
+
+      \            .to.eql(cleanUrl(response.url));\r
+
+      \    } else {\r
+
+      \        pm.expect(\r
+
+      \            response.url_pratinjau === null ||\r
+
+      \            (\r
+
+      \                typeof response.url_pratinjau === \"string\" &&\r
+
+      \                /^https?:\\/\\//.test(response.url_pratinjau)\r
+
+      \            )\r
+
+      \        ).to.be.true;\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+examples: .resources/08 - Lihat Detail Materi.resources/examples
+order: 8000

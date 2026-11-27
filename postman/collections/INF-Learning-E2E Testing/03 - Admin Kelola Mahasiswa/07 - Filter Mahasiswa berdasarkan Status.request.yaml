@@ -1,0 +1,158 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa?status=belum_aktif"
+method: GET
+queryParams:
+  status: belum_aktif
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      \r
+
+      // Pastikan token admin tersedia\r
+
+      if (!token) {\r
+
+      \    console.error(\"Token admin belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel token.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      const status = \"belum_aktif\";\r
+
+      \r
+
+      // STATUS-01: Status berhasil\r
+
+      pm.test(\"STATUS-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // STATUS-02: Response JSON\r
+
+      pm.test(\"STATUS-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // STATUS-03: Hasil filter berupa array\r
+
+      pm.test(\"STATUS-03: Hasil filter berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // STATUS-04: Hasil filter tidak kosong\r
+
+      pm.test(\"STATUS-04: Hasil filter tidak kosong\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // STATUS-05: Seluruh mahasiswa sesuai status\r
+
+      pm.test(\"STATUS-05: Seluruh mahasiswa berstatus belum aktif\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      \r
+
+      \    response.items.forEach(item => {\r
+
+      \        pm.expect(item.status).to.eql(status);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // STATUS-06: Identitas mahasiswa valid\r
+
+      pm.test(\"STATUS-06: Identitas mahasiswa valid\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      \r
+
+      \    response.items.forEach(item => {\r
+
+      \        pm.expect(item.id)\r
+
+      \            .to.be.a(\"number\").and.above(0);\r
+
+      \r
+
+      \        pm.expect(item.nomor_induk)\r
+
+      \            .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \        pm.expect(item.nama)\r
+
+      \            .to.be.a(\"string\").and.not.empty;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // STATUS-07: Tidak ada ID mahasiswa duplikat\r
+
+      pm.test(\"STATUS-07: Tidak ada ID mahasiswa duplikat\", function () {\r
+
+      \    const ids = response.items.map(item => item.id);\r
+
+      \r
+
+      \    pm.expect(new Set(ids).size).to.eql(ids.length);\r
+
+      });"
+    language: text/javascript
+examples: .resources/07 - Filter Mahasiswa berdasarkan Status.resources/examples
+order: 7000

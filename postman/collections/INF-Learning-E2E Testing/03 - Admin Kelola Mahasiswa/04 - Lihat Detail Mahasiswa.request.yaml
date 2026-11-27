@@ -1,0 +1,182 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa/{{e2e_mhs_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mhs_id\");\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !nim || !nama) {\r
+
+      \    console.error(\"Token atau data mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mhs_id\") !== id\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mhs_id\"));\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // DETAIL-01: Status berhasil\r
+
+      pm.test(\"DETAIL-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-02: Response JSON\r
+
+      pm.test(\"DETAIL-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-03: Data mahasiswa tersedia\r
+
+      pm.test(\"DETAIL-03: Data mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-04: ID sesuai\r
+
+      pm.test(\"DETAIL-04: ID mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-05: NIM sesuai\r
+
+      pm.test(\"DETAIL-05: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(nim);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-06: Nama sesuai\r
+
+      pm.test(\"DETAIL-06: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(nama);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-07: Angkatan sesuai\r
+
+      pm.test(\"DETAIL-07: Angkatan mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.angkatan).to.eql(2024);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-08: Status belum aktif\r
+
+      pm.test(\"DETAIL-08: Status mahasiswa belum aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-09: Foto profil masih kosong\r
+
+      pm.test(\"DETAIL-09: Foto profil masih kosong\", function () {\r
+
+      \    pm.expect(response.foto_url).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-10: Waktu pembuatan valid\r
+
+      pm.test(\"DETAIL-10: Waktu pembuatan valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.be.false;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-11: Data sensitif tidak ditampilkan\r
+
+      pm.test(\"DETAIL-11: Data sensitif tidak ditampilkan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"kata_sandi\");\r
+
+      \    pm.expect(response).to.not.have.property(\"kata_sandi_hash\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password_hash\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/04 - Lihat Detail Mahasiswa.resources/examples
+order: 4000

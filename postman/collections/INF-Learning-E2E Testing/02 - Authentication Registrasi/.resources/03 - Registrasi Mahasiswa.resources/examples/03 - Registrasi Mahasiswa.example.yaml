@@ -1,0 +1,39 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/auth/registrasi"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"{{e2e_registrasi_nim}}\",\r
+
+      \    \"kata_sandi\": \"{{e2e_registrasi_password}}\",\r
+
+      \    \"konfirmasi_kata_sandi\": \"{{e2e_registrasi_password}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 16:51:10 GMT
+    server: railway-hikari
+    x-railway-request-id: oqN-9ytNR3mB65fx9I3ezw
+    content-length: "144"
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 70,
+        "peran": "mahasiswa",
+        "nomor_induk": "2488290537",
+        "nama": "E2E Registrasi 2488290537",
+        "status": "aktif",
+        "dibuat_pada": "2026-11-26T16:48:50"
+      }
+order: 1000

@@ -1,0 +1,504 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_mahasiswa_token\");\r
+
+      const id = pm.environment.get(\"e2e_mahasiswa_id\");\r
+
+      \r
+
+      // Pastikan sesi mahasiswa tersedia\r
+
+      if (!token || !id) {\r
+
+      \    console.error(\"Sesi mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_id\") !== id\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    // Bersihkan identitas materi dari pengujian sebelumnya\r
+
+      \    const variables = [\r
+
+      \        \"e2e_aks_mtr_id\",\r
+
+      \        \"e2e_aks_mtr_judul\",\r
+
+      \        \"e2e_aks_mtr_semester\",\r
+
+      \        \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \        \"e2e_aks_mtr_jenis\",\r
+
+      \        \"e2e_aks_mtr_url\"\r
+
+      \    ];\r
+
+      \r
+
+      \    variables.forEach(key => {\r
+
+      \        pm.environment.unset(key);\r
+
+      \    });\r
+
+      \r
+
+      \    console.log(\"Sesi mahasiswa tersedia.\");\r
+
+      \    console.log(\"Daftar materi dapat diakses.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const jenisValid = [\r
+
+      \    \"pdf\", \"ppt\", \"pptx\",\r
+
+      \    \"doc\", \"docx\", \"xls\", \"xlsx\"\r
+
+      ];\r
+
+      \r
+
+      const statusBelajarValid = [\r
+
+      \    \"belum\", \"dilihat\", \"selesai\"\r
+
+      ];\r
+
+      \r
+
+      // Pilih materi PDF jika tersedia\r
+
+      // Jika tidak, gunakan materi pertama\r
+
+      const materi = items.find(item => item.jenis === \"pdf\")\r
+
+      \    || items[0];\r
+
+      \r
+
+      // LIST-01: Status code berhasil\r
+
+      pm.test(\"LIST-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LIST-02: Response JSON\r
+
+      pm.test(\"LIST-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LIST-03: Items berupa array\r
+
+      pm.test(\"LIST-03: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // LIST-04: Daftar materi tidak kosong\r
+
+      pm.test(\"LIST-04: Daftar materi tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // LIST-05: Total materi valid\r
+
+      pm.test(\"LIST-05: Total materi valid\", function () {\r
+
+      \    pm.expect(Number.isInteger(response.total)).to.be.true;\r
+
+      \    pm.expect(response.total).to.be.at.least(items.length);\r
+
+      });\r
+
+      \r
+
+      // LIST-06: Pagination valid\r
+
+      pm.test(\"LIST-06: Pagination valid\", function () {\r
+
+      \    pm.expect(response.page).to.eql(1);\r
+
+      \    pm.expect(response.limit).to.eql(20);\r
+
+      \    pm.expect(items.length).to.be.at.most(response.limit);\r
+
+      \r
+
+      \    pm.expect(response.total_pages)\r
+
+      \        .to.eql(Math.ceil(response.total / response.limit));\r
+
+      });\r
+
+      \r
+
+      // LIST-07: Seluruh ID materi valid\r
+
+      pm.test(\"LIST-07: Seluruh ID materi valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.id)).to.be.true;\r
+
+      \        pm.expect(item.id).to.be.above(0);\r
+
+      \    });\r
+
+      \r
+
+      \    const ids = items.map(item => item.id);\r
+
+      \    pm.expect(new Set(ids).size).to.eql(ids.length);\r
+
+      });\r
+
+      \r
+
+      // LIST-08: Seluruh judul materi valid\r
+
+      pm.test(\"LIST-08: Seluruh judul materi valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.judul)\r
+
+      \            .to.be.a(\"string\").and.not.be.empty;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-09: Seluruh mata kuliah valid\r
+
+      pm.test(\"LIST-09: Seluruh mata kuliah valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.mata_kuliah)\r
+
+      \            .to.be.a(\"string\").and.not.be.empty;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-10: Seluruh semester valid\r
+
+      pm.test(\"LIST-10: Seluruh semester valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.semester))\r
+
+      \            .to.be.true;\r
+
+      \r
+
+      \        pm.expect(item.semester).to.be.within(1, 8);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-11: Seluruh jenis file valid\r
+
+      pm.test(\"LIST-11: Seluruh jenis file valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(jenisValid).to.include(item.jenis);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-12: Seluruh URL materi valid\r
+
+      pm.test(\"LIST-12: Seluruh URL materi valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.url).to.be.a(\"string\");\r
+
+      \        pm.expect(item.url).to.match(/^https?:\\/\\//);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-13: Mahasiswa hanya melihat materi terbit\r
+
+      pm.test(\"LIST-13: Seluruh materi berstatus terbit\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-14: Status belajar mahasiswa valid\r
+
+      pm.test(\"LIST-14: Status belajar mahasiswa valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(statusBelajarValid)\r
+
+      \            .to.include(item.status_belajar);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LIST-15: Timestamp materi valid\r
+
+      pm.test(\"LIST-15: Timestamp materi valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        const dibuat = Date.parse(item.dibuat_pada);\r
+
+      \        const diubah = Date.parse(item.diubah_pada);\r
+
+      \r
+
+      \        pm.expect(Number.isNaN(dibuat)).to.be.false;\r
+
+      \        pm.expect(Number.isNaN(diubah)).to.be.false;\r
+
+      \        pm.expect(diubah).to.be.at.least(dibuat);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // Simpan identitas materi untuk test berikutnya\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    materi &&\r
+
+      \    Number.isInteger(materi.id) &&\r
+
+      \    materi.id > 0 &&\r
+
+      \    typeof materi.judul === \"string\" &&\r
+
+      \    materi.judul.trim().length > 0 &&\r
+
+      \    typeof materi.mata_kuliah === \"string\" &&\r
+
+      \    materi.mata_kuliah.trim().length > 0 &&\r
+
+      \    Number.isInteger(materi.semester) &&\r
+
+      \    materi.semester >= 1 &&\r
+
+      \    materi.semester <= 8 &&\r
+
+      \    jenisValid.includes(materi.jenis) &&\r
+
+      \    typeof materi.url === \"string\" &&\r
+
+      \    /^https?:\\/\\//.test(materi.url) &&\r
+
+      \    materi.status === \"terbit\" &&\r
+
+      \    statusBelajarValid.includes(materi.status_belajar)\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_id\", String(materi.id)\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_judul\", materi.judul\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_semester\", String(materi.semester)\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_mata_kuliah\", materi.mata_kuliah\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_jenis\", materi.jenis\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_aks_mtr_url\", materi.url\r
+
+      \    );\r
+
+      \r
+
+      \    console.log(\"Materi pengujian berhasil dipilih.\");\r
+
+      \    console.log(\"ID:\", materi.id);\r
+
+      \    console.log(\"Judul:\", materi.judul);\r
+
+      \    console.log(\"Semester:\", materi.semester);\r
+
+      \    console.log(\"Mata kuliah:\", materi.mata_kuliah);\r
+
+      \    console.log(\"Jenis:\", materi.jenis);\r
+
+      }\r
+
+      \r
+
+      // LIST-16: Identitas materi berhasil disimpan\r
+
+      pm.test(\"LIST-16: Identitas materi berhasil disimpan\", function () {\r
+
+      \    pm.expect(materi).to.exist;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_id\"))\r
+
+      \        .to.eql(String(materi.id));\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_judul\"))\r
+
+      \        .to.eql(materi.judul);\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_semester\"))\r
+
+      \        .to.eql(String(materi.semester));\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_mata_kuliah\"))\r
+
+      \        .to.eql(materi.mata_kuliah);\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_jenis\"))\r
+
+      \        .to.eql(materi.jenis);\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_aks_mtr_url\"))\r
+
+      \        .to.eql(materi.url);\r
+
+      });"
+    language: text/javascript
+examples: .resources/02 - Lihat Daftar Materi.resources/examples
+order: 2000

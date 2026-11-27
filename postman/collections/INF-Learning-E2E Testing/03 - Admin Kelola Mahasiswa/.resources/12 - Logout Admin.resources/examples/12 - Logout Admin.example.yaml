@@ -1,0 +1,23 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/auth/logout"
+  method: POST
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 17:55:30 GMT
+    server: railway-hikari
+    x-railway-request-id: _FdSykvqRNyy390HnPRhug
+    content-length: "28"
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Berhasil keluar"
+      }
+order: 1000

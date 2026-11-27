@@ -1,0 +1,331 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: judul
+      value: "{{e2e_mtr_judul}}"
+      description: ""
+      disabled: false
+    - type: text
+      key: mata_kuliah
+      value: Sistem Terdistribusi
+      description: ""
+      disabled: false
+    - type: text
+      key: semester
+      value: "4"
+      description: ""
+      disabled: false
+    - type: text
+      key: deskripsi
+      value: Materi khusus pengujian E2E
+      description: ""
+      disabled: false
+    - type: file
+      key: file
+      src:
+        - /D:/SEMESTER 5/Analisis dan Perancangan Sistem/TuTur 2-Class Diagram.pdf
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const adminId = pm.environment.get(\"e2e_admin_id\");\r
+
+      const materiId = pm.environment.get(\"e2e_mtr_id\");\r
+
+      \r
+
+      // Pastikan sesi admin tersedia\r
+
+      if (!token || !adminId) {\r
+
+      \    console.error(\"Admin belum login.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_admin_id\") !== adminId\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Cegah pembuatan materi jika data lama belum dibersihkan\r
+
+      else if (materiId) {\r
+
+      \    console.error(\"Materi pengujian sebelumnya masih tersimpan.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    // Buat judul materi unik\r
+
+      \    const judul = \"E2E Kelola Materi \" + Date.now();\r
+
+      \r
+
+      \    pm.environment.set(\"e2e_mtr_judul\", judul);\r
+
+      \    pm.environment.unset(\"e2e_mtr_url\");\r
+
+      \r
+
+      \    if (pm.variables.get(\"e2e_mtr_judul\") !== judul) {\r
+
+      \        console.error(\"Terdeteksi konflik variabel judul.\");\r
+
+      \        pm.execution.skipRequest();\r
+
+      \    } else {\r
+
+      \        console.log(\"Judul materi:\", judul);\r
+
+      \    }\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const adminId = Number(pm.environment.get(\"e2e_admin_id\"));\r
+
+      \r
+
+      // CREATE-01: Status code berhasil\r
+
+      pm.test(\"CREATE-01: Status code 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      // CREATE-02: Response JSON\r
+
+      pm.test(\"CREATE-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // CREATE-03: ID materi valid\r
+
+      pm.test(\"CREATE-03: ID materi valid\", function () {\r
+
+      \    pm.expect(response.id).to.be.a(\"number\").and.above(0);\r
+
+      \    pm.expect(Number.isInteger(response.id)).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // CREATE-04: Judul materi sesuai\r
+
+      pm.test(\"CREATE-04: Judul materi sesuai\", function () {\r
+
+      \    pm.expect(response.judul).to.eql(judul);\r
+
+      });\r
+
+      \r
+
+      // CREATE-05: Mata kuliah sesuai\r
+
+      pm.test(\"CREATE-05: Mata kuliah sesuai\", function () {\r
+
+      \    pm.expect(response.mata_kuliah)\r
+
+      \        .to.eql(\"Sistem Terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      // CREATE-06: Semester sesuai\r
+
+      pm.test(\"CREATE-06: Semester sesuai\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(4);\r
+
+      });\r
+
+      \r
+
+      // CREATE-07: Deskripsi sesuai\r
+
+      pm.test(\"CREATE-07: Deskripsi sesuai\", function () {\r
+
+      \    pm.expect(response.deskripsi)\r
+
+      \        .to.eql(\"Materi khusus pengujian E2E\");\r
+
+      });\r
+
+      \r
+
+      // CREATE-08: Jenis file PDF\r
+
+      pm.test(\"CREATE-08: Jenis file PDF\", function () {\r
+
+      \    pm.expect(response.jenis).to.eql(\"pdf\");\r
+
+      });\r
+
+      \r
+
+      // CREATE-09: URL file valid\r
+
+      pm.test(\"CREATE-09: URL file tersedia dan valid\", function () {\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url).to.match(/^https?:\\/\\//);\r
+
+      });\r
+
+      \r
+
+      // CREATE-10: Materi dibuat oleh admin\r
+
+      pm.test(\"CREATE-10: Materi dibuat oleh admin\", function () {\r
+
+      \    pm.expect(response.dibuat_oleh).to.eql(adminId);\r
+
+      });\r
+
+      \r
+
+      // CREATE-11: Status materi terbit\r
+
+      pm.test(\"CREATE-11: Status materi terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      // CREATE-12: Timestamp tersedia\r
+
+      pm.test(\"CREATE-12: Timestamp materi valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(response.diubah_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.be.false;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.diubah_pada))\r
+
+      \    ).to.be.false;\r
+
+      });\r
+
+      \r
+
+      // CREATE-13: Status belajar admin null\r
+
+      pm.test(\"CREATE-13: Status belajar admin null\", function () {\r
+
+      \    pm.expect(response.status_belajar).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // CREATE-14: Nama file PDF tersedia\r
+
+      pm.test(\"CREATE-14: Nama file PDF tersedia\", function () {\r
+
+      \    pm.expect(response.nama_file).to.be.a(\"string\");\r
+
+      \    pm.expect(response.nama_file).to.match(/\\.pdf$/i);\r
+
+      });\r
+
+      \r
+
+      // Simpan identitas materi yang berhasil dibuat\r
+
+      if (\r
+
+      \    pm.response.code === 201 &&\r
+
+      \    Number.isInteger(response.id) &&\r
+
+      \    response.id > 0 &&\r
+
+      \    response.judul === judul &&\r
+
+      \    response.dibuat_oleh === adminId\r
+
+      ) {\r
+
+      \    pm.environment.set(\"e2e_mtr_id\", String(response.id));\r
+
+      \r
+
+      \    if (typeof response.url === \"string\") {\r
+
+      \        pm.environment.set(\"e2e_mtr_url\", response.url);\r
+
+      \    }\r
+
+      \r
+
+      \    console.log(\"ID materi:\", response.id);\r
+
+      \    console.log(\"Judul materi:\", response.judul);\r
+
+      }"
+    language: text/javascript
+examples: .resources/02 - Tambah Materi.resources/examples
+order: 2000

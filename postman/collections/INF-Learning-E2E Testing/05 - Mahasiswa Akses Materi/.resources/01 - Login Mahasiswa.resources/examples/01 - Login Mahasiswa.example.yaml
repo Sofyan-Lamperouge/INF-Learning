@@ -1,0 +1,43 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"{{e2e_mahasiswa_nim}}\",\r
+
+      \    \"kata_sandi\": \"{{e2e_mahasiswa_password}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 23:15:02 GMT
+    server: railway-hikari
+    x-railway-request-id: chP322NLS4WVOlzJCYBc-A
+    content-encoding: gzip
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MiIsInNpZCI6MjU1LCJqdGkiOiIzMWZLaV83SlYxUjFhUXZhRmJPWWZncmRJZlJPQzV2NTUySm9wNUNUS0dBIiwiZXhwIjoxNzk1Nzc4MTAyfQ.S79mkXjPuyF19DEnPZJJqhWD0g21vKsL73Sm7SJn_hk",
+        "token_type": "bearer",
+        "expires_in": 1200,
+        "pengguna": {
+          "id": 52,
+          "peran": "mahasiswa",
+          "nomor_induk": "2488010031",
+          "nama": "Mohammad Sofyan Nurseha",
+          "status": "aktif",
+          "foto_url": null
+        }
+      }
+order: 1000

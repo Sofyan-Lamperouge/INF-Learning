@@ -1,0 +1,59 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: invalid_token_e2e_testing
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // GET-01: Status unauthorized\r
+
+      pm.test(\"GET-01: Status code 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      // GET-02: Response berupa JSON\r
+
+      pm.test(\"GET-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // GET-03: Token tidak valid ditolak\r
+
+      pm.test(\"GET-03: Token tidak valid ditolak\", function () {\r
+
+      \    pm.expect(response.detail)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // GET-04: Data profil tidak dikembalikan\r
+
+      pm.test(\"GET-04: Data profil tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"id\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nomor_induk\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/06 - Akses Profil Token Tidak Valid.resources/examples
+order: 6000

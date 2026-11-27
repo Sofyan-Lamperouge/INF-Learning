@@ -1,0 +1,304 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const adminId = pm.environment.get(\"e2e_admin_id\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !adminId || !id || !judul || !url) {\r
+
+      \    console.error(\"Token atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_admin_id\") !== adminId ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul ||\r
+
+      \    pm.variables.get(\"e2e_mtr_url\") !== url\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi identitas materi setelah update\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+ Update$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi setelah update tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mtr_id\"));\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      const adminId = Number(pm.environment.get(\"e2e_admin_id\"));\r
+
+      \r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // VERIFY-01: Status code berhasil\r
+
+      pm.test(\"VERIFY-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-02: Response JSON\r
+
+      pm.test(\"VERIFY-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-03: Response berupa object\r
+
+      pm.test(\"VERIFY-03: Response berupa object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-04: ID materi tidak berubah\r
+
+      pm.test(\"VERIFY-04: ID materi tidak berubah\", function () {\r
+
+      \    pm.expect(response.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-05: Judul terbaru tersimpan\r
+
+      pm.test(\"VERIFY-05: Judul terbaru tersimpan\", function () {\r
+
+      \    pm.expect(response.judul).to.eql(judul);\r
+
+      \    pm.expect(response.judul)\r
+
+      \        .to.match(/^E2E Kelola Materi \\d+ Update$/);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-06: Deskripsi terbaru tersimpan\r
+
+      pm.test(\"VERIFY-06: Deskripsi terbaru tersimpan\", function () {\r
+
+      \    pm.expect(response.deskripsi)\r
+
+      \        .to.eql(\"Materi E2E berhasil diperbarui\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-07: Semester terbaru tersimpan\r
+
+      pm.test(\"VERIFY-07: Semester terbaru tersimpan\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(5);\r
+
+      \    pm.expect(response.semester).to.not.eql(4);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-08: Mata kuliah tidak berubah\r
+
+      pm.test(\"VERIFY-08: Mata kuliah tidak berubah\", function () {\r
+
+      \    pm.expect(response.mata_kuliah)\r
+
+      \        .to.eql(\"Sistem Terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-09: Jenis file tidak berubah\r
+
+      pm.test(\"VERIFY-09: Jenis file tidak berubah\", function () {\r
+
+      \    pm.expect(response.jenis).to.eql(\"pdf\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-10: Alamat file tidak berubah\r
+
+      pm.test(\"VERIFY-10: Alamat file tidak berubah\", function () {\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url).to.match(/^https?:\\/\\//);\r
+
+      \r
+
+      \    pm.expect(cleanUrl(response.url))\r
+
+      \        .to.eql(cleanUrl(url));\r
+
+      });\r
+
+      \r
+
+      // VERIFY-11: Nama file PDF valid\r
+
+      pm.test(\"VERIFY-11: Nama file PDF valid\", function () {\r
+
+      \    pm.expect(response.nama_file).to.be.a(\"string\");\r
+
+      \    pm.expect(response.nama_file).to.match(/\\.pdf$/i);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-12: Pembuat materi tidak berubah\r
+
+      pm.test(\"VERIFY-12: Pembuat materi tidak berubah\", function () {\r
+
+      \    pm.expect(response.dibuat_oleh).to.eql(adminId);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-13: Status materi tetap terbit\r
+
+      pm.test(\"VERIFY-13: Status materi tetap terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-14: Timestamp valid\r
+
+      pm.test(\"VERIFY-14: Timestamp valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(response.diubah_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \    const dibuat = Date.parse(response.dibuat_pada);\r
+
+      \    const diubah = Date.parse(response.diubah_pada);\r
+
+      \r
+
+      \    pm.expect(Number.isNaN(dibuat)).to.be.false;\r
+
+      \    pm.expect(Number.isNaN(diubah)).to.be.false;\r
+
+      \    pm.expect(diubah).to.be.at.least(dibuat);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-15: Status belajar admin null\r
+
+      pm.test(\"VERIFY-15: Status belajar admin null\", function () {\r
+
+      \    pm.expect(response.status_belajar).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-16: URL pratinjau sesuai\r
+
+      pm.test(\"VERIFY-16: URL pratinjau sesuai\", function () {\r
+
+      \    pm.expect(response.url_pratinjau).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url_pratinjau).to.match(/^https?:\\/\\//);\r
+
+      \r
+
+      \    pm.expect(cleanUrl(response.url_pratinjau))\r
+
+      \        .to.eql(cleanUrl(url));\r
+
+      });"
+    language: text/javascript
+examples: .resources/10 - Verifikasi Perubahan Materi.resources/examples
+order: 10000

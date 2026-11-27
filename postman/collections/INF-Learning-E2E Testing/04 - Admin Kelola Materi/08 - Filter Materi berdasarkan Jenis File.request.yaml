@@ -1,0 +1,180 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi?jenis=pdf"
+method: GET
+queryParams:
+  jenis: pdf
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !judul) {\r
+
+      \    console.error(\"Token atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi identitas materi pengujian\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mtr_id\"));\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const jenis = \"pdf\";\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const materi = items.find(item => item.id === id);\r
+
+      \r
+
+      // FILTER-01: Status code berhasil\r
+
+      pm.test(\"FILTER-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // FILTER-02: Response JSON\r
+
+      pm.test(\"FILTER-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // FILTER-03: Items berupa array\r
+
+      pm.test(\"FILTER-03: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // FILTER-04: Hasil filter tidak kosong\r
+
+      pm.test(\"FILTER-04: Hasil filter tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // FILTER-05: Seluruh materi berjenis PDF\r
+
+      pm.test(\"FILTER-05: Seluruh materi berjenis PDF\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(\r
+
+      \            item.jenis,\r
+
+      \            `Jenis file materi ID ${item.id}`\r
+
+      \        ).to.eql(jenis);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // FILTER-06: Materi pengujian ditemukan\r
+
+      pm.test(\"FILTER-06: Materi pengujian ditemukan\", function () {\r
+
+      \    pm.expect(materi).to.exist;\r
+
+      });\r
+
+      \r
+
+      // FILTER-07: Identitas materi sesuai\r
+
+      pm.test(\"FILTER-07: Identitas materi sesuai\", function () {\r
+
+      \    pm.expect(materi?.id).to.eql(id);\r
+
+      \    pm.expect(materi?.judul).to.eql(judul);\r
+
+      \    pm.expect(materi?.jenis).to.eql(jenis);\r
+
+      });"
+    language: text/javascript
+examples: .resources/08 - Filter Materi berdasarkan Jenis File.resources/examples
+order: 8000

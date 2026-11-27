@@ -1,0 +1,75 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // GET-01: Status unauthorized\r
+
+      pm.test(\"GET-01: Status code 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });\r
+
+      \r
+
+      // GET-02: Response berupa JSON\r
+
+      pm.test(\"GET-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // GET-03: Sesi sudah tidak berlaku\r
+
+      pm.test(\"GET-03: Sesi sudah tidak berlaku\", function () {\r
+
+      \    pm.expect(response.detail).to.eql(\r
+
+      \        \"Sesi tidak ditemukan atau sudah berakhir. Silakan login kembali\"\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-04: Data profil tidak dikembalikan\r
+
+      pm.test(\"GET-04: Data profil tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"id\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nomor_induk\");\r
+
+      });\r
+
+      \r
+
+      // GET-05: Token masih tersedia di Environment\r
+
+      pm.test(\"GET-05: Token masih tersedia di Environment\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_token\")\r
+
+      \    ).to.be.a(\"string\").and.not.empty;\r
+
+      });"
+    language: text/javascript
+examples: .resources/04 - Akses Profil Setelah Logout.resources/examples
+order: 4000

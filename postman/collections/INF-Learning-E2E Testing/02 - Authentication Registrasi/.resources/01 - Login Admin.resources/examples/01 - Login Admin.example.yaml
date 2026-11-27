@@ -1,0 +1,43 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/auth/login"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nomor_induk\": \"{{e2e_admin_nim}}\",\r
+
+      \    \"kata_sandi\": \"{{e2e_admin_password}}\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 16:46:13 GMT
+    server: railway-hikari
+    x-railway-request-id: jfgIZG6EQIW6F7QbnpoFkQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwic2lkIjoyMzgsImp0aSI6IlJGcWtGVWJQeFhBUmxmLUN1SEJKNW00cjlLa1FfUEh4NFpwOFZoU2IyRzAiLCJleHAiOjE3OTU3NTQ3NzN9.6zPh0j1Jj7k6_g6Lmq02yHdEV2GHu1OGrBOoDx58wwM",
+        "token_type": "bearer",
+        "expires_in": 1200,
+        "pengguna": {
+          "id": 1,
+          "peran": "admin",
+          "nomor_induk": "ADM001",
+          "nama": "Administrator",
+          "status": "aktif",
+          "foto_url": null
+        }
+      }
+order: 1000

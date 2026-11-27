@@ -1,0 +1,243 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_mahasiswa_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_mahasiswa_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "const nim = pm.environment.get(\"e2e_mahasiswa_nim\");\r
+
+      const password = pm.environment.get(\"e2e_mahasiswa_password\");\r
+
+      \r
+
+      // Bersihkan sesi mahasiswa sebelumnya\r
+
+      pm.environment.unset(\"e2e_mahasiswa_token\");\r
+
+      pm.environment.unset(\"e2e_mahasiswa_id\");\r
+
+      \r
+
+      // Pastikan kredensial tersedia\r
+
+      if (!nim || !password) {\r
+
+      \    console.error(\"Kredensial mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_nim\") !== nim ||\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_password\") !== password\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Kredensial mahasiswa tersedia.\");\r
+
+      \    console.log(\"Login mahasiswa dapat dijalankan.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      const pengguna = response.pengguna || {};\r
+
+      \r
+
+      const nim = pm.environment.get(\"e2e_mahasiswa_nim\");\r
+
+      \r
+
+      // LOGIN-01: Status code berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Response JSON\r
+
+      pm.test(\"LOGIN-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Access token tersedia\r
+
+      pm.test(\"LOGIN-03: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Token type bearer\r
+
+      pm.test(\"LOGIN-04: Token type bearer\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Masa berlaku token valid\r
+
+      pm.test(\"LOGIN-05: Masa berlaku token valid\", function () {\r
+
+      \    pm.expect(response.expires_in)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-06: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-06: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-07: ID mahasiswa valid\r
+
+      pm.test(\"LOGIN-07: ID mahasiswa valid\", function () {\r
+
+      \    pm.expect(pengguna.id).to.be.a(\"number\");\r
+
+      \    pm.expect(Number.isInteger(pengguna.id)).to.be.true;\r
+
+      \    pm.expect(pengguna.id).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-08: Peran pengguna mahasiswa\r
+
+      pm.test(\"LOGIN-08: Peran pengguna mahasiswa\", function () {\r
+
+      \    pm.expect(pengguna.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-09: Nomor induk sesuai\r
+
+      pm.test(\"LOGIN-09: Nomor induk sesuai\", function () {\r
+
+      \    pm.expect(pengguna.nomor_induk).to.eql(nim);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-10: Status mahasiswa aktif\r
+
+      pm.test(\"LOGIN-10: Status mahasiswa aktif\", function () {\r
+
+      \    pm.expect(pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan sesi jika login mahasiswa berhasil\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    typeof response.access_token === \"string\" &&\r
+
+      \    response.access_token.length > 0 &&\r
+
+      \    response.token_type === \"bearer\" &&\r
+
+      \    typeof response.expires_in === \"number\" &&\r
+
+      \    response.expires_in > 0 &&\r
+
+      \    Number.isInteger(pengguna.id) &&\r
+
+      \    pengguna.id > 0 &&\r
+
+      \    pengguna.peran === \"mahasiswa\" &&\r
+
+      \    pengguna.nomor_induk === nim &&\r
+
+      \    pengguna.status === \"aktif\"\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_mahasiswa_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_mahasiswa_id\",\r
+
+      \        String(pengguna.id)\r
+
+      \    );\r
+
+      \r
+
+      \    console.log(\"Login mahasiswa berhasil.\");\r
+
+      \    console.log(\"ID mahasiswa:\", pengguna.id);\r
+
+      \    console.log(\"Sesi mahasiswa berhasil disimpan.\");\r
+
+      }"
+    language: text/javascript
+examples: .resources/01 - Login Mahasiswa.resources/examples
+order: 1000

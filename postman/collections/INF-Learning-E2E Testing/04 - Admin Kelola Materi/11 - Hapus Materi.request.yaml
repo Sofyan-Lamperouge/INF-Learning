@@ -1,0 +1,286 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const adminId = pm.environment.get(\"e2e_admin_id\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      const baseUrl = pm.environment.get(\"base_url\");\r
+
+      \r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // Validasi data pengujian\r
+
+      if (\r
+
+      \    !token || !adminId || !id ||\r
+
+      \    !judul || !url || !baseUrl ||\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+ Update$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi pengujian tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_admin_id\") !== adminId ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul ||\r
+
+      \    pm.variables.get(\"e2e_mtr_url\") !== url ||\r
+
+      \    pm.variables.get(\"base_url\") !== baseUrl\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan endpoint penghapusan sesuai\r
+
+      else if (\r
+
+      \    pm.request.method !== \"DELETE\" ||\r
+
+      \    pm.variables.replaceIn(pm.request.url.toString()) !==\r
+
+      \        `${baseUrl}/api/v1/materi/${id}`\r
+
+      ) {\r
+
+      \    console.error(\"Endpoint penghapusan tidak sesuai.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Verifikasi identitas sebelum penghapusan\r
+
+      else {\r
+
+      \    try {\r
+
+      \        const res = await pm.sendRequest({\r
+
+      \            url: `${baseUrl}/api/v1/materi/${id}`,\r
+
+      \            method: \"GET\",\r
+
+      \            header: {\r
+
+      \                Authorization: `Bearer ${token}`\r
+
+      \            }\r
+
+      \        });\r
+
+      \r
+
+      \        const data = res.json();\r
+
+      \r
+
+      \        if (\r
+
+      \            res.code !== 200 ||\r
+
+      \            data.id !== Number(id) ||\r
+
+      \            data.judul !== judul ||\r
+
+      \            data.dibuat_oleh !== Number(adminId) ||\r
+
+      \            data.semester !== 5 ||\r
+
+      \            data.mata_kuliah !== \"Sistem Terdistribusi\" ||\r
+
+      \            data.deskripsi !== \"Materi E2E berhasil diperbarui\" ||\r
+
+      \            data.jenis !== \"pdf\" ||\r
+
+      \            data.status !== \"terbit\" ||\r
+
+      \            cleanUrl(data.url) !== cleanUrl(url)\r
+
+      \        ) {\r
+
+      \            console.error(\"Identitas materi tidak sesuai.\");\r
+
+      \            console.error(\"Penghapusan dibatalkan.\");\r
+
+      \            pm.execution.skipRequest();\r
+
+      \        } else {\r
+
+      \            console.log(\"Identitas materi terverifikasi.\");\r
+
+      \            console.log(\"ID materi:\", id);\r
+
+      \            console.log(\"Judul materi:\", judul);\r
+
+      \            console.log(\"Materi dapat dihapus.\");\r
+
+      \        }\r
+
+      \r
+
+      \    } catch (error) {\r
+
+      \        console.error(\"Verifikasi materi gagal:\", error);\r
+
+      \        pm.execution.skipRequest();\r
+
+      \    }\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      \r
+
+      // DELETE-01: Status code berhasil\r
+
+      pm.test(\"DELETE-01: Status code 204\", function () {\r
+
+      \    pm.response.to.have.status(204);\r
+
+      });\r
+
+      \r
+
+      // DELETE-02: Response body kosong\r
+
+      pm.test(\"DELETE-02: Response body kosong\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.eql(\"\");\r
+
+      });\r
+
+      \r
+
+      // DELETE-03: ID materi pengujian valid\r
+
+      pm.test(\"DELETE-03: ID materi pengujian valid\", function () {\r
+
+      \    pm.expect(id).to.be.a(\"string\");\r
+
+      \    pm.expect(id).to.match(/^[1-9]\\d*$/);\r
+
+      });\r
+
+      \r
+
+      // DELETE-04: Judul materi pengujian valid\r
+
+      pm.test(\"DELETE-04: Judul materi pengujian valid\", function () {\r
+
+      \    pm.expect(judul)\r
+
+      \        .to.match(/^E2E Kelola Materi \\d+ Update$/);\r
+
+      });\r
+
+      \r
+
+      // DELETE-05: URL materi masih tersimpan\r
+
+      pm.test(\"DELETE-05: URL materi masih tersimpan\", function () {\r
+
+      \    pm.expect(url).to.be.a(\"string\");\r
+
+      \    pm.expect(url).to.match(/^https?:\\/\\//);\r
+
+      });\r
+
+      \r
+
+      // DELETE-06: Token admin masih tersedia\r
+
+      pm.test(\"DELETE-06: Token admin masih tersedia\", function () {\r
+
+      \    const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      \r
+
+      \    pm.expect(token).to.be.a(\"string\");\r
+
+      \    pm.expect(token.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // Informasi hasil penghapusan\r
+
+      if (\r
+
+      \    pm.response.code === 204 &&\r
+
+      \    pm.response.text() === \"\"\r
+
+      ) {\r
+
+      \    console.log(\"Request penghapusan berhasil.\");\r
+
+      \    console.log(\"ID materi:\", id);\r
+
+      \    console.log(\"Judul materi:\", judul);\r
+
+      \    console.log(\"Lanjutkan verifikasi penghapusan.\");\r
+
+      }"
+    language: text/javascript
+examples: .resources/11 - Hapus Materi.resources/examples
+order: 11000

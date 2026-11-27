@@ -1,0 +1,111 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // GET-01: Status berhasil\r
+
+      pm.test(\"GET-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // GET-02: Response berupa JSON\r
+
+      pm.test(\"GET-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // GET-03: ID sesuai hasil login\r
+
+      pm.test(\"GET-03: ID sesuai hasil login\", function () {\r
+
+      \    pm.expect(String(response.id)).to.eql(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_id\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-04: NIM sesuai akun login\r
+
+      pm.test(\"GET-04: NIM sesuai akun login\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // GET-05: Nama pengguna tersedia\r
+
+      pm.test(\"GET-05: Nama pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.nama)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // GET-06: Role mahasiswa\r
+
+      pm.test(\"GET-06: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // GET-07: Status akun aktif\r
+
+      pm.test(\"GET-07: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // GET-08: Field foto profil tersedia\r
+
+      pm.test(\"GET-08: Field foto profil tersedia\", function () {\r
+
+      \    pm.expect(response).to.have.property(\"foto_url\");\r
+
+      \r
+
+      \    if (response.foto_url !== null) {\r
+
+      \        pm.expect(response.foto_url).to.be.a(\"string\");\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+examples: .resources/02 - Akses Profil.resources/examples
+order: 2000

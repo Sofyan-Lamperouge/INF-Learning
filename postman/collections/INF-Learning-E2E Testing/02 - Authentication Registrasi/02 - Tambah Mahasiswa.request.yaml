@@ -1,0 +1,237 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_registrasi_nim}}\",\r
+
+    \    \"nama\": \"{{e2e_registrasi_nama}}\",\r
+
+    \    \"angkatan\": 2024\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "// Bersihkan data pengujian sebelumnya\r
+
+      pm.environment.unset(\"e2e_registrasi_id\");\r
+
+      pm.environment.unset(\"e2e_registrasi_token\");\r
+
+      \r
+
+      // Generate NIM sesuai aturan backend\r
+
+      const angkaAcak = String(\r
+
+      \    Math.floor(Math.random() * 1000000)\r
+
+      ).padStart(6, \"0\");\r
+
+      \r
+
+      const nim = \"2488\" + angkaAcak;\r
+
+      \r
+
+      // Generate nama mahasiswa pengujian\r
+
+      const nama = \"E2E Registrasi \" + nim;\r
+
+      \r
+
+      // Simpan ke Environment\r
+
+      pm.environment.set(\"e2e_registrasi_nim\", nim);\r
+
+      pm.environment.set(\"e2e_registrasi_nama\", nama);"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // Ambil data request yang sudah di-resolve\r
+
+      const request = JSON.parse(\r
+
+      \    pm.variables.replaceIn(pm.request.body.raw)\r
+
+      );\r
+
+      \r
+
+      // MHS-01: Status berhasil\r
+
+      pm.test(\"MHS-01: Status code 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      // MHS-02: Response berupa JSON\r
+
+      pm.test(\"MHS-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // MHS-03: ID mahasiswa tersedia\r
+
+      pm.test(\"MHS-03: ID mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response.id)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // MHS-04: NIM sesuai request\r
+
+      pm.test(\"MHS-04: NIM sesuai request\", function () {\r
+
+      \    pm.expect(response.nomor_induk)\r
+
+      \        .to.eql(request.nomor_induk);\r
+
+      });\r
+
+      \r
+
+      // MHS-05: Format NIM valid\r
+
+      pm.test(\"MHS-05: Format NIM valid\", function () {\r
+
+      \    pm.expect(response.nomor_induk)\r
+
+      \        .to.match(/^2\\d88\\d{6}$/);\r
+
+      });\r
+
+      \r
+
+      // MHS-06: Nama sesuai request\r
+
+      pm.test(\"MHS-06: Nama sesuai request\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(request.nama);\r
+
+      });\r
+
+      \r
+
+      // MHS-07: Angkatan sesuai request\r
+
+      pm.test(\"MHS-07: Angkatan sesuai request\", function () {\r
+
+      \    pm.expect(response.angkatan)\r
+
+      \        .to.eql(request.angkatan);\r
+
+      });\r
+
+      \r
+
+      // MHS-08: Status awal belum aktif\r
+
+      pm.test(\"MHS-08: Status awal belum_aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      // MHS-09: Foto profil masih kosong\r
+
+      pm.test(\"MHS-09: Foto profil masih kosong\", function () {\r
+
+      \    pm.expect(response.foto_url).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      // MHS-10: Waktu pembuatan tersedia\r
+
+      pm.test(\"MHS-10: Waktu pembuatan tersedia\", function () {\r
+
+      \    pm.expect(response.dibuat_pada)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.eql(false);\r
+
+      });\r
+
+      \r
+
+      // Simpan ID mahasiswa yang berhasil dibuat\r
+
+      if (\r
+
+      \    pm.response.code === 201 &&\r
+
+      \    Number.isInteger(response.id) &&\r
+
+      \    response.id > 0 &&\r
+
+      \    response.nomor_induk === request.nomor_induk &&\r
+
+      \    response.nama === request.nama &&\r
+
+      \    response.status === \"belum_aktif\"\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_registrasi_id\",\r
+
+      \        String(response.id)\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // MHS-11: ID berhasil disimpan\r
+
+      pm.test(\"MHS-11: ID berhasil disimpan\", function () {\r
+
+      \    pm.expect(response.id)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_registrasi_id\")\r
+
+      \    ).to.eql(String(response.id));\r
+
+      });"
+    language: text/javascript
+examples: .resources/02 - Tambah Mahasiswa.resources/examples
+order: 2000

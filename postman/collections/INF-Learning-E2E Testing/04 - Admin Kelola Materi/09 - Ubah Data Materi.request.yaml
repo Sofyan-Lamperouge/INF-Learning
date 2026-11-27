@@ -1,0 +1,421 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"judul\": \"{{e2e_mtr_judul}} Update\",\r
+
+    \    \"deskripsi\": \"Materi E2E berhasil diperbarui\",\r
+
+    \    \"mata_kuliah\": \"Sistem Terdistribusi\",\r
+
+    \    \"semester\": 5\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const adminId = pm.environment.get(\"e2e_admin_id\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      const baseUrl = pm.environment.get(\"base_url\");\r
+
+      \r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // Validasi data pengujian\r
+
+      if (\r
+
+      \    !token || !adminId || !id ||\r
+
+      \    !judul || !url || !baseUrl ||\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi pengujian tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_admin_id\") !== adminId ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul ||\r
+
+      \    pm.variables.get(\"e2e_mtr_url\") !== url ||\r
+
+      \    pm.variables.get(\"base_url\") !== baseUrl\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan endpoint yang akan diakses sesuai\r
+
+      else if (\r
+
+      \    pm.request.method !== \"PUT\" ||\r
+
+      \    pm.variables.replaceIn(pm.request.url.toString()) !==\r
+
+      \        `${baseUrl}/api/v1/materi/${id}`\r
+
+      ) {\r
+
+      \    console.error(\"Endpoint update tidak sesuai.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Verifikasi materi sebelum update\r
+
+      else {\r
+
+      \    try {\r
+
+      \        const res = await pm.sendRequest({\r
+
+      \            url: `${baseUrl}/api/v1/materi/${id}`,\r
+
+      \            method: \"GET\",\r
+
+      \            header: {\r
+
+      \                Authorization: `Bearer ${token}`\r
+
+      \            }\r
+
+      \        });\r
+
+      \r
+
+      \        const data = res.json();\r
+
+      \r
+
+      \        if (\r
+
+      \            res.code !== 200 ||\r
+
+      \            data.id !== Number(id) ||\r
+
+      \            data.judul !== judul ||\r
+
+      \            data.dibuat_oleh !== Number(adminId) ||\r
+
+      \            data.semester !== 4 ||\r
+
+      \            data.mata_kuliah !== \"Sistem Terdistribusi\" ||\r
+
+      \            data.deskripsi !== \"Materi khusus pengujian E2E\" ||\r
+
+      \            data.jenis !== \"pdf\" ||\r
+
+      \            data.status !== \"terbit\" ||\r
+
+      \            cleanUrl(data.url) !== cleanUrl(url)\r
+
+      \        ) {\r
+
+      \            console.error(\"Identitas materi tidak sesuai.\");\r
+
+      \            pm.execution.skipRequest();\r
+
+      \        } else {\r
+
+      \            console.log(\"Identitas materi terverifikasi.\");\r
+
+      \            console.log(\"ID materi:\", id);\r
+
+      \            console.log(\"Judul materi:\", judul);\r
+
+      \            console.log(\"Materi dapat diperbarui.\");\r
+
+      \        }\r
+
+      \r
+
+      \    } catch (error) {\r
+
+      \        console.error(\"Verifikasi materi gagal:\", error);\r
+
+      \        pm.execution.skipRequest();\r
+
+      \    }\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mtr_id\"));\r
+
+      const judulLama = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const judulBaru = judulLama + \" Update\";\r
+
+      const urlLama = pm.environment.get(\"e2e_mtr_url\");\r
+
+      const adminId = Number(pm.environment.get(\"e2e_admin_id\"));\r
+
+      \r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // UPDATE-01: Status code berhasil\r
+
+      pm.test(\"UPDATE-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-02: Response JSON\r
+
+      pm.test(\"UPDATE-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // UPDATE-03: ID materi tidak berubah\r
+
+      pm.test(\"UPDATE-03: ID materi tidak berubah\", function () {\r
+
+      \    pm.expect(response.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-04: Judul berhasil diperbarui\r
+
+      pm.test(\"UPDATE-04: Judul berhasil diperbarui\", function () {\r
+
+      \    pm.expect(response.judul).to.eql(judulBaru);\r
+
+      \    pm.expect(response.judul).to.not.eql(judulLama);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-05: Deskripsi berhasil diperbarui\r
+
+      pm.test(\"UPDATE-05: Deskripsi berhasil diperbarui\", function () {\r
+
+      \    pm.expect(response.deskripsi)\r
+
+      \        .to.eql(\"Materi E2E berhasil diperbarui\");\r
+
+      });\r
+
+      \r
+
+      // UPDATE-06: Semester berhasil diperbarui\r
+
+      pm.test(\"UPDATE-06: Semester berhasil diperbarui\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(5);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-07: Mata kuliah tidak berubah\r
+
+      pm.test(\"UPDATE-07: Mata kuliah tidak berubah\", function () {\r
+
+      \    pm.expect(response.mata_kuliah)\r
+
+      \        .to.eql(\"Sistem Terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      // UPDATE-08: Jenis file tidak berubah\r
+
+      pm.test(\"UPDATE-08: Jenis file tidak berubah\", function () {\r
+
+      \    pm.expect(response.jenis).to.eql(\"pdf\");\r
+
+      });\r
+
+      \r
+
+      // UPDATE-09: Alamat file tidak berubah\r
+
+      pm.test(\"UPDATE-09: Alamat file tidak berubah\", function () {\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      \    pm.expect(cleanUrl(response.url))\r
+
+      \        .to.eql(cleanUrl(urlLama));\r
+
+      });\r
+
+      \r
+
+      // UPDATE-10: Pembuat materi tidak berubah\r
+
+      pm.test(\"UPDATE-10: Pembuat materi tidak berubah\", function () {\r
+
+      \    pm.expect(response.dibuat_oleh).to.eql(adminId);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-11: Status materi tetap terbit\r
+
+      pm.test(\"UPDATE-11: Status materi tetap terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      // UPDATE-12: Timestamp valid\r
+
+      pm.test(\"UPDATE-12: Timestamp valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(response.diubah_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \    const dibuat = Date.parse(response.dibuat_pada);\r
+
+      \    const diubah = Date.parse(response.diubah_pada);\r
+
+      \r
+
+      \    pm.expect(Number.isNaN(dibuat)).to.be.false;\r
+
+      \    pm.expect(Number.isNaN(diubah)).to.be.false;\r
+
+      \    pm.expect(diubah).to.be.at.least(dibuat);\r
+
+      });\r
+
+      \r
+
+      // UPDATE-13: Status belajar admin null\r
+
+      pm.test(\"UPDATE-13: Status belajar admin null\", function () {\r
+
+      \    pm.expect(response.status_belajar).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // Simpan identitas terbaru jika perubahan berhasil\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    response.id === id &&\r
+
+      \    response.judul === judulBaru &&\r
+
+      \    response.deskripsi === \"Materi E2E berhasil diperbarui\" &&\r
+
+      \    response.semester === 5 &&\r
+
+      \    response.mata_kuliah === \"Sistem Terdistribusi\" &&\r
+
+      \    response.jenis === \"pdf\" &&\r
+
+      \    response.dibuat_oleh === adminId &&\r
+
+      \    response.status === \"terbit\" &&\r
+
+      \    typeof response.url === \"string\" &&\r
+
+      \    cleanUrl(response.url) === cleanUrl(urlLama)\r
+
+      ) {\r
+
+      \    pm.environment.set(\"e2e_mtr_judul\", response.judul);\r
+
+      \    pm.environment.set(\"e2e_mtr_url\", response.url);\r
+
+      \r
+
+      \    console.log(\"Materi berhasil diperbarui.\");\r
+
+      \    console.log(\"Judul terbaru:\", response.judul);\r
+
+      }"
+    language: text/javascript
+examples: .resources/09 - Ubah Data Materi.resources/examples
+order: 9000

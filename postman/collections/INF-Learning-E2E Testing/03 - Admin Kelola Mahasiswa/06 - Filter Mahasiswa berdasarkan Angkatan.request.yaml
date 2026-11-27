@@ -1,0 +1,162 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa?angkatan=2024"
+method: GET
+queryParams:
+  angkatan: "2024"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      \r
+
+      // Pastikan token admin tersedia\r
+
+      if (!token) {\r
+
+      \    console.error(\"Token admin belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel token.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      const angkatan = 2024;\r
+
+      \r
+
+      // FILTER-01: Status berhasil\r
+
+      pm.test(\"FILTER-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // FILTER-02: Response JSON\r
+
+      pm.test(\"FILTER-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // FILTER-03: Hasil filter berupa array\r
+
+      pm.test(\"FILTER-03: Hasil filter berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // FILTER-04: Hasil filter tidak kosong\r
+
+      pm.test(\"FILTER-04: Hasil filter tidak kosong\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // FILTER-05: Seluruh mahasiswa sesuai angkatan\r
+
+      pm.test(\"FILTER-05: Seluruh mahasiswa sesuai angkatan\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      \r
+
+      \    response.items.forEach(item => {\r
+
+      \        pm.expect(item.angkatan).to.eql(angkatan);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // FILTER-06: Tidak ada mahasiswa dari angkatan lain\r
+
+      pm.test(\"FILTER-06: Tidak ada mahasiswa dari angkatan lain\", function () {\r
+
+      \    const tidakSesuai = response.items.filter(\r
+
+      \        item => item.angkatan !== angkatan\r
+
+      \    );\r
+
+      \r
+
+      \    pm.expect(tidakSesuai.length).to.eql(0);\r
+
+      });\r
+
+      \r
+
+      // FILTER-07: Identitas mahasiswa valid\r
+
+      pm.test(\"FILTER-07: Identitas mahasiswa valid\", function () {\r
+
+      \    pm.expect(response.items)\r
+
+      \        .to.be.an(\"array\").and.not.empty;\r
+
+      \r
+
+      \    response.items.forEach(item => {\r
+
+      \        pm.expect(item.id)\r
+
+      \            .to.be.a(\"number\").and.above(0);\r
+
+      \r
+
+      \        pm.expect(item.nomor_induk)\r
+
+      \            .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \        pm.expect(item.nama)\r
+
+      \            .to.be.a(\"string\").and.not.empty;\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/06 - Filter Mahasiswa berdasarkan Angkatan.resources/examples
+order: 6000

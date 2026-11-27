@@ -1,0 +1,199 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_mahasiswa_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_mahasiswa_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "pm.environment.unset(\"e2e_mahasiswa_token\");\r
+
+      pm.environment.unset(\"e2e_mahasiswa_id\");"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // LOGIN-01: Status berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Access token tersedia\r
+
+      pm.test(\"LOGIN-02: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Token type valid\r
+
+      pm.test(\"LOGIN-03: Token type valid\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Durasi sesi valid\r
+
+      pm.test(\"LOGIN-04: Durasi sesi valid\", function () {\r
+
+      \    pm.expect(response.expires_in)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-05: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      \    pm.expect(response.pengguna.id).to.be.a(\"number\");\r
+
+      \    pm.expect(response.pengguna.nama).to.be.a(\"string\");\r
+
+      \    pm.expect(response.pengguna.nomor_induk).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-06: Nomor induk sesuai\r
+
+      pm.test(\"LOGIN-06: Nomor induk sesuai\", function () {\r
+
+      \    pm.expect(response.pengguna.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // LOGIN-07: Role mahasiswa\r
+
+      pm.test(\"LOGIN-07: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.pengguna.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-08: Status akun aktif\r
+
+      pm.test(\"LOGIN-08: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token dan ID ke Environment\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    response.access_token &&\r
+
+      \    response.pengguna &&\r
+
+      \    response.pengguna.peran === \"mahasiswa\" &&\r
+
+      \    response.pengguna.status === \"aktif\" &&\r
+
+      \    response.pengguna.nomor_induk ===\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_nim\")\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_mahasiswa_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      \r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_mahasiswa_id\",\r
+
+      \        String(response.pengguna.id)\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // LOGIN-09: Verifikasi penyimpanan token\r
+
+      pm.test(\"LOGIN-09: Token terbaru berhasil disimpan\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-10: Verifikasi token yang dibaca Postman\r
+
+      pm.test(\"LOGIN-10: Tidak ada konflik variabel token\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.variables.get(\"e2e_mahasiswa_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });"
+    language: text/javascript
+examples: .resources/01 - Login Mahasiswa.resources/examples
+order: 1000

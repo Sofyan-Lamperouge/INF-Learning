@@ -1,0 +1,204 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa/{{e2e_mhs_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // VERIFY-DELETE-01: Mahasiswa tidak ditemukan\r
+
+      pm.test(\"VERIFY-DELETE-01: Status code 404\", function () {\r
+
+      \    pm.response.to.have.status(404);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-02: Response JSON\r
+
+      pm.test(\"VERIFY-DELETE-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-03: Pesan kesalahan tersedia\r
+
+      pm.test(\"VERIFY-DELETE-03: Mahasiswa tidak ditemukan\", function () {\r
+
+      \    pm.expect(response.detail).to.be.a(\"string\");\r
+
+      \    pm.expect(response.detail.toLowerCase())\r
+
+      \        .to.include(\"tidak ditemukan\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-04: Data mahasiswa tidak dikembalikan\r
+
+      pm.test(\"VERIFY-DELETE-04: Data mahasiswa tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"id\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nama\");\r
+
+      \    pm.expect(response).to.not.have.property(\"nomor_induk\");\r
+
+      });\r
+
+      \r
+
+      // Bersihkan variabel setelah penghapusan terverifikasi\r
+
+      if (\r
+
+      \    pm.response.code === 404 &&\r
+
+      \    typeof response.detail === \"string\" &&\r
+
+      \    response.detail.toLowerCase().includes(\"tidak ditemukan\") &&\r
+
+      \    !(\"id\" in response) &&\r
+
+      \    !(\"nama\" in response) &&\r
+
+      \    !(\"nomor_induk\" in response)\r
+
+      ) {\r
+
+      \    pm.environment.unset(\"e2e_mhs_id\");\r
+
+      \    pm.environment.unset(\"e2e_mhs_nim\");\r
+
+      \    pm.environment.unset(\"e2e_mhs_nama\");\r
+
+      }\r
+
+      \r
+
+      // VERIFY-DELETE-05: ID mahasiswa dibersihkan\r
+
+      pm.test(\"VERIFY-DELETE-05: ID mahasiswa dibersihkan\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mhs_id\")\r
+
+      \    ).to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-06: NIM mahasiswa dibersihkan\r
+
+      pm.test(\"VERIFY-DELETE-06: NIM mahasiswa dibersihkan\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mhs_nim\")\r
+
+      \    ).to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-07: Nama mahasiswa dibersihkan\r
+
+      pm.test(\"VERIFY-DELETE-07: Nama mahasiswa dibersihkan\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mhs_nama\")\r
+
+      \    ).to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-DELETE-08: Token admin tetap tersedia\r
+
+      pm.test(\"VERIFY-DELETE-08: Token admin tetap tersedia\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_admin_token\")\r
+
+      \    ).to.be.a(\"string\").and.not.empty;\r
+
+      });"
+    language: text/javascript
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mhs_id\");\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // Pastikan data pengujian masih tersedia\r
+
+      if (!token || !id || !nim || !nama) {\r
+
+      \    console.error(\"Token atau data mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mhs_id\") !== id\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan identitas mahasiswa pengujian valid\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^2488\\d{6}$/.test(nim) ||\r
+
+      \    nama !== \"E2E Kelola Mahasiswa Update \" + nim\r
+
+      ) {\r
+
+      \    console.error(\"Identitas mahasiswa pengujian tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+examples: .resources/11 - Verifikasi Penghapusan Mahasiswa.resources/examples
+order: 11000

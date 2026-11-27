@@ -1,0 +1,223 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi?semester={{e2e_aks_mtr_semester}}"
+  method: GET
+  queryParams:
+    semester: "{{e2e_aks_mtr_semester}}"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 23:24:08 GMT
+    server: railway-hikari
+    x-railway-request-id: 5AcVrlthT0KrQdMNCYBc-A
+    content-encoding: gzip
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 84,
+            "judul": "E2E Kelola Materi 1795731052268",
+            "deskripsi": "Materi khusus pengujian E2E",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/dc175dbd10234d7d9fc10e705d33a350.pdf?exp=1795737600&sid=255&sig=3AYcVN2xqXp9weowtw44tXtHaW4MDIecjwlxmxD44B8",
+            "nama_file": "TuTur 2-Class Diagram.pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-26T22:10:56",
+            "diubah_pada": "2026-11-26T22:10:56",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/dc175dbd10234d7d9fc10e705d33a350.pdf?exp=1795737600&sid=255&sig=3AYcVN2xqXp9weowtw44tXtHaW4MDIecjwlxmxD44B8"
+          },
+          {
+            "id": 64,
+            "judul": "05. Teorema CAP",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/ab8e9519442f42cc8c2ce56e6b6bb8f8.pdf?exp=1795737600&sid=255&sig=BTnPeh4n38IhJ30g10YplLswDM2Gza6lLuwTddqGgw0",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:16:46",
+            "diubah_pada": "2026-11-13T12:16:46",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/ab8e9519442f42cc8c2ce56e6b6bb8f8.pdf?exp=1795737600&sid=255&sig=BTnPeh4n38IhJ30g10YplLswDM2Gza6lLuwTddqGgw0"
+          },
+          {
+            "id": 63,
+            "judul": "04. Fault Tolerance",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/b9388c0b6e974f27a4509c643e1f37df.pdf?exp=1795737600&sid=255&sig=rti2ZYVAWVhYBLckFTZcj5sMLtrA6C66tY7IYnk0aPk",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:15:50",
+            "diubah_pada": "2026-11-13T12:15:50",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/b9388c0b6e974f27a4509c643e1f37df.pdf?exp=1795737600&sid=255&sig=rti2ZYVAWVhYBLckFTZcj5sMLtrA6C66tY7IYnk0aPk"
+          },
+          {
+            "id": 62,
+            "judul": "03. Teknik Komunikasi dalam Sistem Terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/d5d650d1fa134f0485b599e2c99a8157.pdf?exp=1795737600&sid=255&sig=tE61sLZqlfarwGkLMdu5AqgEVOQ1uJVCb10tbaf4j-E",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:15:11",
+            "diubah_pada": "2026-11-13T12:15:11",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/d5d650d1fa134f0485b599e2c99a8157.pdf?exp=1795737600&sid=255&sig=tE61sLZqlfarwGkLMdu5AqgEVOQ1uJVCb10tbaf4j-E"
+          },
+          {
+            "id": 61,
+            "judul": "02. Model Arsitektur Sistem Terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/270adf1a6ba5490398e54bd862057603.pdf?exp=1795737600&sid=255&sig=0AAhgyLfinHzrv7S2ggZC1VuFucVNIToJAksJ5eRLbo",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:14:29",
+            "diubah_pada": "2026-11-13T12:14:29",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/270adf1a6ba5490398e54bd862057603.pdf?exp=1795737600&sid=255&sig=0AAhgyLfinHzrv7S2ggZC1VuFucVNIToJAksJ5eRLbo"
+          },
+          {
+            "id": 60,
+            "judul": "01. Pengantar sistem terdistribusi",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/5d6b76245c264f10bb5bf6760f36ccb9.pdf?exp=1795737600&sid=255&sig=pee0KkO8S3gVtv8nXi6lLSWsEOzgZdRFQBlg1iILlsI",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T12:13:46",
+            "diubah_pada": "2026-11-13T12:13:46",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/5d6b76245c264f10bb5bf6760f36ccb9.pdf?exp=1795737600&sid=255&sig=pee0KkO8S3gVtv8nXi6lLSWsEOzgZdRFQBlg1iILlsI"
+          },
+          {
+            "id": 59,
+            "judul": "6. Dukungan Pengambilan keputusan berbasis pengetahuan",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/ae7df74d0ad04ade9148aa9601c8f7c5.pdf?exp=1795737600&sid=255&sig=FX6_6DFOzt8wIpjuGdf0oqubHzOnBswmKyP3Yrrs58k",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T11:12:53",
+            "diubah_pada": "2026-11-13T11:12:53",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/ae7df74d0ad04ade9148aa9601c8f7c5.pdf?exp=1795737600&sid=255&sig=FX6_6DFOzt8wIpjuGdf0oqubHzOnBswmKyP3Yrrs58k"
+          },
+          {
+            "id": 57,
+            "judul": "5. Pemodelan dan Analisis",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/92ef8fadbe104c4d80c63c97f36db8e5.pdf?exp=1795737600&sid=255&sig=RnG1ofcF7-kUQMRJtabkvsA2cGo6BCK7QxX0SMBXpAo",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T11:10:17",
+            "diubah_pada": "2026-11-13T11:10:17",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/92ef8fadbe104c4d80c63c97f36db8e5.pdf?exp=1795737600&sid=255&sig=RnG1ofcF7-kUQMRJtabkvsA2cGo6BCK7QxX0SMBXpAo"
+          },
+          {
+            "id": 56,
+            "judul": "4. Pengelolaan Data - Gudang Data Dan Akses",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/dc84c5d806484ba48d2d0ba261228222.pdf?exp=1795737600&sid=255&sig=sJ_WWKac8zFDCp7XcfOA7zd-EK6AwqrNpmLwinJRBJ0",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T11:09:15",
+            "diubah_pada": "2026-11-13T11:09:15",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/dc84c5d806484ba48d2d0ba261228222.pdf?exp=1795737600&sid=255&sig=sJ_WWKac8zFDCp7XcfOA7zd-EK6AwqrNpmLwinJRBJ0"
+          },
+          {
+            "id": 55,
+            "judul": "3. Komponen Sistem Pendukung Keputusan",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/bcb1ebd21c4443b8bcd3e757eef168ba.pdf?exp=1795737600&sid=255&sig=xYqePKXbysYgwt93NLZsCemz2vrwS-ZTIeW36j21aho",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T08:55:57",
+            "diubah_pada": "2026-11-13T08:55:57",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/bcb1ebd21c4443b8bcd3e757eef168ba.pdf?exp=1795737600&sid=255&sig=xYqePKXbysYgwt93NLZsCemz2vrwS-ZTIeW36j21aho"
+          },
+          {
+            "id": 54,
+            "judul": "2. Pengambilan Keputusan, Sistem, Pemodelan, dan Dukungan",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/182aa9d133a34664927e9f6d39916a50.pdf?exp=1795737600&sid=255&sig=eW81mhABiU_EQUBSf5bKdZOiZIR-MTxIgoIrSTYuiwE",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T08:54:21",
+            "diubah_pada": "2026-11-13T08:54:21",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/182aa9d133a34664927e9f6d39916a50.pdf?exp=1795737600&sid=255&sig=eW81mhABiU_EQUBSf5bKdZOiZIR-MTxIgoIrSTYuiwE"
+          },
+          {
+            "id": 53,
+            "judul": "1. SISTEM PENDUKUNG MANAJEMEN",
+            "deskripsi": null,
+            "mata_kuliah": "Sistem Pendukung Keputusan",
+            "semester": 5,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/459f64102fd249bf8d2354b69ec89490.pdf?exp=1795737600&sid=255&sig=SwJDX_rShQHP8ugwwXFP1HH0ZntqkHUX9rUOMBECIlI",
+            "nama_file": null,
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-13T08:47:11",
+            "diubah_pada": "2026-11-13T08:47:11",
+            "status_belajar": "belum",
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/459f64102fd249bf8d2354b69ec89490.pdf?exp=1795737600&sid=255&sig=SwJDX_rShQHP8ugwwXFP1HH0ZntqkHUX9rUOMBECIlI"
+          }
+        ],
+        "total": 12,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi?semester=4"
+  method: GET
+  queryParams:
+    semester: "4"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 22:21:37 GMT
+    server: railway-hikari
+    x-railway-request-id: VrHZXrVuTAaCTgvOLPU1MQ
+    content-encoding: gzip
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "id": 85,
+            "judul": "E2E Kelola Materi 1795731154070",
+            "deskripsi": "Materi khusus pengujian E2E",
+            "mata_kuliah": "Sistem Terdistribusi",
+            "semester": 4,
+            "jenis": "pdf",
+            "url": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM",
+            "nama_file": "TuTur 2-Class Diagram(1).pdf",
+            "dibuat_oleh": 1,
+            "status": "terbit",
+            "dibuat_pada": "2026-11-26T22:12:35",
+            "diubah_pada": "2026-11-26T22:12:35",
+            "status_belajar": null,
+            "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM"
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "limit": 20,
+        "total_pages": 1
+      }
+order: 1000

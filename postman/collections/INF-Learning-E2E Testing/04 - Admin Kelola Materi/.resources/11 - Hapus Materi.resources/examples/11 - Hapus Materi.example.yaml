@@ -1,0 +1,19 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+  method: DELETE
+response:
+  statusCode: 204
+  statusText: ""
+  headers:
+    :status: "204"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 22:32:51 GMT
+    server: railway-hikari
+    x-railway-request-id: 369VnAZxSxy-rPHV0_TJvA
+    x-hikari-trace: sin1.d1nj
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: ""
+order: 1000

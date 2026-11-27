@@ -1,0 +1,298 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi?semester={{e2e_aks_mtr_semester}}"
+method: GET
+queryParams:
+  semester: "{{e2e_aks_mtr_semester}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const keys = [\r
+
+      \    \"e2e_mahasiswa_token\",\r
+
+      \    \"e2e_mahasiswa_id\",\r
+
+      \    \"e2e_aks_mtr_id\",\r
+
+      \    \"e2e_aks_mtr_judul\",\r
+
+      \    \"e2e_aks_mtr_semester\"\r
+
+      ];\r
+
+      \r
+
+      const semester = pm.environment.get(\"e2e_aks_mtr_semester\");\r
+
+      const materiId = pm.environment.get(\"e2e_aks_mtr_id\");\r
+
+      \r
+
+      // Pastikan seluruh variabel tersedia\r
+
+      const missing = keys.filter(\r
+
+      \    key => !pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      // Periksa konflik variabel\r
+
+      const conflicts = keys.filter(\r
+
+      \    key => pm.variables.get(key) !== pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      if (missing.length > 0) {\r
+
+      \    console.error(\"Variabel belum tersedia:\", missing);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (conflicts.length > 0) {\r
+
+      \    console.error(\"Konflik variabel:\", conflicts);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (!/^[1-8]$/.test(semester)) {\r
+
+      \    console.error(\"Semester tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (!/^[1-9]\\d*$/.test(materiId)) {\r
+
+      \    console.error(\"ID materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Filter semester:\", semester);\r
+
+      \    console.log(\"ID materi pengujian:\", materiId);\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const semester = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_semester\")\r
+
+      );\r
+
+      \r
+
+      const materiId = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_id\")\r
+
+      );\r
+
+      \r
+
+      const judul = pm.environment.get(\"e2e_aks_mtr_judul\");\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const materi = items.find(\r
+
+      \    item => item.id === materiId\r
+
+      );\r
+
+      \r
+
+      // SMT-01: Status code berhasil\r
+
+      pm.test(\"SMT-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // SMT-02: Response JSON\r
+
+      pm.test(\"SMT-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // SMT-03: Items berupa array\r
+
+      pm.test(\"SMT-03: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // SMT-04: Hasil filter tidak kosong\r
+
+      pm.test(\"SMT-04: Hasil filter tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // SMT-05: Seluruh materi sesuai semester\r
+
+      pm.test(\"SMT-05: Seluruh materi sesuai semester\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.semester).to.eql(semester);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // SMT-06: Seluruh materi berstatus terbit\r
+
+      pm.test(\"SMT-06: Seluruh materi berstatus terbit\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.status).to.eql(\"terbit\");\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // SMT-07: Materi pengujian ditemukan\r
+
+      pm.test(\"SMT-07: Materi pengujian ditemukan\", function () {\r
+
+      \    pm.expect(materi).to.exist;\r
+
+      });\r
+
+      \r
+
+      // SMT-08: Identitas materi sesuai\r
+
+      pm.test(\"SMT-08: Identitas materi sesuai\", function () {\r
+
+      \    pm.expect(materi?.id).to.eql(materiId);\r
+
+      \    pm.expect(materi?.judul).to.eql(judul);\r
+
+      \    pm.expect(materi?.semester).to.eql(semester);\r
+
+      });\r
+
+      \r
+
+      // SMT-09: Pagination valid\r
+
+      pm.test(\"SMT-09: Pagination valid\", function () {\r
+
+      \    pm.expect(response.page).to.eql(1);\r
+
+      \    pm.expect(response.limit).to.eql(20);\r
+
+      \r
+
+      \    pm.expect(Number.isInteger(response.total))\r
+
+      \        .to.be.true;\r
+
+      \r
+
+      \    pm.expect(response.total)\r
+
+      \        .to.be.at.least(items.length);\r
+
+      \r
+
+      \    pm.expect(items.length)\r
+
+      \        .to.be.at.most(response.limit);\r
+
+      \r
+
+      \    pm.expect(response.total_pages)\r
+
+      \        .to.eql(Math.ceil(response.total / response.limit));\r
+
+      });\r
+
+      \r
+
+      // SMT-10: Status belajar mahasiswa valid\r
+
+      pm.test(\"SMT-10: Status belajar mahasiswa valid\", function () {\r
+
+      \    const statusValid = [\"belum\", \"dilihat\", \"selesai\"];\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(statusValid)\r
+
+      \            .to.include(item.status_belajar);\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/05 - Filter Materi berdasarkan Semester.resources/examples
+order: 5000

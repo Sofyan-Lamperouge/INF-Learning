@@ -1,0 +1,256 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/logout"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const keys = [\r
+
+      \    \"e2e_mahasiswa_token\",\r
+
+      \    \"e2e_mahasiswa_id\",\r
+
+      \    \"e2e_aks_mtr_id\",\r
+
+      \    \"e2e_aks_mtr_judul\",\r
+
+      \    \"e2e_aks_mtr_semester\",\r
+
+      \    \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \    \"e2e_aks_mtr_jenis\",\r
+
+      \    \"e2e_aks_mtr_url\"\r
+
+      ];\r
+
+      \r
+
+      // Pastikan seluruh variabel tersedia\r
+
+      const missing = keys.filter(\r
+
+      \    key => !pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      // Periksa konflik variabel\r
+
+      const conflicts = keys.filter(\r
+
+      \    key => pm.variables.get(key) !== pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      if (missing.length > 0) {\r
+
+      \    console.error(\"Variabel belum tersedia:\", missing);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (conflicts.length > 0) {\r
+
+      \    console.error(\"Konflik variabel:\", conflicts);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Sesi mahasiswa tersedia.\");\r
+
+      \    console.log(\"Identitas materi masih tersedia.\");\r
+
+      \    console.log(\"Logout mahasiswa dapat dijalankan.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const sesiVariables = [\r
+
+      \    \"e2e_mahasiswa_token\",\r
+
+      \    \"e2e_mahasiswa_id\"\r
+
+      ];\r
+
+      \r
+
+      const materiVariables = [\r
+
+      \    \"e2e_aks_mtr_id\",\r
+
+      \    \"e2e_aks_mtr_judul\",\r
+
+      \    \"e2e_aks_mtr_semester\",\r
+
+      \    \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \    \"e2e_aks_mtr_jenis\",\r
+
+      \    \"e2e_aks_mtr_url\"\r
+
+      ];\r
+
+      \r
+
+      // LOG-01: Status code berhasil\r
+
+      pm.test(\"LOG-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOG-02: Response JSON\r
+
+      pm.test(\"LOG-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LOG-03: Pesan logout sesuai\r
+
+      pm.test(\"LOG-03: Pesan logout sesuai\", function () {\r
+
+      \    pm.expect(response.detail).to.eql(\"Berhasil keluar\");\r
+
+      });\r
+
+      \r
+
+      // Bersihkan variabel hanya jika logout berhasil\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    response.detail === \"Berhasil keluar\"\r
+
+      ) {\r
+
+      \    sesiVariables.forEach(key => {\r
+
+      \        pm.environment.unset(key);\r
+
+      \    });\r
+
+      \r
+
+      \    materiVariables.forEach(key => {\r
+
+      \        pm.environment.unset(key);\r
+
+      \    });\r
+
+      \r
+
+      \    console.log(\"Logout mahasiswa berhasil.\");\r
+
+      \    console.log(\"Variabel sesi berhasil dibersihkan.\");\r
+
+      \    console.log(\"Variabel materi berhasil dibersihkan.\");\r
+
+      }\r
+
+      \r
+
+      // LOG-04: Token mahasiswa berhasil dihapus\r
+
+      pm.test(\"LOG-04: Token mahasiswa berhasil dihapus\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_token\")\r
+
+      \    ).to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // LOG-05: ID mahasiswa berhasil dihapus\r
+
+      pm.test(\"LOG-05: ID mahasiswa berhasil dihapus\", function () {\r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_mahasiswa_id\")\r
+
+      \    ).to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // LOG-06: Seluruh variabel materi berhasil dihapus\r
+
+      pm.test(\"LOG-06: Seluruh variabel materi berhasil dihapus\", function () {\r
+
+      \    materiVariables.forEach(key => {\r
+
+      \        pm.expect(\r
+
+      \            pm.environment.get(key),\r
+
+      \            `Variabel ${key} belum dihapus`\r
+
+      \        ).to.be.undefined;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // LOG-07: Konfigurasi utama tetap tersedia\r
+
+      pm.test(\"LOG-07: Konfigurasi utama tetap tersedia\", function () {\r
+
+      \    const keys = [\r
+
+      \        \"base_url\",\r
+
+      \        \"e2e_mahasiswa_nim\",\r
+
+      \        \"e2e_mahasiswa_password\"\r
+
+      \    ];\r
+
+      \r
+
+      \    keys.forEach(key => {\r
+
+      \        pm.expect(pm.environment.get(key))\r
+
+      \            .to.be.a(\"string\").and.not.be.empty;\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+examples: .resources/10 - Logout Mahasiswa.resources/examples
+order: 10000

@@ -1,0 +1,266 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/kategori/semester"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_mahasiswa_token\");\r
+
+      const id = pm.environment.get(\"e2e_mahasiswa_id\");\r
+
+      const semester = pm.environment.get(\"e2e_aks_mtr_semester\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !semester) {\r
+
+      \    console.error(\"Sesi atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mahasiswa_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_aks_mtr_semester\") !== semester\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi semester materi pengujian\r
+
+      else if (!/^[1-8]$/.test(semester)) {\r
+
+      \    console.error(\"Semester materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Sesi mahasiswa tersedia.\");\r
+
+      \    console.log(\"Semester materi pengujian:\", semester);\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const semester = Number(\r
+
+      \    pm.environment.get(\"e2e_aks_mtr_semester\")\r
+
+      );\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const kategori = items.find(\r
+
+      \    item => item.semester === semester\r
+
+      );\r
+
+      \r
+
+      // KAT-01: Status code berhasil\r
+
+      pm.test(\"KAT-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // KAT-02: Response JSON\r
+
+      pm.test(\"KAT-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // KAT-03: Items berupa array\r
+
+      pm.test(\"KAT-03: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // KAT-04: Daftar kategori tidak kosong\r
+
+      pm.test(\"KAT-04: Daftar kategori tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // KAT-05: Seluruh semester valid\r
+
+      pm.test(\"KAT-05: Seluruh semester valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.semester))\r
+
+      \            .to.be.true;\r
+
+      \r
+
+      \        pm.expect(item.semester).to.be.within(1, 8);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // KAT-06: Tidak ada semester duplikat\r
+
+      pm.test(\"KAT-06: Tidak ada semester duplikat\", function () {\r
+
+      \    const semesters = items.map(item => item.semester);\r
+
+      \r
+
+      \    pm.expect(new Set(semesters).size)\r
+
+      \        .to.eql(semesters.length);\r
+
+      });\r
+
+      \r
+
+      // KAT-07: Total materi valid\r
+
+      pm.test(\"KAT-07: Total materi valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.total_materi))\r
+
+      \            .to.be.true;\r
+
+      \r
+
+      \        pm.expect(item.total_materi).to.be.at.least(0);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // KAT-08: Total mata kuliah valid\r
+
+      pm.test(\"KAT-08: Total mata kuliah valid\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(Number.isInteger(item.total_mata_kuliah))\r
+
+      \            .to.be.true;\r
+
+      \r
+
+      \        pm.expect(item.total_mata_kuliah)\r
+
+      \            .to.be.at.least(0);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // KAT-09: Jumlah mata kuliah tidak melebihi materi\r
+
+      pm.test(\"KAT-09: Jumlah mata kuliah konsisten\", function () {\r
+
+      \    items.forEach(item => {\r
+
+      \        pm.expect(item.total_mata_kuliah)\r
+
+      \            .to.be.at.most(item.total_materi);\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // KAT-10: Semester materi pengujian ditemukan\r
+
+      pm.test(\"KAT-10: Semester materi pengujian ditemukan\", function () {\r
+
+      \    pm.expect(kategori).to.exist;\r
+
+      \    pm.expect(kategori?.semester).to.eql(semester);\r
+
+      });\r
+
+      \r
+
+      // KAT-11: Semester pengujian memiliki materi\r
+
+      pm.test(\"KAT-11: Semester pengujian memiliki materi\", function () {\r
+
+      \    pm.expect(kategori?.total_materi).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // KAT-12: Semester pengujian memiliki mata kuliah\r
+
+      pm.test(\"KAT-12: Semester pengujian memiliki mata kuliah\", function () {\r
+
+      \    pm.expect(kategori?.total_mata_kuliah)\r
+
+      \        .to.be.above(0);\r
+
+      });"
+    language: text/javascript
+examples: .resources/03 - Lihat Kategori Semester.resources/examples
+order: 3000

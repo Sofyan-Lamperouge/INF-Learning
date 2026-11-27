@@ -1,0 +1,236 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi?q={{e2e_mtr_judul}}"
+method: GET
+queryParams:
+  q: "{{e2e_mtr_judul}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !judul) {\r
+
+      \    console.error(\"Token atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi identitas materi pengujian\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mtr_id\"));\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      \r
+
+      const items = Array.isArray(response.items)\r
+
+      \    ? response.items\r
+
+      \    : [];\r
+
+      \r
+
+      const materi = items.find(item => item.id === id);\r
+
+      \r
+
+      // SEARCH-01: Status code berhasil\r
+
+      pm.test(\"SEARCH-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // SEARCH-02: Response JSON\r
+
+      pm.test(\"SEARCH-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // SEARCH-03: Items berupa array\r
+
+      pm.test(\"SEARCH-03: Items berupa array\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // SEARCH-04: Hasil pencarian tidak kosong\r
+
+      pm.test(\"SEARCH-04: Hasil pencarian tidak kosong\", function () {\r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // SEARCH-05: Seluruh hasil sesuai kata kunci\r
+
+      pm.test(\"SEARCH-05: Seluruh hasil sesuai kata kunci\", function () {\r
+
+      \    const keyword = judul.toLowerCase();\r
+
+      \r
+
+      \    pm.expect(items.length).to.be.above(0);\r
+
+      \r
+
+      \    items.forEach(item => {\r
+
+      \        const judulMateri = (item.judul || \"\").toLowerCase();\r
+
+      \        const deskripsi = (item.deskripsi || \"\").toLowerCase();\r
+
+      \r
+
+      \        pm.expect(\r
+
+      \            judulMateri.includes(keyword) ||\r
+
+      \            deskripsi.includes(keyword)\r
+
+      \        ).to.be.true;\r
+
+      \    });\r
+
+      });\r
+
+      \r
+
+      // SEARCH-06: Materi pengujian ditemukan\r
+
+      pm.test(\"SEARCH-06: Materi pengujian ditemukan\", function () {\r
+
+      \    pm.expect(materi).to.exist;\r
+
+      });\r
+
+      \r
+
+      // SEARCH-07: ID materi sesuai\r
+
+      pm.test(\"SEARCH-07: ID materi sesuai\", function () {\r
+
+      \    pm.expect(materi?.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // SEARCH-08: Judul materi sesuai\r
+
+      pm.test(\"SEARCH-08: Judul materi sesuai\", function () {\r
+
+      \    pm.expect(materi?.judul).to.eql(judul);\r
+
+      });\r
+
+      \r
+
+      // SEARCH-09: Mata kuliah sesuai\r
+
+      pm.test(\"SEARCH-09: Mata kuliah sesuai\", function () {\r
+
+      \    pm.expect(materi?.mata_kuliah)\r
+
+      \        .to.eql(\"Sistem Terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      // SEARCH-10: Semester sesuai\r
+
+      pm.test(\"SEARCH-10: Semester sesuai\", function () {\r
+
+      \    pm.expect(materi?.semester).to.eql(4);\r
+
+      });\r
+
+      \r
+
+      // SEARCH-11: Jenis materi sesuai\r
+
+      pm.test(\"SEARCH-11: Jenis materi sesuai\", function () {\r
+
+      \    pm.expect(materi?.jenis).to.eql(\"pdf\");\r
+
+      });\r
+
+      \r
+
+      // SEARCH-12: Status materi terbit\r
+
+      pm.test(\"SEARCH-12: Status materi terbit\", function () {\r
+
+      \    pm.expect(materi?.status).to.eql(\"terbit\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/05 - Cari Materi berdasarkan Judul.resources/examples
+order: 5000

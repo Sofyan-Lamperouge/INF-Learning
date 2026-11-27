@@ -1,0 +1,182 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/logout"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const adminId = pm.environment.get(\"e2e_admin_id\");\r
+
+      \r
+
+      // Pastikan sesi admin tersedia\r
+
+      if (!token || !adminId) {\r
+
+      \    console.error(\"Sesi admin belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_admin_id\") !== adminId\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan Environment materi sudah dibersihkan\r
+
+      else if (\r
+
+      \    pm.environment.get(\"e2e_mtr_id\") !== undefined ||\r
+
+      \    pm.environment.get(\"e2e_mtr_judul\") !== undefined ||\r
+
+      \    pm.environment.get(\"e2e_mtr_url\") !== undefined\r
+
+      ) {\r
+
+      \    console.error(\"Environment materi belum dibersihkan.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"Sesi admin tersedia.\");\r
+
+      \    console.log(\"Environment materi sudah bersih.\");\r
+
+      \    console.log(\"Logout admin dapat dijalankan.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // LOGOUT-01: Status code berhasil\r
+
+      pm.test(\"LOGOUT-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGOUT-02: Response JSON\r
+
+      pm.test(\"LOGOUT-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LOGOUT-03: Pesan logout berhasil\r
+
+      pm.test(\"LOGOUT-03: Pesan logout berhasil\", function () {\r
+
+      \    pm.expect(response.detail).to.eql(\"Berhasil keluar\");\r
+
+      });\r
+
+      \r
+
+      // Bersihkan sesi admin jika logout berhasil\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    response.detail === \"Berhasil keluar\"\r
+
+      ) {\r
+
+      \    pm.environment.unset(\"e2e_admin_token\");\r
+
+      \    pm.environment.unset(\"e2e_admin_id\");\r
+
+      \r
+
+      \    console.log(\"Logout admin berhasil.\");\r
+
+      \    console.log(\"Environment sesi admin dibersihkan.\");\r
+
+      }\r
+
+      \r
+
+      // LOGOUT-04: Token admin berhasil dibersihkan\r
+
+      pm.test(\"LOGOUT-04: Token admin berhasil dibersihkan\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_admin_token\"))\r
+
+      \        .to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // LOGOUT-05: ID admin berhasil dibersihkan\r
+
+      pm.test(\"LOGOUT-05: ID admin berhasil dibersihkan\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_admin_id\"))\r
+
+      \        .to.be.undefined;\r
+
+      });\r
+
+      \r
+
+      // LOGOUT-06: Environment materi tetap bersih\r
+
+      pm.test(\"LOGOUT-06: Environment materi tetap bersih\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_id\"))\r
+
+      \        .to.be.undefined;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_judul\"))\r
+
+      \        .to.be.undefined;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_mtr_url\"))\r
+
+      \        .to.be.undefined;\r
+
+      });"
+    language: text/javascript
+examples: .resources/13 - Logout Admin.resources/examples
+order: 13000

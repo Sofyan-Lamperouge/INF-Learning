@@ -1,0 +1,186 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa/{{e2e_mhs_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mhs_id\");\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !nim || !nama) {\r
+
+      \    console.error(\"Token atau data mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mhs_id\") !== id\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan MHS-08 sudah berhasil\r
+
+      else if (\r
+
+      \    nama !== \"E2E Kelola Mahasiswa Update \" + nim\r
+
+      ) {\r
+
+      \    console.error(\"Data mahasiswa belum diperbarui.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mhs_id\"));\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // VERIFY-01: Status berhasil\r
+
+      pm.test(\"VERIFY-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-02: Response JSON\r
+
+      pm.test(\"VERIFY-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // VERIFY-03: Data mahasiswa tersedia\r
+
+      pm.test(\"VERIFY-03: Data mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-04: ID tidak berubah\r
+
+      pm.test(\"VERIFY-04: ID mahasiswa tidak berubah\", function () {\r
+
+      \    pm.expect(response.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-05: NIM tidak berubah\r
+
+      pm.test(\"VERIFY-05: NIM mahasiswa tidak berubah\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(nim);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-06: Nama baru tersimpan\r
+
+      pm.test(\"VERIFY-06: Nama baru berhasil tersimpan\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(nama);\r
+
+      \    pm.expect(response.nama).to.eql(\r
+
+      \        \"E2E Kelola Mahasiswa Update \" + nim\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // VERIFY-07: Nama lama sudah berubah\r
+
+      pm.test(\"VERIFY-07: Nama lama sudah berubah\", function () {\r
+
+      \    pm.expect(response.nama).to.not.eql(\r
+
+      \        \"E2E Kelola Mahasiswa \" + nim\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // VERIFY-08: Angkatan baru tersimpan\r
+
+      pm.test(\"VERIFY-08: Angkatan baru berhasil tersimpan\", function () {\r
+
+      \    pm.expect(response.angkatan).to.eql(2025);\r
+
+      });\r
+
+      \r
+
+      // VERIFY-09: Status tidak berubah\r
+
+      pm.test(\"VERIFY-09: Status mahasiswa tidak berubah\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"belum_aktif\");\r
+
+      });\r
+
+      \r
+
+      // VERIFY-10: Foto profil tidak berubah\r
+
+      pm.test(\"VERIFY-10: Foto profil tidak berubah\", function () {\r
+
+      \    pm.expect(response.foto_url).to.be.null;\r
+
+      });"
+    language: text/javascript
+examples: .resources/09 - Verifikasi Perubahan Data Mahasiswa.resources/examples
+order: 9000

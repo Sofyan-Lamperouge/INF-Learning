@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/mahasiswa/{{e2e_mhs_id}}"
+  method: PUT
+  body:
+    type: json
+    content: "{\r
+
+      \    \"nama\": \"E2E Kelola Mahasiswa Update {{e2e_mhs_nim}}\",\r
+
+      \    \"angkatan\": 2025\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: ""
+  headers:
+    :status: "200"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 17:43:03 GMT
+    server: railway-hikari
+    x-railway-request-id: aKruFoHIRQmeymFaY53eZw
+    content-length: "175"
+    x-hikari-trace: sin1.tr00
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "id": 73,
+        "nomor_induk": "2488640512",
+        "nama": "E2E Kelola Mahasiswa Update 2488640512",
+        "angkatan": 2025,
+        "status": "belum_aktif",
+        "foto_url": null,
+        "dibuat_pada": "2026-11-26T17:24:05"
+      }
+order: 1000

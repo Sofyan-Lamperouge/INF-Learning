@@ -1,0 +1,413 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_aks_mtr_id}}/unduh"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_mahasiswa_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const keys = [\r
+
+      \    \"e2e_mahasiswa_token\",\r
+
+      \    \"e2e_mahasiswa_id\",\r
+
+      \    \"e2e_aks_mtr_id\",\r
+
+      \    \"e2e_aks_mtr_judul\",\r
+
+      \    \"e2e_aks_mtr_jenis\"\r
+
+      ];\r
+
+      \r
+
+      const materiId = pm.environment.get(\"e2e_aks_mtr_id\");\r
+
+      const jenis = pm.environment.get(\"e2e_aks_mtr_jenis\");\r
+
+      \r
+
+      const jenisValid = [\r
+
+      \    \"pdf\", \"ppt\", \"pptx\",\r
+
+      \    \"doc\", \"docx\", \"xls\", \"xlsx\"\r
+
+      ];\r
+
+      \r
+
+      // Pastikan seluruh variabel tersedia\r
+
+      const missing = keys.filter(\r
+
+      \    key => !pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      // Periksa konflik variabel\r
+
+      const conflicts = keys.filter(\r
+
+      \    key => pm.variables.get(key) !== pm.environment.get(key)\r
+
+      );\r
+
+      \r
+
+      if (missing.length > 0) {\r
+
+      \    console.error(\"Variabel belum tersedia:\", missing);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (conflicts.length > 0) {\r
+
+      \    console.error(\"Konflik variabel:\", conflicts);\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (!/^[1-9]\\d*$/.test(materiId)) {\r
+
+      \    console.error(\"ID materi tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else if (!jenisValid.includes(jenis)) {\r
+
+      \    console.error(\"Jenis file tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      else {\r
+
+      \    console.log(\"ID materi:\", materiId);\r
+
+      \    console.log(\"Jenis file:\", jenis);\r
+
+      \    console.log(\"Materi siap diunduh.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const jenis = pm.environment.get(\"e2e_aks_mtr_jenis\");\r
+
+      \r
+
+      const contentType = (\r
+
+      \    pm.response.headers.get(\"Content-Type\") || \"\"\r
+
+      ).split(\";\")[0].trim().toLowerCase();\r
+
+      \r
+
+      const disposition =\r
+
+      \    pm.response.headers.get(\"Content-Disposition\") || \"\";\r
+
+      \r
+
+      const contentLength =\r
+
+      \    pm.response.headers.get(\"Content-Length\");\r
+
+      \r
+
+      const mimeTypes = {\r
+
+      \    pdf: \"application/pdf\",\r
+
+      \    ppt: \"application/vnd.ms-powerpoint\",\r
+
+      \    pptx: \"application/vnd.openxmlformats-officedocument.presentationml.presentation\",\r
+
+      \    doc: \"application/msword\",\r
+
+      \    docx: \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\",\r
+
+      \    xls: \"application/vnd.ms-excel\",\r
+
+      \    xlsx: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\r
+
+      };\r
+
+      \r
+
+      const body = pm.response.text();\r
+
+      \r
+
+      // Ambil nama file dari Content-Disposition\r
+
+      function getFilename(header) {\r
+
+      \    const encoded = header.match(\r
+
+      \        /filename\\*=UTF-8''([^;]+)/i\r
+
+      \    );\r
+
+      \r
+
+      \    if (encoded) {\r
+
+      \        return decodeURIComponent(encoded[1].trim());\r
+
+      \    }\r
+
+      \r
+
+      \    const normal = header.match(\r
+
+      \        /filename=\"?([^\";]+)\"?/i\r
+
+      \    );\r
+
+      \r
+
+      \    return normal ? normal[1].trim() : \"\";\r
+
+      }\r
+
+      \r
+
+      // DWN-01: Status code berhasil\r
+
+      pm.test(\"DWN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // DWN-02: Header Content-Type tersedia\r
+
+      pm.test(\"DWN-02: Content-Type tersedia\", function () {\r
+
+      \    pm.expect(contentType).not.to.be.empty;\r
+
+      });\r
+
+      \r
+
+      // DWN-03: Content-Type sesuai jenis file\r
+
+      pm.test(\"DWN-03: Content-Type sesuai jenis file\", function () {\r
+
+      \    pm.expect(mimeTypes[jenis]).to.exist;\r
+
+      \    pm.expect(contentType).to.eql(mimeTypes[jenis]);\r
+
+      });\r
+
+      \r
+
+      // DWN-04: Header Content-Disposition tersedia\r
+
+      pm.test(\"DWN-04: Content-Disposition tersedia\", function () {\r
+
+      \    pm.expect(disposition).not.to.be.empty;\r
+
+      });\r
+
+      \r
+
+      // DWN-05: File dikirim sebagai attachment\r
+
+      pm.test(\"DWN-05: File dikirim sebagai attachment\", function () {\r
+
+      \    pm.expect(disposition).to.match(/^attachment\\b/i);\r
+
+      });\r
+
+      \r
+
+      // DWN-06: Nama file tersedia\r
+
+      pm.test(\"DWN-06: Nama file tersedia\", function () {\r
+
+      \    const filename = getFilename(disposition);\r
+
+      \r
+
+      \    pm.expect(filename).to.be.a(\"string\");\r
+
+      \    pm.expect(filename).not.to.be.empty;\r
+
+      });\r
+
+      \r
+
+      // DWN-07: Ekstensi file sesuai\r
+
+      pm.test(\"DWN-07: Ekstensi file sesuai\", function () {\r
+
+      \    const filename = getFilename(disposition);\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        filename.toLowerCase().endsWith(\".\" + jenis)\r
+
+      \    ).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // DWN-08: Ukuran file lebih dari nol\r
+
+      pm.test(\"DWN-08: Ukuran file lebih dari nol\", function () {\r
+
+      \    pm.expect(contentLength).to.match(/^\\d+$/);\r
+
+      \    pm.expect(Number(contentLength)).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // DWN-09: Response body tidak kosong\r
+
+      pm.test(\"DWN-09: Response body tidak kosong\", function () {\r
+
+      \    pm.expect(body.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // DWN-10: Format awal file sesuai\r
+
+      pm.test(\"DWN-10: Format awal file sesuai\", function () {\r
+
+      \    if (jenis === \"pdf\") {\r
+
+      \        pm.expect(body.startsWith(\"%PDF-\")).to.be.true;\r
+
+      \    }\r
+
+      \r
+
+      \    else if ([\"docx\", \"pptx\", \"xlsx\"].includes(jenis)) {\r
+
+      \        pm.expect(body.startsWith(\"PK\\u0003\\u0004\"))\r
+
+      \            .to.be.true;\r
+
+      \    }\r
+
+      \r
+
+      \    else if ([\"doc\", \"ppt\", \"xls\"].includes(jenis)) {\r
+
+      \        const stream = pm.response.stream;\r
+
+      \r
+
+      \        pm.expect(stream).to.exist;\r
+
+      \r
+
+      \        const signature = Array.from(\r
+
+      \            stream.slice(0, 8)\r
+
+      \        );\r
+
+      \r
+
+      \        pm.expect(signature).to.eql([\r
+
+      \            208, 207, 17, 224, 161, 177, 26, 225\r
+
+      \        ]);\r
+
+      \    }\r
+
+      \r
+
+      \    else {\r
+
+      \        pm.expect.fail(\"Jenis file tidak didukung.\");\r
+
+      \    }\r
+
+      });\r
+
+      \r
+
+      // DWN-11: Sesi mahasiswa tetap tersedia\r
+
+      pm.test(\"DWN-11: Sesi mahasiswa tetap tersedia\", function () {\r
+
+      \    pm.expect(pm.environment.get(\"e2e_mahasiswa_token\"))\r
+
+      \        .to.be.a(\"string\").and.not.be.empty;\r
+
+      \r
+
+      \    pm.expect(pm.environment.get(\"e2e_mahasiswa_id\"))\r
+
+      \        .to.be.a(\"string\").and.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      // DWN-12: Identitas materi tetap tersedia\r
+
+      pm.test(\"DWN-12: Identitas materi tetap tersedia\", function () {\r
+
+      \    const keys = [\r
+
+      \        \"e2e_aks_mtr_id\",\r
+
+      \        \"e2e_aks_mtr_judul\",\r
+
+      \        \"e2e_aks_mtr_semester\",\r
+
+      \        \"e2e_aks_mtr_mata_kuliah\",\r
+
+      \        \"e2e_aks_mtr_jenis\",\r
+
+      \        \"e2e_aks_mtr_url\"\r
+
+      \    ];\r
+
+      \r
+
+      \    keys.forEach(key => {\r
+
+      \        pm.expect(pm.environment.get(key))\r
+
+      \            .to.be.a(\"string\").and.not.be.empty;\r
+
+      \    });\r
+
+      });"
+    language: text/javascript
+order: 9000

@@ -1,0 +1,23 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/mahasiswa/{{e2e_mhs_id}}"
+  method: GET
+response:
+  statusCode: 404
+  statusText: ""
+  headers:
+    :status: "404"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 17:53:39 GMT
+    server: railway-hikari
+    x-railway-request-id: RfzcRzTbRZu9xq9dnPRhug
+    content-length: "38"
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Mahasiswa tidak ditemukan"
+      }
+order: 1000

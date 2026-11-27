@@ -1,0 +1,249 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_registrasi_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_registrasi_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "// Bersihkan token registrasi sebelumnya\r
+
+      pm.environment.unset(\"e2e_registrasi_token\");\r
+
+      \r
+
+      // Pastikan data mahasiswa tersedia\r
+
+      const id = pm.environment.get(\"e2e_registrasi_id\");\r
+
+      const nim = pm.environment.get(\"e2e_registrasi_nim\");\r
+
+      const password = pm.environment.get(\"e2e_registrasi_password\");\r
+
+      \r
+
+      if (!id || !nim || !password) {\r
+
+      \    throw new Error(\"Data mahasiswa registrasi belum lengkap.\");\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // LOGIN-01: Status berhasil\r
+
+      pm.test(\"LOGIN-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-02: Response berupa JSON\r
+
+      pm.test(\"LOGIN-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-03: Access token tersedia\r
+
+      pm.test(\"LOGIN-03: Access token tersedia\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      });\r
+
+      \r
+
+      // LOGIN-04: Token type valid\r
+
+      pm.test(\"LOGIN-04: Token type valid\", function () {\r
+
+      \    pm.expect(response.token_type).to.eql(\"bearer\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-05: Durasi sesi valid\r
+
+      pm.test(\"LOGIN-05: Durasi sesi valid\", function () {\r
+
+      \    pm.expect(response.expires_in)\r
+
+      \        .to.be.a(\"number\").and.above(0);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-06: Data pengguna tersedia\r
+
+      pm.test(\"LOGIN-06: Data pengguna tersedia\", function () {\r
+
+      \    pm.expect(response.pengguna).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-07: ID sesuai mahasiswa registrasi\r
+
+      pm.test(\"LOGIN-07: ID mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(String(response.pengguna.id)).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_id\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // LOGIN-08: NIM sesuai mahasiswa registrasi\r
+
+      pm.test(\"LOGIN-08: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.pengguna.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // LOGIN-09: Nama sesuai mahasiswa registrasi\r
+
+      pm.test(\"LOGIN-09: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.pengguna.nama).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nama\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // LOGIN-10: Role mahasiswa\r
+
+      pm.test(\"LOGIN-10: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.pengguna.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // LOGIN-11: Status akun aktif\r
+
+      pm.test(\"LOGIN-11: Status akun aktif\", function () {\r
+
+      \    pm.expect(response.pengguna.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // Simpan token jika login dan identitas valid\r
+
+      if (\r
+
+      \    pm.response.code === 200 &&\r
+
+      \    typeof response.access_token === \"string\" &&\r
+
+      \    response.access_token.length > 0 &&\r
+
+      \    response.pengguna &&\r
+
+      \    String(response.pengguna.id) ===\r
+
+      \        pm.environment.get(\"e2e_registrasi_id\") &&\r
+
+      \    response.pengguna.nomor_induk ===\r
+
+      \        pm.environment.get(\"e2e_registrasi_nim\") &&\r
+
+      \    response.pengguna.nama ===\r
+
+      \        pm.environment.get(\"e2e_registrasi_nama\") &&\r
+
+      \    response.pengguna.peran === \"mahasiswa\" &&\r
+
+      \    response.pengguna.status === \"aktif\"\r
+
+      ) {\r
+
+      \    pm.environment.set(\r
+
+      \        \"e2e_registrasi_token\",\r
+
+      \        response.access_token\r
+
+      \    );\r
+
+      }\r
+
+      \r
+
+      // LOGIN-12: Token berhasil disimpan\r
+
+      pm.test(\"LOGIN-12: Token registrasi berhasil disimpan\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.environment.get(\"e2e_registrasi_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });\r
+
+      \r
+
+      // LOGIN-13: Tidak ada konflik variabel token\r
+
+      pm.test(\"LOGIN-13: Tidak ada konflik variabel token\", function () {\r
+
+      \    pm.expect(response.access_token)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.variables.get(\"e2e_registrasi_token\")\r
+
+      \    ).to.eql(response.access_token);\r
+
+      });"
+    language: text/javascript
+examples: .resources/04 - Login Setelah Registrasi.resources/examples
+order: 4000

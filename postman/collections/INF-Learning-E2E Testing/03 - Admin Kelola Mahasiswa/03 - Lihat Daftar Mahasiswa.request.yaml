@@ -1,0 +1,172 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/mahasiswa?q={{e2e_mhs_nim}}"
+method: GET
+queryParams:
+  q: "{{e2e_mhs_nim}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mhs_id\");\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !nim || !nama) {\r
+
+      \    console.error(\"Token atau data mahasiswa belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mhs_nim\") !== nim\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mhs_id\"));\r
+
+      const nim = pm.environment.get(\"e2e_mhs_nim\");\r
+
+      const nama = pm.environment.get(\"e2e_mhs_nama\");\r
+
+      \r
+
+      // READ-01: Status berhasil\r
+
+      pm.test(\"READ-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // READ-02: Response JSON\r
+
+      pm.test(\"READ-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // READ-03: Daftar mahasiswa tersedia\r
+
+      pm.test(\"READ-03: Daftar mahasiswa tersedia\", function () {\r
+
+      \    pm.expect(response.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      // READ-04: Daftar tidak kosong\r
+
+      pm.test(\"READ-04: Daftar mahasiswa tidak kosong\", function () {\r
+
+      \    pm.expect(response.items.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      // Cari mahasiswa yang dibuat pada MHS-02\r
+
+      const mahasiswa = Array.isArray(response.items)\r
+
+      \    ? response.items.find(item => item.id === id)\r
+
+      \    : undefined;\r
+
+      \r
+
+      // READ-05: Mahasiswa pengujian ditemukan\r
+
+      pm.test(\"READ-05: Mahasiswa pengujian ditemukan\", function () {\r
+
+      \    pm.expect(mahasiswa).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // READ-06: ID sesuai\r
+
+      pm.test(\"READ-06: ID mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(mahasiswa.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // READ-07: NIM sesuai\r
+
+      pm.test(\"READ-07: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(mahasiswa.nomor_induk).to.eql(nim);\r
+
+      });\r
+
+      \r
+
+      // READ-08: Nama sesuai\r
+
+      pm.test(\"READ-08: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(mahasiswa.nama).to.eql(nama);\r
+
+      });\r
+
+      \r
+
+      // READ-09: Angkatan sesuai\r
+
+      pm.test(\"READ-09: Angkatan mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(mahasiswa.angkatan).to.eql(2024);\r
+
+      });\r
+
+      \r
+
+      // READ-10: Status sesuai\r
+
+      pm.test(\"READ-10: Status mahasiswa belum aktif\", function () {\r
+
+      \    pm.expect(mahasiswa.status).to.eql(\"belum_aktif\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/03 - Lihat Daftar Mahasiswa.resources/examples
+order: 3000

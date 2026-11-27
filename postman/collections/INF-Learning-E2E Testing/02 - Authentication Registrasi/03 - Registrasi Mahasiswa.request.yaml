@@ -1,0 +1,167 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/auth/registrasi"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomor_induk\": \"{{e2e_registrasi_nim}}\",\r
+
+    \    \"kata_sandi\": \"{{e2e_registrasi_password}}\",\r
+
+    \    \"konfirmasi_kata_sandi\": \"{{e2e_registrasi_password}}\"\r
+
+    }"
+scripts:
+  - type: beforeRequest
+    code: "// Pastikan mahasiswa pengujian sudah dibuat\r
+
+      const id = pm.environment.get(\"e2e_registrasi_id\");\r
+
+      const nim = pm.environment.get(\"e2e_registrasi_nim\");\r
+
+      const password = pm.environment.get(\"e2e_registrasi_password\");\r
+
+      \r
+
+      if (!id || !nim || !password) {\r
+
+      \    throw new Error(\r
+
+      \        \"Data registrasi belum lengkap. Periksa REG-02 dan Environment.\"\r
+
+      \    );\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // REG-01: Status berhasil\r
+
+      pm.test(\"REG-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // REG-02: Response berupa JSON\r
+
+      pm.test(\"REG-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // REG-03: ID sesuai mahasiswa yang dibuat\r
+
+      pm.test(\"REG-03: ID mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(String(response.id)).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_id\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // REG-04: NIM sesuai\r
+
+      pm.test(\"REG-04: NIM mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nomor_induk).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nim\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // REG-05: Nama mahasiswa sesuai\r
+
+      pm.test(\"REG-05: Nama mahasiswa sesuai\", function () {\r
+
+      \    pm.expect(response.nama).to.eql(\r
+
+      \        pm.environment.get(\"e2e_registrasi_nama\")\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      // REG-06: Role mahasiswa\r
+
+      pm.test(\"REG-06: Role mahasiswa\", function () {\r
+
+      \    pm.expect(response.peran).to.eql(\"mahasiswa\");\r
+
+      });\r
+
+      \r
+
+      // REG-07: Status akun berubah menjadi aktif\r
+
+      pm.test(\"REG-07: Status akun menjadi aktif\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"aktif\");\r
+
+      });\r
+
+      \r
+
+      // REG-08: Waktu pembuatan tersedia\r
+
+      pm.test(\"REG-08: Waktu pembuatan valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada)\r
+
+      \        .to.be.a(\"string\").and.not.empty;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.eql(false);\r
+
+      });\r
+
+      \r
+
+      // REG-09: Password tidak dikembalikan\r
+
+      pm.test(\"REG-09: Password tidak terekspos\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"kata_sandi\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password\");\r
+
+      \    pm.expect(response).to.not.have.property(\"password_hash\");\r
+
+      });\r
+
+      \r
+
+      // REG-10: Registrasi tidak membuat access token\r
+
+      pm.test(\"REG-10: Access token tidak dikembalikan\", function () {\r
+
+      \    pm.expect(response).to.not.have.property(\"access_token\");\r
+
+      });"
+    language: text/javascript
+examples: .resources/03 - Registrasi Mahasiswa.resources/examples
+order: 3000

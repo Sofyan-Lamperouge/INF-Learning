@@ -1,0 +1,294 @@
+$kind: http-request
+url: "{{base_url}}/api/v1/materi/{{e2e_mtr_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{e2e_admin_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const token = pm.environment.get(\"e2e_admin_token\");\r
+
+      const id = pm.environment.get(\"e2e_mtr_id\");\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      \r
+
+      // Pastikan data pengujian tersedia\r
+
+      if (!token || !id || !judul || !url) {\r
+
+      \    console.error(\"Token atau data materi belum tersedia.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Pastikan tidak ada konflik variabel\r
+
+      else if (\r
+
+      \    pm.variables.get(\"e2e_admin_token\") !== token ||\r
+
+      \    pm.variables.get(\"e2e_mtr_id\") !== id ||\r
+
+      \    pm.variables.get(\"e2e_mtr_judul\") !== judul ||\r
+
+      \    pm.variables.get(\"e2e_mtr_url\") !== url\r
+
+      ) {\r
+
+      \    console.error(\"Terdeteksi konflik variabel.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }\r
+
+      \r
+
+      // Validasi identitas materi\r
+
+      else if (\r
+
+      \    !/^[1-9]\\d*$/.test(id) ||\r
+
+      \    !/^E2E Kelola Materi \\d+$/.test(judul)\r
+
+      ) {\r
+
+      \    console.error(\"Identitas materi pengujian tidak valid.\");\r
+
+      \    pm.execution.skipRequest();\r
+
+      }"
+    language: text/javascript
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      const id = Number(pm.environment.get(\"e2e_mtr_id\"));\r
+
+      const judul = pm.environment.get(\"e2e_mtr_judul\");\r
+
+      const url = pm.environment.get(\"e2e_mtr_url\");\r
+
+      const adminId = Number(pm.environment.get(\"e2e_admin_id\"));\r
+
+      \r
+
+      // Menghilangkan parameter Signed URL\r
+
+      function cleanUrl(value) {\r
+
+      \    return typeof value === \"string\"\r
+
+      \        ? value.split(\"?\")[0]\r
+
+      \        : \"\";\r
+
+      }\r
+
+      \r
+
+      // DETAIL-01: Status code berhasil\r
+
+      pm.test(\"DETAIL-01: Status code 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-02: Response JSON\r
+
+      pm.test(\"DETAIL-02: Response berupa JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-03: Response berupa object\r
+
+      pm.test(\"DETAIL-03: Response berupa object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-04: ID materi sesuai\r
+
+      pm.test(\"DETAIL-04: ID materi sesuai\", function () {\r
+
+      \    pm.expect(response.id).to.eql(id);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-05: Judul materi sesuai\r
+
+      pm.test(\"DETAIL-05: Judul materi sesuai\", function () {\r
+
+      \    pm.expect(response.judul).to.eql(judul);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-06: Deskripsi materi sesuai\r
+
+      pm.test(\"DETAIL-06: Deskripsi materi sesuai\", function () {\r
+
+      \    pm.expect(response.deskripsi)\r
+
+      \        .to.eql(\"Materi khusus pengujian E2E\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-07: Mata kuliah sesuai\r
+
+      pm.test(\"DETAIL-07: Mata kuliah sesuai\", function () {\r
+
+      \    pm.expect(response.mata_kuliah)\r
+
+      \        .to.eql(\"Sistem Terdistribusi\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-08: Semester sesuai\r
+
+      pm.test(\"DETAIL-08: Semester sesuai\", function () {\r
+
+      \    pm.expect(response.semester).to.eql(4);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-09: Jenis materi PDF\r
+
+      pm.test(\"DETAIL-09: Jenis materi PDF\", function () {\r
+
+      \    pm.expect(response.jenis).to.eql(\"pdf\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-10: URL mengarah ke file yang sama\r
+
+      pm.test(\"DETAIL-10: URL file sesuai\", function () {\r
+
+      \    pm.expect(response.url).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url).to.match(/^https?:\\/\\//);\r
+
+      \    pm.expect(cleanUrl(response.url)).to.eql(cleanUrl(url));\r
+
+      });\r
+
+      \r
+
+      // DETAIL-11: Nama file PDF tersedia\r
+
+      pm.test(\"DETAIL-11: Nama file PDF valid\", function () {\r
+
+      \    pm.expect(response.nama_file).to.be.a(\"string\");\r
+
+      \    pm.expect(response.nama_file).to.match(/\\.pdf$/i);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-12: Materi dibuat oleh admin\r
+
+      pm.test(\"DETAIL-12: Materi dibuat oleh admin\", function () {\r
+
+      \    pm.expect(response.dibuat_oleh).to.eql(adminId);\r
+
+      });\r
+
+      \r
+
+      // DETAIL-13: Status materi terbit\r
+
+      pm.test(\"DETAIL-13: Status materi terbit\", function () {\r
+
+      \    pm.expect(response.status).to.eql(\"terbit\");\r
+
+      });\r
+
+      \r
+
+      // DETAIL-14: Timestamp valid\r
+
+      pm.test(\"DETAIL-14: Timestamp valid\", function () {\r
+
+      \    pm.expect(response.dibuat_pada).to.be.a(\"string\");\r
+
+      \    pm.expect(response.diubah_pada).to.be.a(\"string\");\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.dibuat_pada))\r
+
+      \    ).to.be.false;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Number.isNaN(Date.parse(response.diubah_pada))\r
+
+      \    ).to.be.false;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-15: Status belajar admin null\r
+
+      pm.test(\"DETAIL-15: Status belajar admin null\", function () {\r
+
+      \    pm.expect(response.status_belajar).to.be.null;\r
+
+      });\r
+
+      \r
+
+      // DETAIL-16: URL pratinjau sesuai\r
+
+      pm.test(\"DETAIL-16: URL pratinjau valid\", function () {\r
+
+      \    pm.expect(response.url_pratinjau).to.be.a(\"string\");\r
+
+      \    pm.expect(response.url_pratinjau).to.match(/^https?:\\/\\//);\r
+
+      \r
+
+      \    pm.expect(cleanUrl(response.url_pratinjau))\r
+
+      \        .to.eql(cleanUrl(url));\r
+
+      });"
+    language: text/javascript
+examples: .resources/04 - Lihat Detail Materi.resources/examples
+order: 4000

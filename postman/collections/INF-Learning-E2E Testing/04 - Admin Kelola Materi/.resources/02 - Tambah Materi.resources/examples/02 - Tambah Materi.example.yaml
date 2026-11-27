@@ -1,0 +1,66 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/api/v1/materi"
+  method: POST
+  body:
+    type: formdata
+    content:
+      - type: text
+        key: judul
+        value: "{{e2e_mtr_judul}}"
+        description: ""
+        disabled: false
+      - type: text
+        key: mata_kuliah
+        value: Sistem Terdistribusi
+        description: ""
+        disabled: false
+      - type: text
+        key: semester
+        value: "4"
+        description: ""
+        disabled: false
+      - type: text
+        key: deskripsi
+        value: Materi khusus pengujian E2E
+        description: ""
+        disabled: false
+      - type: file
+        key: file
+        src:
+          - /D:/SEMESTER 5/Analisis dan Perancangan Sistem/TuTur 2-Class Diagram.pdf
+        description: ""
+        disabled: false
+response:
+  statusCode: 201
+  statusText: ""
+  headers:
+    :status: "201"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 22:12:34 GMT
+    server: railway-hikari
+    x-railway-request-id: ZyHvkhvOSL-RhtTA9I3ezw
+    content-encoding: gzip
+    x-hikari-trace: sin1.nzn2
+    x-railway-edge: sin1
+    vary: accept-encoding
+  body:
+    type: json
+    content: |-
+      {
+        "id": 85,
+        "judul": "E2E Kelola Materi 1795731154070",
+        "deskripsi": "Materi khusus pengujian E2E",
+        "mata_kuliah": "Sistem Terdistribusi",
+        "semester": 4,
+        "jenis": "pdf",
+        "url": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM",
+        "nama_file": "TuTur 2-Class Diagram(1).pdf",
+        "dibuat_oleh": 1,
+        "status": "terbit",
+        "dibuat_pada": "2026-11-26T22:12:35",
+        "diubah_pada": "2026-11-26T22:12:35",
+        "status_belajar": null,
+        "url_pratinjau": "https://inf-learning-production.up.railway.app/uploads/cb91a6e43db64b648dc765940c378160.pdf?exp=1795734000&sid=253&sig=PGCPRyXBmw83Kz4NXyZTbxP0Ev1syVnwl-WU34AfVdM"
+      }
+order: 1000

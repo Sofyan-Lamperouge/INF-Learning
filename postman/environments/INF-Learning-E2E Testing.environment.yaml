@@ -1,0 +1,24 @@
+name: INF-Learning-E2E Testing
+values:
+  - key: base_url
+    value: ''
+  - key: e2e_admin_nim
+    value: ''
+  - key: e2e_admin_password
+    value: ''
+  - key: e2e_mahasiswa_nim
+    value: ''
+  - key: e2e_mahasiswa_password
+    value: ''
+  - key: e2e_registrasi_password
+    value: ''
+  - key: e2e_registrasi_nim
+    value: ''
+  - key: e2e_registrasi_nama
+    value: ''
+  - key: e2e_materi_id
+    value: ''
+  - key: e2e_registrasi_id
+    value: ''
+  - key: ''
+    value: ''
