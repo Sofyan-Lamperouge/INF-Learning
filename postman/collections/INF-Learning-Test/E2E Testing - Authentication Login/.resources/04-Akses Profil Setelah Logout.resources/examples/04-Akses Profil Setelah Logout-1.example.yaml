@@ -1,0 +1,25 @@
+$kind: http-example
+name: 04-Akses Profil Setelah Logout
+request:
+  url: "{{base_url}}/auth/me"
+  method: GET
+response:
+  statusCode: 401
+  statusText: ""
+  headers:
+    :status: "401"
+    content-type: application/json
+    date: Thu, 26 Nov 2026 08:40:32 GMT
+    server: railway-hikari
+    www-authenticate: Bearer
+    x-railway-request-id: 5iC0JbnxQxeSrj3K9fVATg
+    content-length: "53"
+    x-hikari-trace: sin1.hs0s
+    x-railway-edge: sin1
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Token tidak valid atau sudah kedaluwarsa"
+      }
+order: 2000
