@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+// Komponen untuk menampilkan rekap kuis di dashboard admin. Menampilkan daftar kuis terbaru, atau pesan kosong jika belum ada kuis.
 export default function RekapKuis({ kuisList = [] }) {
   return (
     <div className="rekap-card">

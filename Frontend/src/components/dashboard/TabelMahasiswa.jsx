@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+// Komponen untuk menampilkan tabel mahasiswa di dashboard admin. Menampilkan daftar mahasiswa terbaru, atau pesan kosong jika belum ada mahasiswa.
 export default function TabelMahasiswa({ mahasiswaList = [] }) {
   return (
     <div className="rekap-card">

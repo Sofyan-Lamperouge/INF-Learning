@@ -10,7 +10,7 @@ function potongNama(teks, maks = MAKS_NAMA_SUKSES) {
     ? `${huruf.slice(0, maks).join("").trimEnd()}...`
     : huruf.join("");
 }
-
+// Modal konfirmasi hapus materi.
 export default function DeleteMateriModal({
   materi,
   deleting = false,
@@ -33,7 +33,7 @@ export default function DeleteMateriModal({
   // onDone disimpan di ref supaya timer tidak ter-reset saat halaman induk render ulang.
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
-
+  // Tutup popup sukses setelah beberapa detik.
   useEffect(() => {
     if (!success) return undefined;
     const timer = window.setTimeout(
@@ -42,7 +42,7 @@ export default function DeleteMateriModal({
     );
     return () => window.clearTimeout(timer);
   }, [success]);
-
+  
   return (
     <div className="hapus-materi-overlay">
       {success ? (

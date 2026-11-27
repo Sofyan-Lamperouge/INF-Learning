@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+// Komponen untuk menampilkan rekap materi di dashboard admin. Menampilkan daftar materi terbaru, atau pesan kosong jika belum ada materi.
 const SEMESTER_COLORS = {
   1: "semester-1",
   2: "semester-2",
@@ -11,6 +12,7 @@ const SEMESTER_COLORS = {
   8: "semester-8",
 };
 
+// Ambil nama file dari URL file materi. Jika gagal, kembalikan nama default berdasarkan jenis file.
 function getFileName(fileUrl, fallbackType) {
   if (!fileUrl) return "";
 
@@ -26,6 +28,7 @@ function getFileName(fileUrl, fallbackType) {
   }
 }
 
+// Format semester: jika valid, tampilkan "Semester N", jika tidak valid, tampilkan "—".
 function formatSemester(semester) {
   const value = Number(semester);
 

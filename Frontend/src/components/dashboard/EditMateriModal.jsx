@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { updateMateri } from "../../services/materiService.js";
 
+// Modal untuk mengedit materi. Menampilkan form dengan input semester, mata kuliah, nama materi, dan file materi.
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx"]; 
 
+// Ambil nama file dari URL materi, atau tampilkan "File tidak tersedia" jika URL kosong.
 function getCurrentFileName(url = "") {
   if (!url) return "File tidak tersedia";
 
+  // Ambil nama file dari URL, hapus UUID jika ada, dan tampilkan nama yang lebih ramah.
   try {
     const storedName = decodeURIComponent(
       new URL(url, window.location.origin).pathname.split("/").pop() || ""
@@ -19,6 +22,7 @@ function getCurrentFileName(url = "") {
   }
 }
 
+// Ikon file berdasarkan ekstensi file.
 function FileTypeIcon({ extension }) {
   return (
     <div className={`edit-materi-file-icon edit-materi-file-icon--${extension}`} aria-hidden="true">
@@ -39,6 +43,7 @@ function FileTypeIcon({ extension }) {
   );
 }
 
+// Ikon hasil operasi (sukses / gagal).
 function ResultIcon({ type }) {
   if (type === "success") {
     return (
@@ -55,6 +60,7 @@ function ResultIcon({ type }) {
   );
 }
 
+// Modal untuk mengedit materi. Menampilkan form dengan input semester, mata kuliah, nama materi, dan file materi.
 export default function EditMateriModal({
   materi,
   mataKuliahOptions = [],
@@ -76,10 +82,12 @@ export default function EditMateriModal({
   const extension = visibleFileName.split(".").pop()?.toLowerCase() || "file";
   const fileType = extension.toUpperCase();
 
+  // Tutup popup sukses setelah beberapa detik.
   useEffect(() => {
     document.documentElement.classList.add("edit-materi-modal-open");
     document.body.classList.add("edit-materi-modal-open");
 
+    // Tutup dengan tombol Escape (dinonaktifkan saat proses simpan / popup sukses)
     function handleKeyDown(event) {
       if (event.key === "Escape" && !saving && !result) onClose();
     }
@@ -92,11 +100,13 @@ export default function EditMateriModal({
     };
   }, [onClose, saving, result]);
 
+  // Tampilkan pesan error sementara di popup.
   function showError(message) {
     setResult({ type: "error", message });
     window.setTimeout(() => setResult(null), 2600);
   }
 
+  // Tangani perubahan input form.
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
@@ -124,6 +134,7 @@ export default function EditMateriModal({
     setFile(selected);
   }
 
+  // Tangani submit form untuk memperbarui materi.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -136,7 +147,7 @@ export default function EditMateriModal({
       showError("Nama materi minimal terdiri dari 3 karakter.");
       return;
     }
-
+    
     const formData = new FormData();
     formData.append("judul", form.judul.trim());
     formData.append("semester", form.semester);
