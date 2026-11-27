@@ -51,6 +51,7 @@ function KuisIcon() {
   );
 }
 
+// Icon SVG inline
 function MahasiswaIcon() {
   return (
     <svg
@@ -75,6 +76,7 @@ function badgeHariIni(jumlah) {
   return { text: `[+${n}]`, tone: n > 0 ? "green" : "blue" };
 }
 
+// Panel utama dashboard: welcome + tombol upload + statistik materi, kuis, mahasiswa.
 export default function MainPanel({ user, stats, statsError = "", onUpload }) {
   const nama = user?.namaLengkap || "Admin";
 

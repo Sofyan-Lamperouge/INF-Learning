@@ -3,6 +3,7 @@
 
 import { NavLink } from "react-router-dom";
 
+// Daftar menu sidebar dengan label, path, dan ikon SVG
 const MENU_ITEMS = [
   {
     label: "Dashboard",

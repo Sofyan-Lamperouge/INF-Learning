@@ -1,3 +1,4 @@
+// Komponen kartu statistik di dashboard. Menampilkan ikon, judul, nilai, badge, dan subtitle. Badge memiliki warna yang dapat disesuaikan.
 export default function StatCard({ icon, title, value, badge, badgeTone = "blue", subtitle }) {
   return (
     <div className="stat-card">

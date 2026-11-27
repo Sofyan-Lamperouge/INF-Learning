@@ -9793,7 +9793,8 @@ button[aria-label^="Hapus materi"]:focus-visible {
   color: #6b6b6b;
 }
 
-/* ---------- Tabel materi ---------- */
+/* ---------- TABEL MATERI ---------- */
+
 .sm-table-box {
   overflow: hidden;
   border: calc(var(--u) * 1) solid #e3f1fb;
@@ -9940,6 +9941,30 @@ button[aria-label^="Hapus materi"]:focus-visible {
   font-size: calc(var(--u) * 16);
   color: #6b6b6b;
 }
+
+/* [UD] TOMBOL UNDUH DI TABEL MATERI: sekarang <button>, plus animasi putar */
+.sm-btn-unduh {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.sm-btn-unduh:disabled { cursor: progress; }
+.sm-btn-unduh.memuat:hover { background: transparent; }
+.sm-spin {
+  display: block;
+  width: calc(var(--u) * 28);
+  height: calc(var(--u) * 28);
+  min-width: 18px;
+  min-height: 18px;
+  border: 2px solid #cfe9fb;
+  border-top-color: #55b5ef;
+  border-radius: 50%;
+  animation: sm-putar 0.8s linear infinite;
+}
+@keyframes sm-putar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sm-spin { animation-duration: 2.4s; } }
 
 /* ---------- Skeleton loading ---------- */
 .sm-skel {

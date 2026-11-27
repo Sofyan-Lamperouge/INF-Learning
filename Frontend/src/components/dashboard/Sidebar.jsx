@@ -8,12 +8,13 @@ import SidebarUser from "./SidebarUser.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
 import SidebarSkeleton from "../skeletons/SidebarSkeleton.jsx";
 
+// Sidebar dashboard admin. Menampilkan logo, menu, tombol keluar, dan kartu user. Menggunakan skeleton saat loading.
 export default function Sidebar() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     // Sembunyikan skeleton setelah 1 detik
     const timer = setTimeout(() => setLoading(false), 1000);

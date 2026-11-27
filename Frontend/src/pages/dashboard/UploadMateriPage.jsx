@@ -6,14 +6,17 @@ import {
   PESAN_FILE_PALSU,
 } from "../../utils/fileSignature.js";
 
+// Batas ukuran file maksimal (10 MB) dan ekstensi file yang diizinkan
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ["pdf", "docx", "pptx"];
 
+// Halaman upload materi. Terdiri dari dua langkah: (1) mengisi informasi materi, dan (2) memilih file materi. Setelah itu diarahkan ke halaman konfirmasi.
 export default function UploadMateriPage() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [form, setForm] = useState(
     () =>
+      // Gunakan state dari navigasi sebelumnya jika ada, atau inisialisasi form kosong
       state?.form ?? { semester: "", mataKuliah: "", judul: "", deskripsi: "" },
   );
   const [file, setFile] = useState(() => state?.file ?? null);
@@ -21,6 +24,7 @@ export default function UploadMateriPage() {
   const [isChecking, setIsChecking] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Fungsi untuk memperbarui nilai form saat input berubah
   const updateForm = (event) => {
     setForm((current) => ({
       ...current,
@@ -29,6 +33,7 @@ export default function UploadMateriPage() {
     setError("");
   };
 
+  // Fungsi untuk menangani perubahan file saat pengguna memilih file baru
   const handleFileChange = (event) => {
     const selected = event.target.files?.[0] ?? null;
     setError("");
@@ -52,6 +57,7 @@ export default function UploadMateriPage() {
     setFile(selected);
   };
 
+  // Fungsi untuk menangani klik tombol "Lanjutkan" dan memeriksa file sebelum melanjutkan ke halaman konfirmasi
   const handleContinue = async (event) => {
     event.preventDefault();
     if (isChecking) return;

@@ -21,8 +21,17 @@ import {
   getKategoriMataKuliah,
   getMateriMataKuliah,
 } from "../../services/materiMahasiswaService.js";
+import DownloadToast from "../../components/student/baca/DownloadToast.jsx";
+import useUnduhDaftar from "../../components/student/materi/useUnduhDaftar.js";
 
 export default function MateriMahasiswaPage() {
+  const {
+    status: statusUnduh,
+    info: infoUnduh,
+    aktifId,
+    unduh,
+    tutup: tutupToast,
+  } = useUnduhDaftar();
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const semesterParam = Number(params.get("semester"));
@@ -162,6 +171,8 @@ export default function MateriMahasiswaPage() {
             items={materiList}
             loading={loadingMateri}
             onLihat={handleLihat}
+            onUnduh={unduh}
+            aktifId={aktifId}
           />
         ) : (
           <MataKuliahGrid
@@ -172,6 +183,7 @@ export default function MateriMahasiswaPage() {
           />
         )}
       </section>
+      <DownloadToast status={statusUnduh} info={infoUnduh} onTutup={tutupToast} />
     </StudentLayout>
   );
 }

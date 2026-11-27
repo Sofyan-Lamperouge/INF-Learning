@@ -1,13 +1,15 @@
 // src/components/student/materi/MateriTable.jsx
 // Tabel materi satu mata kuliah: No | Nama Materi | File | Tanggal Upload | Aksi
 
-import { CalendarIcon, DownloadIcon, EyeIcon } from './MateriIcons.jsx';
-import { formatTanggal, namaFile } from './helpers.js';
+import { CalendarIcon, DownloadIcon, EyeIcon } from "./MateriIcons.jsx";
+import { formatTanggal, namaFile } from "./helpers.js";
 
 export default function MateriTable({
   items = [],
   loading = false,
   onLihat,
+  onUnduh,
+  aktifId = null,
 }) {
   return (
     <div className="sm-table-box">
@@ -72,16 +74,20 @@ export default function MateriTable({
                       <EyeIcon />
                       Lihat
                     </button>
-                    <a
-                      className="sm-btn-unduh"
-                      href={materi.url}
-                      download
-                      target="_blank"
-                      rel="noreferrer"
+                    <button
+                      type="button"
+                      className={`sm-btn-unduh${aktifId === materi.id ? " memuat" : ""}`}
+                      onClick={() => onUnduh?.(materi)}
+                      disabled={aktifId !== null}
+                      aria-busy={aktifId === materi.id}
                       aria-label={`Unduh ${materi.judul}`}
                     >
-                      <DownloadIcon />
-                    </a>
+                      {aktifId === materi.id ? (
+                        <span className="sm-spin" aria-hidden="true" />
+                      ) : (
+                        <DownloadIcon />
+                      )}
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -89,7 +95,9 @@ export default function MateriTable({
         </table>
       </div>
 
-      <div className="sm-table-footer">{loading ? '' : `${items.length} Materi`}</div>
+      <div className="sm-table-footer">
+        {loading ? "" : `${items.length} Materi`}
+      </div>
     </div>
   );
 }

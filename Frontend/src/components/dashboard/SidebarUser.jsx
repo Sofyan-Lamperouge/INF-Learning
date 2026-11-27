@@ -1,11 +1,13 @@
 import { useAuth } from '../../hooks/useAuth.js';
 
+// Komponen kartu user di sidebar dashboard. Menampilkan inisial, nama, dan peran pengguna.
 export default function SidebarUser() {
   const { user, role } = useAuth();
 
   const nama = user?.nama || user?.namaLengkap || 'Haikal Azkal Azkiya';
   const peran = role === 'admin' ? 'Administrator' : role || 'Administrator';
-
+  
+  // Ambil inisial dari nama pengguna: huruf pertama dari dua kata pertama, diubah menjadi huruf kapital.
   const inisial = nama
     .split(' ')
     .map((n) => n[0])
